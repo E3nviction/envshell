@@ -1,0 +1,4 @@
+#env-panel {
+	background-color: alpha(#222, 0.2);
+	border-bottom: 1px solid alpha(#555, 0.025);
+}

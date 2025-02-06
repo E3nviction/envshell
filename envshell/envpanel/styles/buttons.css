@@ -1,0 +1,30 @@
+#power-button,
+#control-center-button,
+#current_window,
+#envsh-button {
+	border-radius: 5px;
+	padding: 0 5px;
+	margin: 0 2.5px;
+}
+
+#power-button:hover,
+#control-center-button:hover,
+#current_window:hover,
+#envsh-button:hover {
+	background-color: alpha(#555, 0.4);
+}
+
+#power-button:active,
+#control-center-button:active,
+#current_window:active,
+#envsh-button:active {
+	background-color: alpha(#444, 0.4);
+}
+
+/* EnvSH Button */
+
+#envsh-button label {
+	font-size: 17px;
+	margin: 0 10px;
+	font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+}

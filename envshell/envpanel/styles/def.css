@@ -1,0 +1,22 @@
+*:not(mark) {
+	background-color: transparent;
+	box-shadow: none;
+	border: none;
+	font-family: "Fira Mono Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+	color: #fff;
+	font-size: 12px;
+	margin: 0;
+	padding: 0;
+	font-weight: normal;
+}
+
+slider {
+	background-color: alpha(#fff, 0.3);
+	border-radius: 20px;
+}
+
+scale {
+	background-color: alpha(#333, 0.3);
+	border: 1px solid alpha(#555, 0.3);
+	border-radius: 20px;
+}
