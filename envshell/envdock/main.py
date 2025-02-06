@@ -1,57 +1,18 @@
-from hmac import new
-import subprocess
 import threading
 import time
-import json
 import sys
 
 from fabric import Application
-from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.svg import Svg
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib  # type: ignore
+from gi.repository import GLib
 
 import os
 
-app_list = {
-    "NotFOUND": "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/abrt.svg",
-}
-app_name_translation_list = {
-    "code": "vscode"
-}
-pinned = {
-    "org.gnome.Nautilus": "nautilus",
-    "gnome-disks": "gnome-disks",
-    "org.gnome.baobab": "baobab",
-    "kitty": "kitty",
-    "brave-browser": "brave",
-    "code": "code",
-    "org.gnome.Calculator": "gnome-calculator",
-    "org.gnome.TextEditor": "gnome-text-editor",
-    "org.gnome.Loupe": "Image Viewer",
-    "org.gnome.clocks": "gnome-clocks",
-    "krita": "krita",
-    "spotify": "spotify",
-    "vesktop": "vesktop",
-    "org.keepassxc.KeePassXC": "keepassxc",
-    "com.github.rafostar.Clapper": "clapper",
-    "blender": "blender",
-    "obsidian": "obsidian",
-}
-app_names = json.load(open("./envpanel/app_names.json"))
-exclude_list = [
-    "kitty-dropterm",
-    "albert",
-    "main.py"
-]
-ignored_workspace_list = [
-    9
-]
-icon_list = []
-icon_dir = "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/"
+from config.c import app_list, app_name_translation_list, pinned, app_names, exclude_list, ignored_workspace_list,icon_list, icon_dir
 
 # Get all the icons
 for file in os.listdir(icon_dir):
@@ -62,12 +23,9 @@ for file in os.listdir(icon_dir):
 for icon in icon_list:
     app_list[icon] = f"{icon_dir}{icon}.svg"
 
-from .services import AppService
-
-from hyprpy import Hyprland
-
 global instance
-from utils.roam import instance
+global envshell_service
+from utils.roam import instance, envshell_service
 
 
 class EnvDock(Window):
@@ -82,10 +40,9 @@ class EnvDock(Window):
             **kwargs,
         )
 
-        self.app_service = AppService()
-        self.app_service.connect(
-            "apps-changed",
-            lambda _, apps: self.update_ui_thread_safe(apps),
+        envshell_service.connect(
+            "dock-apps-changed",
+            lambda _, apps: self.dock_apps_changed(apps),
         )
 
         self.dock_box = Box(
@@ -100,45 +57,28 @@ class EnvDock(Window):
             start_children=[self.dock_box],
         )
 
-        self.start_app_monitor_thread()
+        self.start_update_thread()
 
-    def update_ui_thread_safe(self, _apps):
+    def dock_apps_changed(self, _apps):
         """Update UI safely in the main thread."""
-        def focus(b):
-            try:
-                print("Focus app: " + b.get_name())
-                os.system("hyprctl dispatch focuswindow address:" + b.get_name())
-            except:
-                print("Failed to focus app")
-        def launch(b):
-            try:
-                print("Launch app: " + b.get_name())
-                os.system("hyprctl dispatch exec " + pinned[b.get_name()])
-            except:
-                print("Failed to launch app")
-        def update_ui():
+        def focus(b): os.system("hyprctl dispatch focuswindow address:" + b.get_name())
+        def launch(b): os.system("hyprctl dispatch exec " + pinned[b.get_name()])
+        def dock_apps_changed_update():
             self.dock_box.children = []
             apps = _apps
             # We have to eval the string to get the list, because Signals don't work with lists. Atleast I haven't found a way
-            if apps[0] == "[" and apps[-1] == "]":
-                apps: list = eval(apps)
+            if apps[0] == "[" and apps[-1] == "]": apps: list = eval(apps)
             pinned_apps = {}
             apps_new = []
             for i, app in enumerate(apps):
-                # Here we check if the app is in the pinned list
-                if app[0] in pinned:
-                    # If so we add it to the pinned_apps list and remove it from the apps list
-                    pinned_apps[app[0]] = [app[0], app[1], app[2], app[3], app[4], True]
-                else:
+                if app[0] not in pinned:
                     apps_new.append(app)
+                    continue
+                pinned_apps[app[0]] = [app[0], app[1], app[2], app[3], app[4], True]
             apps = apps_new
-            # Here we check if the pinned app has been overwritten, so if not, we can again add it to the pinned_apps list
             for p in pinned:
                 if p not in pinned_apps:
                     pinned_apps[p] = [p, None, None, None, None, False]
-            # We sort the pinned_apps by Alphabetical order
-            #pinned_apps = dict(sorted(pinned_apps.items(), key=lambda item: item[0].lower()))
-            # Actually its better to sort it by the pinned list, so its in the order that was set by the user
             pinned_apps = dict(sorted(pinned_apps.items(), key=lambda item: list(pinned.keys()).index(item[0])))
             for app_ in pinned_apps:
                 app, pid, title, address, active, running = pinned_apps[app_]
@@ -166,7 +106,7 @@ class EnvDock(Window):
                                 on_clicked=focus,
                                 tooltip_text=f"{app}",
                             ),
-                            Svg(svg_file="./envpanel/svgs/indicator.svg", size=(6), name="dock-app-indicator", h_align="center", v_align="center"),
+                            Svg(svg_file="./assets/svgs/indicator.svg", size=(6), name="dock-app-indicator", h_align="center", v_align="center"),
                         ],
                     )
                 else:
@@ -212,13 +152,11 @@ class EnvDock(Window):
                 self.dock_box.add(app_button)
             self.dock_box.show_all()
 
-        GLib.idle_add(update_ui)
+        GLib.idle_add(dock_apps_changed_update)
 
-    def start_app_monitor_thread(self):
+    def start_update_thread(self):
         """Start a background thread to monitor open applications."""
-        def fetch_open_apps(sender, **kwargs):
-            print("Signal:", sender)
-            global instance
+        def run():
             while True:
                 try:
                     windows = instance.get_windows()
@@ -238,17 +176,13 @@ class EnvDock(Window):
                             open_apps.append([app_name, pid, str(title), address, iaddress == address])
                     # sort alphabetically
                     open_apps = sorted(open_apps, key=lambda x: x[0])
-                    self.app_service.apps = str(open_apps)
+                    envshell_service.dock_apps = str(open_apps)
                 except Exception as e:
                     print("Error fetching open apps:", e)
-                    print("Exiting because of Error...")
                     sys.exit(1)
                 time.sleep(0.25)
 
-        instance.signal_active_window_changed.connect(fetch_open_apps)
-        instance.signal_active_workspace_changed.connect(fetch_open_apps)
-        instance.signal_window_created.connect(fetch_open_apps)
-        instance.signal_window_destroyed.connect(fetch_open_apps)
+        threading.Thread(target=run, daemon=True).start()
 
 
 if __name__ == "__main__":

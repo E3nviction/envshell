@@ -1,12 +1,8 @@
-from hmac import new
 import subprocess
 import threading
 import time
-import json
-import sys
 import gi
 
-from fabric import Application
 from fabric.core.service import Service, Signal, Property
 from fabric.widgets.datetime import DateTime
 from fabric.widgets.centerbox import CenterBox
@@ -16,18 +12,13 @@ from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
 from fabric.widgets.svg import Svg
 from fabric.widgets.wayland import WaylandWindow as Window
-gi.require_version("Rsvg", "2.0")
-from gi.repository import GLib, Gtk, GdkPixbuf, Rsvg, cairo # type: ignore
-
-from .services import AppNameService
-
-from hyprpy import Hyprland
+from gi.repository import GLib, Gtk, GdkPixbuf
 
 global instance
-from utils.roam import instance
+global envshell_service
+from utils.roam import instance, envshell_service
 
-app_names = json.load(open("./envpanel/app_names.json"))
-
+from config.c import app_names
 
 def dropdown_option(self, label: str = "", keybind: str = "", on_click="echo \"EnvPanelDropdown Action\"", on_clicked=None):
 	def on_click_subthread(button):
@@ -226,21 +217,19 @@ class ControlCenter(Window):
 			**kwargs,
 		)
 
-		volume = subprocess.run("wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}'", shell=True, capture_output=True, text=True)
-		volume = volume.stdout.strip()
-		volume = round(float(volume) * 100)
+		envshell_service.connect("volume-changed", self.volume_changed)
+		envshell_service.connect("wlan-changed", self.wlan_changed)
+		envshell_service.connect("bluetooth-changed", self.bluetooth_changed)
 
-		wlan = subprocess.run("iwgetid -r", shell=True, capture_output=True, text=True)
-		wlan = wlan.stdout.strip()
-		if wlan == "":
-			wlan = "No Connection"
+		volume = 100
 
-		bluetooth = subprocess.run("bluetoothctl show | grep Powered | awk '{print $2}'", shell=True, capture_output=True, text=True)
-		bluetooth = bluetooth.stdout.strip()
-		if bluetooth == "yes":
-			bluetooth = "On"
-		else:
-			bluetooth = "Off"
+		wlan = "..."
+
+		bluetooth = "..."
+
+		self.wlan_label = Label(wlan, name="wifi-widget-label", h_align="start")
+		self.bluetooth_label = Label(bluetooth, name="bluetooth-widget-label", h_align="start")
+		self.volume_scale = Scale(value=volume, min_value=0, max_value=100, name="volume-slider", h_expand=True)
 
 		self.widgets = Box(
 			children=[
@@ -251,14 +240,14 @@ class ControlCenter(Window):
 								Svg("./assets/svgs/wifi.svg", name="wifi-widget-icon"),
 								Box(name="wifi-widget-info", orientation="vertical", children=[
 									Label("Wi-Fi", name="wifi-widget-title", h_align="start"),
-									Label(wlan, name="wifi-widget-label", h_align="start"),
+									self.wlan_label,
 								])
 							])),
 							Button(name="bluetooth-widget", child=Box(orientation="horizontal", children=[
 								Svg("./assets/svgs/bluetooth.svg", name="bluetooth-widget-icon"),
 								Box(name="bluetooth-widget-info", orientation="vertical", children=[
 									Label("Bluetooth", name="bluetooth-widget-title", h_align="start"),
-									Label(bluetooth, name="bluetooth-widget-label", h_align="start"),
+									self.bluetooth_label,
 								])
 							])),
 						]),
@@ -274,7 +263,7 @@ class ControlCenter(Window):
 				]),
 				Box(name="volume-widget-menu", orientation="vertical", children=[
 					Label("Sound", h_align="start"),
-					Scale(value=volume, min_value=0, max_value=100, name="volume-slider", h_expand=True),
+					self.volume_scale,
 				])
 			],
 			h_expand=True,
@@ -286,11 +275,41 @@ class ControlCenter(Window):
 			start_children=[self.widgets],
 		)
 
+		self.start_update_thread()
+
 	def toggle_cc(self, button):
 		if self.is_visible():
 			self.hide()
 		else:
 			self.show()
+
+	def volume_changed(self, _, volume):
+		GLib.idle_add(lambda: self.volume_scale.set_value(int(volume)))
+
+	def wlan_changed(self, _, wlan):
+		GLib.idle_add(lambda: self.wlan_label.set_property("label", wlan))
+
+	def bluetooth_changed(self, _, bluetooth):
+		GLib.idle_add(lambda: self.bluetooth_label.set_property("label", bluetooth))
+
+	def start_update_thread(self):
+		def run():
+			try:
+				while True:
+					volume = subprocess.run("wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}'", shell=True, capture_output=True, text=True)
+					envshell_service.volume = round(float(volume.stdout.strip()) * 100)
+
+					wlan = subprocess.run("iwgetid -r", shell=True, capture_output=True, text=True)
+					envshell_service.wlan = "No Connection" if wlan.stdout.strip() == "" else wlan.stdout.strip()
+
+					bluetooth = subprocess.run("bluetoothctl show | grep Powered | awk '{print $2}'", shell=True, capture_output=True, text=True)
+					envshell_service.bluetooth = "On" if bluetooth.stdout.strip() == "yes" else "Off"
+
+					time.sleep(5)
+			except KeyboardInterrupt:
+				pass
+
+		threading.Thread(target=run, daemon=True).start()
 
 class EnvPanel(Window):
 	def __init__(self, **kwargs):
@@ -303,10 +322,7 @@ class EnvPanel(Window):
 			**kwargs,
 		)
 
-		self.date_time = DateTime(
-			formatters="%a %b %d %H:%M",
-			name="date-time",
-		)
+		self.date_time = DateTime(formatters="%a %b %d %H:%M", name="date-time")
 		self.dropdown = Dropdown()
 		self.control_center = ControlCenter()
 		self.control_center_image = Svg("./assets/svgs/control-center.svg", name="control-center-image")
@@ -324,41 +340,40 @@ class EnvPanel(Window):
 		self.envsh_button = Button(label="", name="envsh-button", on_clicked=self.dropdown.toggle_dropdown)
 		self.power_button_image = Svg("./assets/svgs/battery.svg", name="control-center-image")
 		self.power_button = Button(image=self.power_button_image, name="power-button")
-		self.curr_window = Button(label="Fetching...", name="current_window")
+		self.current_active_app_name = Button(label="Fetching...", name="current_window")
 
-		self.app_name_service = AppNameService()
-		self.app_name_service.connect(
-			"name-changed",
-			lambda _, name: self.update_ui_thread_safe(name),
+		envshell_service.connect(
+			"current-active-app-name-changed",
+			self.current_active_app_name_changed,
 		)
 
 		self.children = CenterBox(
-			start_children=[self.envsh_button, self.curr_window],
+			start_children=[self.envsh_button, self.current_active_app_name],
 			end_children=[self.power_button, self.control_center_button, self.date_time],
 		)
-		self.start_window_update_thread()
 
-	def update_ui_thread_safe(self, new_name):
-		"""Update UI safely in the main thread."""
-		GLib.idle_add(lambda: self.curr_window.set_property("label", new_name))
+		self.start_update_thread()
 
-	def start_window_update_thread(self):
-		"""Start a background thread to update the active window."""
-		def fetch_active_window():
-			while True:
-				try:
-					result = instance.get_active_window()
-					if result:
+	def current_active_app_name_changed(self, _, new_name):
+		GLib.idle_add(lambda: self.current_active_app_name.set_property("label", new_name))
+
+	def start_update_thread(self):
+		def run():
+			try:
+				while True:
+					try:
+						result = instance.get_active_window()
+						if not result:
+							envshell_service.current_active_app_name = "Hyprland"
+							continue
 						window_title = result.wm_class
-						if window_title == "":
-							window_title = result.title
-						if window_title in app_names:
-							window_title = app_names[window_title]
-						self.app_name_service.name = window_title
-					else:
-						self.app_name_service.name = "Hyprland"
-				except Exception as e:
-					self.app_name_service.name = "Hyprland"
-				time.sleep(0.1) # == 100ms
+						if window_title == "": window_title = result.title
+						if window_title in app_names: window_title = app_names[window_title]
+						envshell_service.current_active_app_name = window_title
+					except Exception as e:
+						envshell_service.current_active_app_name = "Hyprland"
+					time.sleep(0.1)
+			except KeyboardInterrupt:
+				pass
 
-		threading.Thread(target=fetch_active_window, daemon=True).start()
+		threading.Thread(target=run, daemon=True).start()
