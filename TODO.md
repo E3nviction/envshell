@@ -3,6 +3,7 @@
 - [ ] Working Battery Icon
 - [X] Updating UI
 - [ ] Make Socket work
+- [ ] IMPROVE CONFIG
 - [ ] Control Center
   - [ ] Bluetooth Interface
   - [ ] Wi-Fi Interface

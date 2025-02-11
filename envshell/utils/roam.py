@@ -18,3 +18,12 @@ except Exception as e:
 
 def main():
     return instance, envshell_service
+
+def create_instance():
+    try:
+        _instance = Hyprland()
+    except Exception as e:
+        print("Failed to connect to Hyprland:", e)
+        sys.exit(1)
+
+    return _instance

@@ -1,4 +1,10 @@
 #env-panel {
 	background-color: alpha(#222, 0.2);
 	border-bottom: 1px solid alpha(#555, 0.025);
+	transition: all 120ms ease-in-out;
+}
+
+#env-panel.empty {
+	background-color: alpha(#222, 0);
+	border-bottom: 1px solid alpha(#555, 0);
 }

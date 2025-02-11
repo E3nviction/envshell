@@ -1,11 +1,11 @@
 @import "envpanel/styles/def.css";
 @import "envpanel/styles/buttons.css";
 @import "envpanel/styles/dropdown.css";
-@import "envpanel/styles/about.css";
 @import "envpanel/styles/panel.css";
 @import "envpanel/styles/power.css";
 @import "envpanel/styles/time.css";
-@import "envpanel/styles/control-center.css";
+@import "envpanel/controlcenter.css";
+@import "envpanel/about.css";
 
 #control-center-indicators {
 	background-color: alpha(#555, 0.2);
