@@ -38,6 +38,7 @@ c.pin_window(wmclass="blender", command="blender")
 c.pin_window(wmclass="obsidian", command="obsidian")
 
 # Apps
+c.window_rule(from_wmclass="None", to_title="Hyprland")
 c.window_rule(from_wmclass="code", to_title="Visual Studio Code")
 c.window_rule(from_wmclass="brave-browser", to_title="Brave Browser")
 c.window_rule(from_wmclass="discord", to_title="Discord")
@@ -54,6 +55,46 @@ c.window_rule(from_wmclass="brave-chatgpt.com__-Default", to_title="ChatGPT")
 
 # Workspace
 c.workspace_rule(9)
+
+
+# Shell
+c.shell_rule(rule="dock-position", value="bottom center")
+c.shell_rule(rule="dock-margin", value="0 0 5 0")
+c.shell_rule(rule="dock-rounding", value="15px")
+c.shell_rule(rule="dock-orientation", value="horizontal")
+
+c.shell_rule(rule="panel-position", value="top left right")
+c.shell_rule(rule="panel-margin", value="0 0 0 0")
+c.shell_rule(rule="panel-rounding", value="0")
+c.shell_rule(rule="panel-date-format", value="%a %b %d %H:%M")
+c.shell_rule(rule="panel-icon", value="")
+
+c.shell_rule(rule="about-window-width", value=250)
+c.shell_rule(rule="about-window-height", value=355)
+c.shell_rule(rule="about-window-resizable", value=False)
+c.shell_rule(rule="about-computer-label", value="Env Shell")
+c.shell_rule(rule="about-computer-caption", value="ESH, 2024")
+c.shell_rule(rule="about-more-info", value="https://github.com/E3nviction/envshell")
+
+env_menu_option_labels = {
+    "About this PC": ["NOTEDITABLE"],
+    "System Settings...": ["code ~/.config/"],
+    "Nix Store...": ["xdg-open https://search.nixos.org/packages"],
+    "Force Quit App": ["hyprctl activewindow -j | jq -r .pid | xargs kill -9", "󰘶 󰘳 C"],
+    "Sleep": ["systemctl suspend", "󰘶 󰘳 M"],
+    "Restart...": ["systemctl restart", "󰘶 󰘳 M"],
+    "Shut Down...": ["shutdown now", "󰘶 󰘳 M"],
+    "Lock Screen": ["hyprlock", "󰘳 L"],
+}
+
+i = 0
+for k, v in env_menu_option_labels.items():
+    c.shell_rule(rule=f"panel-env-menu-option-{i+1}-label", value=k)
+    c.shell_rule(rule=f"panel-env-menu-option-{i+1}-on-click", value=v[0])
+    if len(v) > 1:
+        c.shell_rule(rule=f"panel-env-menu-option-{i+1}-keybind", value=v[1])
+    i += 1
+
 
 # Icons
 icon_list = []

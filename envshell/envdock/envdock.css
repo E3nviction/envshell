@@ -1,8 +1,8 @@
 #env-dock {
-    background-color: alpha(#333, 0.2);
+    background-color: alpha(#333, 0.1);
     border-radius: 15px;
-    padding: 22px;
-    border: 0.5px solid alpha(#3a3a3a, 0.4);
+    padding: 30px;
+    border: 0.5px solid alpha(#333, 0.1);
 }
 
 #dock-box {

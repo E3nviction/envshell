@@ -13,55 +13,61 @@ class Config:
 		self._config["window_rules"] = []
 		self._config["translations"] = []
 		self._config["workspace_rules"] = []
+		self._config["shell_rules"] = []
 		self._config["dock_pinned"] = {}
 
 	def window_rule(
-			self,
-			from_wmclass=None,
-			from_title=None,
-			to_wmclass=None,
-			to_title=None,
-			is_wmclass=None,
-			is_title=None,
-			rule="global-title"
-		):
+		self,
+		from_wmclass=None,
+		from_title=None,
+		to_wmclass=None,
+		to_title=None,
+		is_wmclass=None,
+		is_title=None,
+		rule="global-title"
+	):
 		"""Rule for Windows"""
 		self._config["window_rules"].append({"from_wmclass": is_wmclass or from_wmclass, "from_title": is_title or from_title, "to_wmclass": to_wmclass, "to_title": to_title, "rule": rule})
-
 	def workspace_rule(
-			self,
-			is_id=None,
-			is_title=None,
-			rule="ignore"
-		):
+		self,
+		is_id=None,
+		is_title=None,
+		rule="ignore"
+	):
 		self._config["workspace_rules"].append({"is_id": is_id, "is_title": is_title, "rule": rule})
-
 	def window_rename(
-			self,
-			from_wmclass=None,
-			to_wmclass=None,
-			is_wmclass=None,
-		):
+		self,
+		from_wmclass=None,
+		to_wmclass=None,
+		is_wmclass=None,
+	):
 		self._config["translations"].append({"from_wmclass": is_wmclass or from_wmclass, "to_wmclass": to_wmclass})
+	def shell_rule(
+			self,
+			rule="panel-position",
+			value="top",
+	):
+		self._config["shell_rules"].append({"rule": rule, "value": value})
 
 	@property
 	def window_rules(self):
 		return self._config["window_rules"]
-
 	@property
 	def translations(self):
 		return self._config["translations"]
-
 	@property
 	def workspace_rules(self):
 		return self._config["workspace_rules"]
+	@property
+	def shell_rules(self):
+		return self._config["shell_rules"]
+	@property
+	def dock_pinned(self):
+		return self._config["dock_pinned"]
 
 	def pin_window(self, wmclass=None, command=None):
 		self._config["dock_pinned"][wmclass] = command
 
-	@property
-	def dock_pinned(self):
-		return self._config["dock_pinned"]
 
 	def get_title(self, wmclass=None, title=None):
 		if wmclass is None and title is None:
@@ -119,3 +125,9 @@ class Config:
 			if t["is_title"] == title and id_ is None and t["rule"] == "ignore":
 				return True
 		return False
+
+	def get_shell_rule(self, rule=None):
+		for t in self.shell_rules:
+			if t["rule"] == rule:
+				return t["value"]
+		return None

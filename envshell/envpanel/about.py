@@ -8,12 +8,14 @@ from fabric.widgets.box import Box
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import Gtk, GdkPixbuf
 
+from config.c import c
+
 class About(Gtk.Window):
 	def __init__(self):
 		super().__init__(title="About Menu")
-		self.set_default_size(250, 355)
-		self.set_size_request(250, 355)
-		self.set_resizable(False)
+		self.set_default_size(c.get_shell_rule("about-window-width"), c.get_shell_rule("about-window-height"))
+		self.set_size_request(c.get_shell_rule("about-window-width"), c.get_shell_rule("about-window-height"))
+		self.set_resizable(c.get_shell_rule("about-window-resizable"))
 		self.set_wmclass("esh-about-menu", "esh-about-menu")
 		self.set_name("about-menu")
 		self.set_visible(False)
@@ -34,8 +36,8 @@ class About(Gtk.Window):
 		logo_box.pack_start(logo, False, False, 0)
 
 		# Labels
-		name_label = Gtk.Label(label="Env Shell", name="about-name-label")
-		date_label = Gtk.Label(label="ESH, 2024", name="about-date-label")
+		name_label = Gtk.Label(label=c.get_shell_rule("about-computer-label"), name="about-name-label")
+		date_label = Gtk.Label(label=c.get_shell_rule("about-computer-caption"), name="about-date-label")
 
 		# Info Section
 		info_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
@@ -100,7 +102,7 @@ class About(Gtk.Window):
 		self.add(main_box)
 
 	def open_more_info(self, button):
-		subprocess.run("xdg-open https://github.com/E3nviction/envshell", shell=True)
+		subprocess.run(f"xdg-open {c.get_shell_rule('about-more-info')}", shell=True)
 
 	def toggle(self, b):
 		if self.get_visible():

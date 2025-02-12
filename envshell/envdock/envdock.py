@@ -31,10 +31,13 @@ class EnvDock(Window):
     def __init__(self, **kwargs):
         super().__init__(
             layer="top",
-            anchor="bottom center",
+            anchor=c.get_shell_rule(rule="dock-position"),
             exclusivity="auto",
             name="env-dock",
-            margin=(0, 0, 5, 0),
+            style=f"""
+                border-radius: {c.get_shell_rule(rule="dock-rounding")};
+            """,
+            margin=c.get_shell_rule(rule="dock-margin"),
             size=(400, 46),
             **kwargs,
         )
@@ -45,8 +48,11 @@ class EnvDock(Window):
         )
 
         self.dock_box = Box(
-            orientation="horizontal",
+            orientation=c.get_shell_rule(rule="dock-orientation"),
             name="dock-box",
+            style=f"""
+                border-radius: {c.get_shell_rule(rule="dock-rounding")};
+            """,
 			children=[],
             h_expand=True,
             v_expand=True,
