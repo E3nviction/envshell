@@ -1,9 +1,8 @@
 from fabric.core.service import Service, Signal, Property
+from fabric.notifications import Notification
+from typing import List
 
 class EnvShellService(Service):
-	@Signal
-	def current_active_app_name_changed(self, new_current_active_app_name: str) -> None:
-		...
 	@Signal
 	def bluetooth_changed(self, new_bluetooth: str) -> None:
 		...
@@ -15,6 +14,15 @@ class EnvShellService(Service):
 		...
 	@Signal
 	def dock_apps_changed(self, new_dock_apps: str) -> None:
+		...
+	@Signal
+	def clear_all_changed(self, value: bool) -> None:
+		...
+	@Signal
+	def notification_count_changed(self, value: int) -> None:
+		...
+	@Signal
+	def dont_disturb_changed(self, value: bool) -> None:
 		...
 
 	@Property(str, flags="read-write")
@@ -32,12 +40,13 @@ class EnvShellService(Service):
 	@Property(str, flags="read-write")
 	def dock_apps(self) -> str:
 		return self._dock_apps
+	@Property(str, flags="read-write")
+	def notification_count(self) -> int:
+		return self._notification_count
+	@Property(str, flags="read-write")
+	def dont_disturb(self) -> bool:
+		return self._dont_disturb
 
-	@current_active_app_name.setter
-	def current_active_app_name(self, value: str):
-		if value != self._current_active_app_name:
-			self._current_active_app_name = value
-			self.current_active_app_name_changed(value)
 	@volume.setter
 	def volume(self, value: str):
 		if value != self._volume:
@@ -58,15 +67,62 @@ class EnvShellService(Service):
 		if value != self._dock_apps:
 			self._dock_apps = value
 			self.dock_apps_changed(value)
+	@dont_disturb.setter
+	def dont_disturb(self, value: bool):
+		if value != self._dont_disturb:
+			self._dont_disturb = value
+			self.dont_disturb_changed(value)
 
 	def sc(self, signal_name: str, callback: callable, def_value="..."):
 		self.connect(signal_name, callback)
 		return def_value
 
-	def __init__(self, volume: str = "", wlan: str = "", bluetooth: str = "", current_active_app_name: str = "", dock_apps: str = ""):
+	def __init__(self, volume: str = "", wlan: str = "", bluetooth: str = "", dock_apps: str = "", notifications: List[Notification] = [], dont_disturb: bool = False):
 		super().__init__()
 		self._volume = volume or ""
 		self._wlan = wlan or ""
 		self._bluetooth = bluetooth or ""
-		self._current_active_app_name = current_active_app_name or ""
 		self._dock_apps = dock_apps or ""
+		self._notifications = notifications
+		self._notification_count = len(self._notifications)
+		self._dont_disturb = dont_disturb
+
+		self.notifications = []
+
+	def remove_notification(self, id: int):
+		item = next((p for p in self._notifications if p["id"] == id), None)
+		index = self._notifications.index(item)
+
+		self.write_notifications(self._notifications)
+
+		self._notifications.pop(index)
+		self._notification_count -= 1
+		self.notification_count_changed(self._notification_count)
+		if self._notification_count == 0:
+			self.clear_all_changed(True)
+
+	def cache_notification(self, data: Notification):
+		existing_data = self._notifications
+		serialized_data = data.serialize()
+		serialized_data.update({"id": self._notification_count + 1})
+		existing_data.append(serialized_data)
+
+		self._notification_count += 1
+		self._notifications = existing_data
+		self.notification_count_changed(self._notification_count)
+
+	def clear_all_notifications(self):
+		self._notifications = []
+		self._notification_count = 0
+
+		# Write the updated data back to the cache file
+		self.write_notifications(self._notifications)
+		self.clear_all_changed(True)
+		self.notification_count_changed(self._notification_count)
+
+	def get_deserialized(self) -> List[Notification]:
+		if len(self.notifications) <= 0:
+			self.notifications = [
+				Notification.deserialize(data) for data in self._notifications
+			]
+		return self.notifications

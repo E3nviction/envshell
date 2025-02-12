@@ -1,5 +1,6 @@
 import sys
 from hyprpy import Hyprland
+from fabric.notifications import Notifications
 from utils.services import EnvShellService
 
 global instance
@@ -14,6 +15,13 @@ try:
     envshell_service = EnvShellService()
 except Exception as e:
     print("Failed to create EnvShellService:", e)
+    sys.exit(1)
+
+global notification_service
+try:
+    notification_service = Notifications()
+except Exception as e:
+    print("Failed to create NotificationService:", e)
     sys.exit(1)
 
 def main():
