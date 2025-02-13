@@ -1,7 +1,8 @@
-from envnotch.envnotch import EnvNotch
-from envpanel.envpanel import EnvPanel
-from envdock.envdock import EnvDock
+from modules.envnotch.envnotch import EnvNotch
+from modules.envpanel.envpanel import EnvPanel
+from modules.envdock.envdock import EnvDock
 from fabric import Application
+import loguru
 
 if __name__ == "__main__":
 	envnotch = EnvNotch()

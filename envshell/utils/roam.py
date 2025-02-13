@@ -1,4 +1,5 @@
 import sys
+import os
 from hyprpy import Hyprland
 from fabric.notifications import Notifications
 from utils.services import EnvShellService

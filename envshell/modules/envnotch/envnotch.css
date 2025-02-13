@@ -1,0 +1,46 @@
+#notch-box {
+	background-color: transparent;
+	border-radius: 0 0 0px 0px;
+}
+
+#notch-content {
+	background-color: #000;
+	transition: all 200ms ease-in-out;
+	border-radius: 0 0 12px 12px;
+}
+
+#notch-corner {
+	background-color: #000;
+	transition: all 200ms ease-in-out;
+}
+
+#env-notch.hide #notch-content {
+	background-color: transparent;
+}
+
+#env-notch.hide #notch-corner {
+	background-color: transparent;
+}
+
+#env-notch.hide #notch-indicator {
+	color: transparent;
+}
+
+#corner {
+	background-color: #000;
+}
+
+#notch-indicators {
+	background-color: transparent;
+}
+
+#notch-indicator.off {
+	color: transparent;
+}
+
+#notch-indicator {
+	color: #ff690b;
+	transition: all 300ms ease-in-out;
+	margin-top: -2px;
+	margin-left: 2px;
+}

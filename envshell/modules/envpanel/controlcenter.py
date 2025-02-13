@@ -16,6 +16,8 @@ global envshell_service
 from utils.roam import envshell_service
 from utils.exml import exml
 
+from utils.functions import get_from_socket
+
 class ControlCenter(Window):
 	def __init__(self, **kwargs):
 		super().__init__(
@@ -40,7 +42,7 @@ class ControlCenter(Window):
 
 		# Widgets
 		self.widgets = exml(
-			file="./envpanel/controlcenter.xml",
+			file="./modules/envpanel/controlcenter.xml",
 			root=Box,
 			tags={
 				"Box": Box,
@@ -72,16 +74,20 @@ class ControlCenter(Window):
 		def run():
 			try:
 				while True:
+					self.smode = get_from_socket()[0]
 					volume = subprocess.run("wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}'", shell=True, capture_output=True, text=True)
 					envshell_service.volume = round(float(volume.stdout.strip()) * 100)
 
 					wlan = subprocess.run("iwgetid -r", shell=True, capture_output=True, text=True)
-					envshell_service.wlan = "No Connection" if wlan.stdout.strip() == "" else wlan.stdout.strip()
+					if self.smode == True:
+						envshell_service.wlan = "PhotonWeb5"
+					else:
+						envshell_service.wlan = "No Connection" if wlan.stdout.strip() == "" else wlan.stdout.strip()
 
 					bluetooth = subprocess.run("bluetoothctl show | grep Powered | awk '{print $2}'", shell=True, capture_output=True, text=True)
 					envshell_service.bluetooth = "On" if bluetooth.stdout.strip() == "yes" else "Off"
 
-					time.sleep(5)
+					time.sleep(0.5)
 			except KeyboardInterrupt: pass
 
 		threading.Thread(target=run, daemon=True).start()

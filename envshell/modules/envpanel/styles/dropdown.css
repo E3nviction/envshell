@@ -6,7 +6,7 @@
 
 #dropdown-options {
 	background-color: alpha(#333, 0.7);
-	box-shadow: inset 0 0 0 0.5px alpha(#555, 0.7);
+	box-shadow: inset 0 0 0 0.5px alpha(#555, 0.2);
 	border-radius: 10px;
 	padding: .5rem;
 }
@@ -34,6 +34,10 @@
 
 #dropdown-option-label:first-child {
 	padding-right: 5rem;
+}
+
+#dropdown-option:hover #dropdown-option-keybind {
+	color: #fff;
 }
 
 #dropdown-option-keybind {

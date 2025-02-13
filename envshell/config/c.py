@@ -52,6 +52,10 @@ c.window_rule(from_wmclass="org.gnome.Maps", to_title="Maps")
 c.window_rule(from_wmclass="org.gnome.Calculator", to_title="Calculator")
 c.window_rule(from_wmclass="org.gnome.Clocks", to_title="Clocks")
 c.window_rule(from_wmclass="brave-chatgpt.com__-Default", to_title="ChatGPT")
+c.window_rule(from_wmclass="obsidian", to_title="Obsidian")
+c.window_rule(from_wmclass="blender", to_title="Blender")
+c.window_rule(from_wmclass="spotify", to_title="Spotify")
+
 
 # Workspace
 c.workspace_rule(9)

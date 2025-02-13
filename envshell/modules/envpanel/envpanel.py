@@ -107,25 +107,19 @@ class EnvPanel(Window):
 		self.dropdown = Dropdown()
 		self.control_center = ControlCenter()
 		self.control_center_image = Svg("./assets/svgs/control-center.svg", name="control-center-image")
-		self.control_center_indicators = Box(name="control-center-indicators", orientation="vertical", children=[
-			Box(name="control-center-indicator-row", orientation="horizontal", children=[
-				Label("·", name="control-center-indicator", h_align="start"),
-				Label("·", name="control-center-indicator", h_align="start"),
-			]),
-			Box(name="control-center-indicator-row", orientation="horizontal", children=[
-				Label("·", name="control-center-indicator", h_align="start"),
-				Label("·", name="control-center-indicator", h_align="start"),
-			])
-		])
-		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", on_clicked=self.control_center.toggle_cc)
-		self.envsh_button = Button(label=c.get_shell_rule(rule="panel-icon"), name="envsh-button", on_clicked=self.dropdown.toggle_dropdown)
+		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
+		self.envsh_button = Button(label=c.get_shell_rule(rule="panel-icon"), name="envsh-button", style_classes="button", on_clicked=self.dropdown.toggle_dropdown)
 		self.power_button_image = Svg("./assets/svgs/battery.svg", name="control-center-image")
-		self.power_button = Button(image=self.power_button_image, name="power-button")
-		self.current_active_app_name = ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window))
+		self.power_button = Button(image=self.power_button_image, name="power-button", style_classes="button")
+		self.search_button_image = Svg("./assets/svgs/search.svg", name="search-button-image")
+		self.search_button = Button(image=self.search_button_image, name="search-button", style_classes="button")
+		self.wifi_button_image = Svg("./assets/svgs/wifi-clear.svg", name="wifi-button-image")
+		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
+		self.global_title = ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window))
 
 		self.children = CenterBox(
-			start_children=[self.envsh_button, self.current_active_app_name],
-			end_children=[self.power_button, self.control_center_button, self.date_time],
+			start_children=[self.envsh_button, self.global_title],
+			end_children=[self.power_button, self.wifi_button, self.search_button, self.control_center_button, self.date_time],
 		)
 
 	def format_window(self, title, wmclass):
