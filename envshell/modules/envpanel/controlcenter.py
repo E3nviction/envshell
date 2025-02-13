@@ -19,6 +19,7 @@ from utils.exml import exml
 from utils.functions import get_from_socket
 
 class ControlCenter(Window):
+	"""Control Center for envshell"""
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="top",

@@ -89,6 +89,7 @@ class Corners(Window):
 
 
 class EnvNotch(Window):
+	"""Desktop Notch for envshell"""
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="overlay",

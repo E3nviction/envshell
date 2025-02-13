@@ -52,6 +52,7 @@ def dropdown_option(self, label: str = "", keybind: str = "", on_click="echo \"E
 def dropdown_divider(comment): return Box(children=[Box(name="dropdown-divider", h_expand=True)], name="dropdown-divider-box", h_align="fill", h_expand=True, v_expand=True,)
 
 class Dropdown(Window):
+	"""EnvMenu for envshell"""
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="top",
@@ -88,6 +89,7 @@ class Dropdown(Window):
 	def on_leave(self, widget, event): self.hide()
 
 class EnvPanel(Window):
+	"""Top Panel for envshell"""
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="top",

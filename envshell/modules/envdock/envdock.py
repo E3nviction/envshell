@@ -28,6 +28,7 @@ instance = create_instance()
 
 
 class EnvDock(Window):
+    """Hackable dock for envshell."""
     def __init__(self, **kwargs):
         super().__init__(
             layer="top",

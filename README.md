@@ -7,8 +7,14 @@ All powered by [Fabric](https://github.com/Fabric-Development/fabric)
 
 ## Structure
 
-- A TopPanel (EnvPanel)
-- A Dock     (EnvDock)
+- A TopPanel      (EnvPanel)
+- A Dock          (EnvDock)
+- A About Window  (EnvAbout)
+- A OSMenu        (EnvMenu)
+- A Notch         (EnvNotch)
+- A SpotLight     (EnvLight)
+- A ControlCenter (EnvControlCenter)
+- A Noti-Daemon   (EnvNoti)
 
 ## Usage
 

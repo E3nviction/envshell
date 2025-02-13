@@ -11,6 +11,7 @@ from gi.repository import Gtk, GdkPixbuf
 from config.c import c
 
 class About(Gtk.Window):
+	"""About app for envshell"""
 	def __init__(self):
 		super().__init__(title="About Menu")
 		self.set_default_size(c.get_shell_rule("about-window-width"), c.get_shell_rule("about-window-height"))
