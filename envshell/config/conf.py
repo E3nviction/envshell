@@ -74,16 +74,16 @@ class Config:
 			return None
 		for t in self.window_rules:
 			# from wmclass to wmclass
-			if t["from_wmclass"] == wmclass and t["to_wmclass"] not in ["", None] and t["rule"] == "global-title":
+			if t["from_wmclass"] == wmclass and t["to_wmclass"] not in ["", None] and wmclass != None and t["rule"] == "global-title":
 				return t["to_wmclass"]
 			# from title to title
-			if t["from_title"] == title and t["to_title"] not in ["", None] and t["rule"] == "global-title":
+			if t["from_title"] == title and t["to_title"] not in ["", None] and title != None and t["rule"] == "global-title":
 				return t["to_title"]
 			# from wmclass to title
-			if t["from_wmclass"] == wmclass and t["to_title"] not in ["", None] and t["rule"] == "global-title":
+			if t["from_wmclass"] == wmclass and t["to_title"] not in ["", None] and wmclass != None and t["rule"] == "global-title":
 				return t["to_title"]
 			# from title to wmclass
-			if t["from_title"] == title and t["to_wmclass"] not in ["", None] and t["rule"] == "global-title":
+			if t["from_title"] == title and t["to_wmclass"] not in ["", None] and title != None and t["rule"] == "global-title":
 				return t["to_wmclass"]
 		if wmclass is not None:
 			return wmclass
