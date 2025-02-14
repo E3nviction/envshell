@@ -35,7 +35,7 @@
             <Ref>self.volume_scale</Ref>
         </BoxV>
         <BoxV name="music-widget" style_classes="menu">
-            <Label label="Music Coming Soon..." h_align="start"/>
+            <Ref>self.music_label</Ref>
         </BoxV>
     </BoxV>
 </esh>
