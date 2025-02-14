@@ -1,4 +1,3 @@
-import subprocess
 import threading
 import time
 import gi
@@ -14,6 +13,7 @@ from fabric.widgets.svg import Svg
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
+from fabric.utils.helpers import exec_shell_command_async
 from gi.repository import GLib, Gtk, GdkPixbuf
 
 global instance
@@ -29,7 +29,7 @@ def dropdown_option(self, label: str = "", keybind: str = "", on_click="echo \"E
 	def on_click_subthread(button):
 		self.toggle_dropdown(button)
 		if on_clicked: on_clicked(button)
-		else: subprocess.run(on_click, shell=True)
+		else: exec_shell_command_async(on_click, shell=True)
 	return Button(
 		child=CenterBox(
 			start_children=[
@@ -128,6 +128,7 @@ class EnvPanel(Window):
 		name = wmclass
 		if name == "": name = title
 		name = c.get_title(wmclass=wmclass, title=title)
+		envshell_service.current_active_app_name = name
 		if c.is_window_autohide(wmclass=name, title=name):
 			self.add_style_class("empty")
 		else:

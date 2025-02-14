@@ -1,7 +1,6 @@
 import datetime
 import os
 import shutil
-import subprocess
 from typing import Dict, List, Literal
 
 import gi

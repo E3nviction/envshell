@@ -6,6 +6,7 @@ from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.wayland import WaylandWindow as Window
+from fabric.utils.helpers import exec_shell_command_async
 from gi.repository import Gtk, GdkPixbuf
 
 from config.c import c
@@ -103,7 +104,7 @@ class About(Gtk.Window):
 		self.add(main_box)
 
 	def open_more_info(self, button):
-		subprocess.run(f"xdg-open {c.get_shell_rule('about-more-info')}", shell=True)
+		exec_shell_command_async(f"xdg-open {c.get_shell_rule('about-more-info')}")
 
 	def toggle(self, b):
 		if self.get_visible():
