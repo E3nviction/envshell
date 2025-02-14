@@ -24,6 +24,12 @@ class EnvShellService(Service):
 	@Signal
 	def dont_disturb_changed(self, value: bool) -> None:
 		...
+	@Signal
+	def current_active_app_name_changed(self, value: str) -> None:
+		...
+	@Signal
+	def music_changed(self, value: str) -> None:
+		...
 
 	@Property(str, flags="read-write")
 	def current_active_app_name(self) -> str:
@@ -46,7 +52,15 @@ class EnvShellService(Service):
 	@Property(str, flags="read-write")
 	def dont_disturb(self) -> bool:
 		return self._dont_disturb
+	@Property(str, flags="read-write")
+	def music(self) -> str:
+		return self._music
 
+	@current_active_app_name.setter
+	def current_active_app_name(self, value: str):
+		if value != self._current_active_app_name:
+			self._current_active_app_name = value
+			self.current_active_app_name_changed(value)
 	@volume.setter
 	def volume(self, value: str):
 		if value != self._volume:
@@ -72,20 +86,27 @@ class EnvShellService(Service):
 		if value != self._dont_disturb:
 			self._dont_disturb = value
 			self.dont_disturb_changed(value)
+	@music.setter
+	def music(self, value: str):
+		if value != self._music:
+			self._music = value
+			self.music_changed(value)
 
 	def sc(self, signal_name: str, callback: callable, def_value="..."):
 		self.connect(signal_name, callback)
 		return def_value
 
-	def __init__(self, volume: str = "", wlan: str = "", bluetooth: str = "", dock_apps: str = "", notifications: List[Notification] = [], dont_disturb: bool = False):
+	def __init__(self):
 		super().__init__()
-		self._volume = volume or ""
-		self._wlan = wlan or ""
-		self._bluetooth = bluetooth or ""
-		self._dock_apps = dock_apps or ""
-		self._notifications = notifications
+		self._volume = ""
+		self._wlan = ""
+		self._bluetooth = ""
+		self._dock_apps = ""
+		self._notifications = []
 		self._notification_count = len(self._notifications)
-		self._dont_disturb = dont_disturb
+		self._dont_disturb = False
+		self._current_active_app_name = ""
+		self._music = ""
 
 		self.notifications = []
 
