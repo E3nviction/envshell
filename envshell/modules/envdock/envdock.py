@@ -96,7 +96,7 @@ class EnvDock(Window):
                         svg = Svg(svg_file=app_list[str(app_i).lower()], size=(32), name="dock-app-icon")
                     else:
                         svg = Svg(svg_file=app_list[str(app_i)], size=(32), name="dock-app-icon")
-                app = c.get_title(wmclass=app, title=title)
+                app = c.get_title(wmclass=app, title=title if running else None)
                 if running:
                     app_button = Box(
                         orientation="vertical",
