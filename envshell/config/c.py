@@ -5,6 +5,7 @@ c.window_rule(is_wmclass="Hyprland", rule="autohide-panel")
 c.window_rule(is_wmclass="albert", rule="autohide-panel")
 c.window_rule(is_title="Albert", rule="autohide-panel")
 c.window_rule(is_wmclass="main.py", rule="autohide-panel")
+c.window_rule(is_wmclass="ulauncher", rule="autohide-panel")
 
 app_list = {
     "NotFOUND": "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/abrt.svg",
@@ -17,9 +18,12 @@ c.window_rename(from_wmclass="vesktop", to_wmclass="discord")
 c.window_rule(is_wmclass="kitty-dropterm", rule="ignore")
 c.window_rule(is_wmclass="albert", rule="ignore")
 c.window_rule(is_wmclass="main.py", rule="ignore")
+c.window_rule(is_wmclass="ulauncher", rule="ignore")
 
 # Dock
 c.pin_window(wmclass="org.gnome.Nautilus", command="nautilus")
+c.pin_window(wmclass="org.gnome.Settings", command="XDG_CURRENT_DESKTOP=GNOME gnome-control-center")
+c.pin_window(wmclass="org.gnome.Software", command="gnome-software")
 c.pin_window(wmclass="gnome-disks", command="gnome-disks")
 c.pin_window(wmclass="org.gnome.baobab", command="baobab")
 c.pin_window(wmclass="kitty", command="kitty")
@@ -55,6 +59,15 @@ c.window_rule(from_wmclass="brave-chatgpt.com__-Default", to_title="ChatGPT")
 c.window_rule(from_wmclass="obsidian", to_title="Obsidian")
 c.window_rule(from_wmclass="blender", to_title="Blender")
 c.window_rule(from_wmclass="spotify", to_title="Spotify")
+c.window_rule(from_wmclass="org.gnome.Software", to_title="App Store")
+c.window_rule(from_wmclass="org.gnome.Settings", to_title="Settings")
+c.window_rule(from_wmclass="gnome-disks", to_title="Disks")
+c.window_rule(from_wmclass="org.gnome.baobab", to_title="Disk Usage")
+c.window_rule(from_wmclass="org.gnome.TextEditor", to_title="Text Editor")
+c.window_rule(from_wmclass="org.gnome.Loupe", to_title="Image Viewer")
+c.window_rule(from_wmclass="org.gnome.clocks", to_title="Clocks")
+c.window_rule(from_wmclass="krita", to_title="Krita")
+c.window_rule(from_wmclass="com.github.rafostar.Clapper", to_title="Media Player")
 
 
 # Workspace
