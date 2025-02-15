@@ -2,10 +2,12 @@
 	border-radius: 5px;
 	padding: 0 5px;
 	margin: 0 2.5px;
+	background: radial-gradient(alpha(#444, 0.4) 0%, transparent, transparent);
+	transition: all 100ms ease-in-out;
 }
 
 .button:hover {
-	background-color: alpha(#555, 0.4);
+	background: radial-gradient(alpha(#444, 0.4) 100%, transparent, transparent);
 }
 
 .button:active {

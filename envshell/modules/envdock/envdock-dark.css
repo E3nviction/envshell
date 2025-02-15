@@ -1,0 +1,29 @@
+#env-dock {
+}
+
+#dock-box {
+    padding: 10px;
+	background-color: alpha(#111, 0.1);
+	box-shadow: inset 0 -0.5px 0 .5px alpha(#777, 0.1), inset 0 0.5px 0 .5px alpha(#aaa, 0.1);
+	border: 1px solid alpha(#111, 0.3);
+	border-top: none;
+	border-radius: 20px;
+}
+
+#dock-seperator {
+    border-right: 1px solid alpha(#aaa, 0.3);
+}
+
+.dock-app-button {
+    padding: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    border-radius: 12px;
+}
+
+.dock-app-button:hover {
+}
+
+.dock-app-button tooltip {
+    background-color: #000;
+}

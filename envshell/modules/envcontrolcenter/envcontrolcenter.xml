@@ -28,11 +28,13 @@
         </BoxH>
         <BoxV name="brightness-widget" style_classes="menu" h_expand="true">
             <Label label="Display" style_classes="title" h_align="start"/>
-            <Scale value="100" min_value="0" max_value="100" name="brightness-widget-slider" h_expand="true" size="20"/>
+            <Scale value="100" min_value="0" max_value="100" name="brightness-widget-slider" h_expand="true" size="30"/>
+            <Label label="󰖨 " name="brightness-widget-icon" h_align="start"/>
         </BoxV>
         <BoxV name="volume-widget" style_classes="menu">
             <Label label="Sound" style_classes="title" h_align="start"/>
             <Ref>self.volume_scale</Ref>
+            <Ref>self.volume_icon</Ref>
         </BoxV>
         <BoxV name="music-widget" style_classes="menu">
             <Ref>self.music_label</Ref>
