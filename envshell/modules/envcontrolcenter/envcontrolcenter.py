@@ -6,6 +6,7 @@ import time
 from fabric.widgets.datetime import DateTime
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.label import Label
+from fabric.widgets.overlay import Overlay
 from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
@@ -23,7 +24,7 @@ from utils.exml import exml
 from utils.functions import get_from_socket
 
 
-class ControlCenter(Window):
+class EnvControlCenter(Window):
 	"""Control Center for envshell"""
 	def __init__(self, **kwargs):
 		super().__init__(
@@ -48,12 +49,14 @@ class ControlCenter(Window):
 		# Labels
 		self.wlan_label = Label(wlan, name="wifi-widget-label", h_align="start")
 		self.bluetooth_label = Label(bluetooth, name="bluetooth-widget-label", h_align="start")
-		self.volume_scale = Scale(value=volume, min_value=0, max_value=100, name="volume-widget-slider", size=20, h_expand=True)
+		self.volume_icon = Label(" ", name="volume-widget-icon", h_align="start")
+		self.volume_scale = Scale(value=volume, min_value=0, max_value=100, name="volume-widget-slider", size=30, h_expand=True)
+		self.volume_scale.connect("change-value", self.set_volume)
 		self.music_label = Label(music, name="music-widget-label", h_align="start")
 
 		# Widgets
 		self.widgets = exml(
-			file="./modules/envpanel/controlcenter.xml",
+			file="./modules/envcontrolcenter/envcontrolcenter.xml",
 			root=Box,
 			tags={
 				"Box": Box,
@@ -66,7 +69,8 @@ class ControlCenter(Window):
 				"self.wlan_label": self.wlan_label,
 				"self.bluetooth_label": self.bluetooth_label,
 				"self.volume_scale": self.volume_scale,
-				"self.music_label": self.music_label
+				"self.music_label": self.music_label,
+				"self.volume_icon": self.volume_icon
 			}
 		)
 
@@ -79,6 +83,9 @@ class ControlCenter(Window):
 
 		# Start Update Thread
 		self.start_update_thread()
+
+	def set_volume(self, _, __, volume):
+		audio_service.speaker.volume = volume
 
 	def toggle_cc(self, button, *_): self.set_visible(not self.is_visible())
 	def volume_changed(self, _, volume): GLib.idle_add(lambda: self.volume_scale.set_value(int(volume)))
