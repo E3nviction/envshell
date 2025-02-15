@@ -76,7 +76,8 @@ c.workspace_rule(9)
 
 # Shell
 c.shell_rule(rule="dock-position", value="bottom center")
-c.shell_rule(rule="dock-margin", value="0 0 5 0")
+c.shell_rule(rule="dock-margin", value="0 0 -47 0")
+c.shell_rule(rule="dock-margin-active", value="0 0 5 0")
 c.shell_rule(rule="dock-rounding", value="15px")
 c.shell_rule(rule="dock-orientation", value="horizontal")
 
