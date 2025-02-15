@@ -6,6 +6,7 @@ import os
 from fabric import Application
 from fabric.widgets.button import Button
 from fabric.widgets.svg import Svg
+from fabric.widgets.label import Label
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.wayland import WaylandWindow as Window
@@ -26,7 +27,6 @@ global envshell_service
 from utils.roam import create_instance, envshell_service
 instance = create_instance()
 
-
 class EnvDock(Window):
     """Hackable dock for envshell."""
     def __init__(self, **kwargs):
@@ -38,7 +38,7 @@ class EnvDock(Window):
             style=f"""
                 border-radius: {c.get_shell_rule(rule="dock-rounding")};
             """,
-            margin=c.get_shell_rule(rule="dock-margin"),
+            margin=c.get_shell_rule(rule="dock-margin-active"),
             size=(400, 46),
             **kwargs,
         )
@@ -60,6 +60,7 @@ class EnvDock(Window):
         )
 
         self.children = CenterBox(
+            name="dock-center",
             start_children=[self.dock_box],
         )
 
@@ -88,28 +89,32 @@ class EnvDock(Window):
             pinned_apps = dict(sorted(pinned_apps.items(), key=lambda item: list(c.dock_pinned.keys()).index(item[0])))
             for app_ in pinned_apps:
                 app, pid, title, address, active, running = pinned_apps[app_]
-                svg = Svg(svg_file=app_list["NotFOUND"], size=(32), name="dock-app-icon")
+                svg     = Svg(svg_file=app_list["NotFOUND"], size=(32), name="dock-app-icon")
+                svg_mag = Svg(svg_file=app_list["NotFOUND"], size=(64), name="dock-app-icon")
                 app_i = app
                 app_i = c.get_translation(wmclass=app)
                 if str(app_i).lower() in app_list or str(app_i) in app_list:
                     if str(app_i).lower() in app_list:
-                        svg = Svg(svg_file=app_list[str(app_i).lower()], size=(32), name="dock-app-icon")
+                        svg     = Svg(svg_file=app_list[str(app_i).lower()], size=(32), name="dock-app-icon")
+                        svg_mag = Svg(svg_file=app_list[str(app_i).lower()], size=(64), name="dock-app-icon")
                     else:
-                        svg = Svg(svg_file=app_list[str(app_i)], size=(32), name="dock-app-icon")
+                        svg     = Svg(svg_file=app_list[str(app_i)], size=(32), name="dock-app-icon")
+                        svg_mag = Svg(svg_file=app_list[str(app_i)], size=(64), name="dock-app-icon")
                 app = c.get_title(wmclass=app, title=title if running else None)
                 if running:
+                    self.button = Button(
+                        child=svg,
+                        name=f"{address}",
+                        style_classes=("active" if active else "", "dock-app-button", "running"),
+                        h_align="center",
+                        v_align="center",
+                        on_clicked=focus,
+                        tooltip_text=f"{app}",
+                    )
                     app_button = Box(
                         orientation="vertical",
                         children=[
-                            Button(
-                                child=svg,
-                                name=f"{address}",
-                                style_classes=("active" if active else "", "dock-app-button", "running"),
-                                h_align="center",
-                                v_align="center",
-                                on_clicked=focus,
-                                tooltip_text=f"{app}",
-                            ),
+                            self.button,
                             Svg(svg_file="./assets/svgs/indicator.svg", size=(6), name="dock-app-indicator", h_align="center", v_align="center"),
                         ],
                     )
