@@ -20,8 +20,10 @@ global instance
 global envshell_service
 from utils.roam import instance, envshell_service
 
-from .controlcenter import ControlCenter
+from ..envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
+
+from ..envlight.envlight import EnvLight
 
 from config.c import c
 
@@ -105,9 +107,10 @@ class EnvPanel(Window):
 			**kwargs,
 		)
 
+		self.envlight = EnvLight()
 		self.date_time = DateTime(formatters=c.get_shell_rule(rule="panel-date-format"), name="date-time")
 		self.dropdown = Dropdown()
-		self.control_center = ControlCenter()
+		self.control_center = EnvControlCenter()
 		self.control_center_image = Svg("./assets/svgs/control-center.svg", name="control-center-image")
 		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
 		self.envsh_button = Button(label=c.get_shell_rule(rule="panel-icon"), name="envsh-button", style_classes="button", on_clicked=self.dropdown.toggle_dropdown)
@@ -115,9 +118,14 @@ class EnvPanel(Window):
 		self.power_button = Button(image=self.power_button_image, name="power-button", style_classes="button")
 		self.search_button_image = Svg("./assets/svgs/search.svg", name="search-button-image")
 		self.search_button = Button(image=self.search_button_image, name="search-button", style_classes="button")
+		self.search_button.connect("clicked", self.envlight.toggle)
 		self.wifi_button_image = Svg("./assets/svgs/wifi-clear.svg", name="wifi-button-image")
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
-		self.global_title = ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window))
+		self.global_title = Button(
+			child=ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window)),
+			name="global-title-button",
+			style_classes="button"
+		)
 
 		self.children = CenterBox(
 			start_children=[self.envsh_button, self.global_title],

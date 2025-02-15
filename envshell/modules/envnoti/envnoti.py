@@ -11,7 +11,6 @@ from fabric.utils import invoke_repeater, get_relative_path
 
 from gi.repository import GdkPixbuf
 
-
 NOTIFICATION_WIDTH = 360
 NOTIFICATION_IMAGE_SIZE = 64
 NOTIFICATION_TIMEOUT = 10 * 1000
@@ -133,6 +132,8 @@ class EnvNoti(Window):
 	def __init__(self, **kwargs):
 		super().__init__(
 			margin="8px 8px 8px 8px",
+			name="notification-window",
+			layer="overlay",
 			anchor="top right",
 			child=Box(
 				size=2,

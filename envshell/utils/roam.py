@@ -19,12 +19,12 @@ except Exception as e:
     print("Failed to create EnvShellService:", e)
     sys.exit(1)
 
-global notification_service
-try:
-    notification_service = Notifications()
-except Exception as e:
-    print("Failed to create NotificationService:", e)
-    sys.exit(1)
+#global notification_service
+#try:
+#    notification_service = Notifications()
+#except Exception as e:
+#    print("Failed to create NotificationService:", e)
+#    sys.exit(1)
 
 global audio_service
 try:
