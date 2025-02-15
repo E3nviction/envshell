@@ -15,6 +15,20 @@ from gi.repository import GLib
 
 from config.c import c
 
+apps = {
+	"Brave Browser": "brave",
+	"Vesktop": "vesktop",
+	"Files": "nautilus",
+	"Settings": "XDG_CURRENT_DESKTOP=GNOME gnome-control-center",
+	"Software": "gnome-software",
+	"Disks": "gnome-disks",
+	"Calculator": "gnome-calculator",
+	"Clocks": "gnome-clocks",
+	"Terminal": "gnome-terminal",
+	"Maps": "gnome-maps",
+	"ChatGPT": "brave --app=https://chat.openai.com/",
+}
+
 class EnvLight(Window):
 	def __init__(self, **kwargs):
 		super().__init__(
@@ -22,13 +36,20 @@ class EnvLight(Window):
 			anchor="center center",
 			exclusivity="auto",
 			name="env-light",
-			all_visible=True,
+			all_visible=False,
+			h_expand=True,
+			v_expand=True,
 			size=(600, 64),
-			visible=True,
-			keyboard_mode="exclusive",
+			visible=False,
+			keyboard_mode="on-demand",
 			pass_through=False,
 			**kwargs,
 		)
+
+		self.entry = Entry(placeholder="Envlight Search", name="light-entry", h_expand=True)
+
+		self.entry.connect("activate", self.submit)
+		self.entry.connect("changed", self.update_suggestions)
 
 		self.light = Box(
 			name="light-content",
@@ -46,14 +67,17 @@ class EnvLight(Window):
 					orientation="h",
 					size=(600, 64),
 					children=[
-						Entry(placeholder="Envlight Search", name="light-entry"),
+						self.entry,
 					]
 				),
-				Label("Suggestion 1", name="light-suggestions-label", h_align="start"),
-				Label("Suggestion 2", name="light-suggestions-label", h_align="start"),
-				Label("Suggestion 3", name="light-suggestions-label", h_align="start"),
-				Label("Suggestion 4", name="light-suggestions-label", h_align="start"),
-				Label("Suggestion 5", name="light-suggestions-label", h_align="start"),
+				Box(
+					name="light-suggestions",
+					h_expand=True,
+					v_expand=True,
+					h_align="start",
+					orientation="v",
+					size=(600, 64),
+				),
 			],
 		)
 
@@ -63,4 +87,39 @@ class EnvLight(Window):
 		self.children = [
 			self.light
 		]
+
+	def toggle(self, b):
+		if self.get_visible():
+			self.hide()
+		else:
+			self.show_light()
+
+	def show_light(self):
+		self.entry.set_text("")
 		self.show_all()
+
+	def submit(self, b):
+		print(self.entry.get_text())
+		self.hide()
+
+	def update_suggestions(self, b):
+		# use apps
+		SUGGESTIONS = 5
+		text = self.entry.get_text()
+		fitting = []
+
+		for app in apps.items():
+			if str(app[0]).startswith(text):
+				fitting.append(
+					Button(
+						label=app[0],
+						name="light-suggestion",
+						h_align="start",
+						h_expand=True,
+						v_expand=True
+					)
+				)
+			if len(fitting) == SUGGESTIONS:
+				break
+
+		self.light.children[1].children = fitting
