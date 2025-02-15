@@ -43,7 +43,7 @@ class Corners(Window):
 		super().__init__(
 			name="corners",
 			layer="overlay",
-			margin=(-24, 0, -57, 0),
+			margin=(-24, 0, -67, 0),
 			anchor="top bottom left right",
 			exclusivity="normal",
 			pass_through=True,
@@ -112,8 +112,7 @@ class EnvNotch(Window):
 			v_align="start",
 			h_align="start",
 			children=[
-				NotchCorner("top-right", 5),
-				Box(),
+				NotchCorner("top-right", 5)
 			]
 		)
 
@@ -123,8 +122,7 @@ class EnvNotch(Window):
 			v_align="start",
 			h_align="start",
 			children=[
-				NotchCorner("top-left", 5),
-				Box(),
+				NotchCorner("top-left", 5)
 			]
 		)
 
