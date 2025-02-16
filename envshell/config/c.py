@@ -75,14 +75,17 @@ c.workspace_rule(9)
 
 
 # Shell
+c.shell_rule(rule="dock-width", value=782)
+c.shell_rule(rule="dock-height", value=64)
 c.shell_rule(rule="dock-position", value="bottom center")
-c.shell_rule(rule="dock-margin", value="0 0 -47 0")
-c.shell_rule(rule="dock-margin-active", value="0 0 5 0")
-c.shell_rule(rule="dock-rounding", value="15px")
+c.shell_rule(rule="dock-margin", value=(0, 0, 5, 0,))
+c.shell_rule(rule="dock-rounding", value="19.2px")
 c.shell_rule(rule="dock-orientation", value="horizontal")
 
+c.shell_rule(rule="panel-width", value=1920)
+c.shell_rule(rule="panel-height", value=24)
 c.shell_rule(rule="panel-position", value="top left right")
-c.shell_rule(rule="panel-margin", value="0 0 0 0")
+c.shell_rule(rule="panel-margin", value=(0, 0, 0, 0))
 c.shell_rule(rule="panel-rounding", value="0")
 c.shell_rule(rule="panel-date-format", value="%a %b %d %H:%M")
 c.shell_rule(rule="panel-icon", value="")
