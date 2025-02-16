@@ -30,6 +30,12 @@ class EnvShellService(Service):
 	@Signal
 	def music_changed(self, value: str) -> None:
 		...
+	@Signal
+	def current_dropdown_changed(self, value: int) -> None:
+		...
+	@Signal
+	def dropdowns_hide_changed(self, value: bool) -> None:
+		...
 
 	@Property(str, flags="read-write")
 	def current_active_app_name(self) -> str:
@@ -55,7 +61,12 @@ class EnvShellService(Service):
 	@Property(str, flags="read-write")
 	def music(self) -> str:
 		return self._music
-
+	@Property(int, flags="read-write")
+	def current_dropdown(self) -> int:
+		return self._current_dropdown
+	@Property(bool, flags="read-write", default_value=False)
+	def dropdowns_hide(self) -> bool:
+		return self._dropdowns_hide
 	@current_active_app_name.setter
 	def current_active_app_name(self, value: str):
 		if value != self._current_active_app_name:
@@ -91,6 +102,17 @@ class EnvShellService(Service):
 		if value != self._music:
 			self._music = value
 			self.music_changed(value)
+	@current_dropdown.setter
+	def current_dropdown(self, value: int):
+		if value != self._current_dropdown:
+			self._current_dropdown = value
+			self.dropdowns_hide = not self.dropdowns_hide
+			self.current_dropdown_changed(value)
+	@dropdowns_hide.setter
+	def dropdowns_hide(self, value: bool):
+		if value != self._dropdowns_hide:
+			self._dropdowns_hide = value
+			self.dropdowns_hide_changed(value)
 
 	def sc(self, signal_name: str, callback: callable, def_value="..."):
 		self.connect(signal_name, callback)
@@ -107,6 +129,8 @@ class EnvShellService(Service):
 		self._dont_disturb = False
 		self._current_active_app_name = ""
 		self._music = ""
+		self._current_dropdown = 0
+		self._dropdowns_hide = False
 
 		self.notifications = []
 
