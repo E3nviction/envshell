@@ -44,6 +44,27 @@
 	border-bottom: 1px solid alpha(#aaa, 0.3);
 }
 
+#device-icon {
+	border-radius: 50%;
+	padding: 5px;
+	margin-bottom: 2.5px;
+	margin-top: 2.5px;
+	margin-right: 10px;
+	background-color: #555;
+}
+
+#devices-title {
+	color: alpha(#fff, 0.6);
+}
+
+#device-icon.paired {
+	background-color: #888;
+}
+
+#device-icon.connected {
+	background-color: #2369ff;
+}
+
 .menu {
 	margin: 5px;
 	background-color: alpha(#000, 0.3);
