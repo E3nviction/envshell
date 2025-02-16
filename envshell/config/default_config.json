@@ -1,0 +1,167 @@
+{
+    "Window": {
+        "autohide": {
+            "class": {
+                "Hyprland": true,
+                "albert": true,
+                "main.py": true,
+                "ulauncher": true
+            },
+            "title": {
+                "Albert": true
+            }
+        },
+        "rename": {
+            "class": {
+                "code": "vscode",
+                "vesktop": "discord"
+            }
+        },
+        "ignore": {
+            "class": {
+                "kitty-dropterm": true,
+                "albert": true,
+                "main.py": true,
+                "ulauncher": true
+            }
+        },
+        "translate": {
+            "class": {
+                "None": "Hyprland",
+                "code": "Visual Studio Code",
+                "brave-browser": "Brave Browser",
+                "discord": "Discord",
+                "vesktop": "Vesktop",
+                "kitty": "Kitty",
+                "org.keepassxc.KeePassXC": "KeePassXC",
+                "org.gnome.Terminal": "Terminal",
+                "org.gnome.Nautilus": "Finder",
+                "org.gnome.NautilusPreviewer": "Finder",
+                "org.gnome.Maps": "Maps",
+                "org.gnome.Calculator": "Calculator",
+                "org.gnome.Clocks": "Clocks",
+                "brave-chatgpt.com__-Default": "ChatGPT",
+                "obsidian": "Obsidian",
+                "blender": "Blender",
+                "spotify": "Spotify",
+                "org.gnome.Software": "App Store",
+                "org.gnome.Settings": "Settings",
+                "gnome-disks": "Disks",
+                "org.gnome.baobab": "Disk Usage",
+                "org.gnome.TextEditor": "Text Editor",
+                "org.gnome.Loupe": "Image Viewer",
+                "org.gnome.clocks": "Clocks",
+                "krita": "Krita",
+                "com.github.rafostar.Clapper": "Media Player"
+            }
+        }
+    },
+    "Dock": {
+        "pinned": {
+            "org.gnome.Nautilus": "nautilus",
+            "org.gnome.Settings": "XDG_CURRENT_DESKTOP=GNOME gnome-control-center",
+            "org.gnome.Software": "gnome-software",
+            "gnome-disks": "gnome-disks",
+            "org.gnome.baobab": "baobab",
+            "kitty": "kitty",
+            "brave-browser": "brave",
+            "code": "code",
+            "org.gnome.Calculator": "gnome-calculator",
+            "org.gnome.TextEditor": "gnome-text-editor",
+            "org.gnome.Loupe": "loupe",
+            "org.gnome.clocks": "gnome-clocks",
+            "krita": "krita",
+            "spotify": "spotify",
+            "vesktop": "vesktop",
+            "org.keepassxc.KeePassXC": "keepassxc",
+            "com.github.rafostar.Clapper": "clapper",
+            "blender": "blender",
+            "obsidian": "obsidian"
+        }
+    },
+    "Workspace": {
+        "ignore": {
+            "id": {
+                "9": true
+            }
+        }
+    },
+    "Shell": {
+        "dock": {
+            "width": 782,
+            "height": 64,
+            "position": "bottom center",
+            "margin": [
+                0,
+                0,
+                5,
+                0
+            ],
+            "rounding": "19.2px",
+            "orientation": "horizontal"
+        },
+        "panel": {
+            "width": 1920,
+            "height": 24,
+            "position": "top left right",
+            "margin": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "rounding": "0",
+            "date-format": "%a %b %d %H:%M",
+            "icon": "\ue711"
+        },
+        "about": {
+            "window": {
+                "width": 250,
+                "height": 355,
+                "resizable": false
+            },
+            "computer-label": "Env Shell",
+            "computer-caption": "ESH, 2024",
+            "more-info": "https://github.com/E3nviction/envshell"
+        },
+        "env_menu": {
+            "options": {
+                "1": {
+                    "label": "About this PC"
+                },
+                "2": {
+                    "label": "System Settings...",
+                    "on-click": "code ~/.config/"
+                },
+                "3": {
+                    "label": "Nix Store...",
+                    "on-click": "xdg-open https://search.nixos.org/packages"
+                },
+                "4": {
+                    "label": "Force Quit App",
+                    "on-click": "hyprctl dispatch killactive"
+                },
+                "5": {
+                    "label": "Sleep",
+                    "on-click": "systemctl suspend"
+                },
+                "6": {
+                    "label": "Restart...",
+                    "on-click": "systemctl restart"
+                },
+                "7": {
+                    "label": "Shut Down...",
+                    "on-click": "shutdown now"
+                },
+                "8": {
+                    "label": "Lock Screen",
+                    "on-click": "hyprlock",
+                    "keybind": "\udb81\ude33 L"
+                }
+            }
+        }
+    },
+    "Icons": {
+        "directory": "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/"
+    }
+}
