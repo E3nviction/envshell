@@ -172,9 +172,13 @@ class EnvPanel(Window):
 
 		self.systray = SystemTray()
 
+		self.systray_box = Box(
+			name="system-tray-box",
+		)
+
 		self.children = CenterBox(
 			start_children=[self.envsh_button, self.global_title, self.global_menu_button_file, self.global_menu_button_edit, self.global_menu_button_view, self.global_menu_button_go, self.global_menu_button_window, self.global_menu_button_help],
-			end_children=[self.power_button, self.wifi_button, self.search_button, self.control_center_button, self.date_time],
+			end_children=[self.systray_box, self.power_button, self.wifi_button, self.search_button, self.control_center_button, self.date_time],
 		)
 
 	def format_window(self, title, wmclass):
