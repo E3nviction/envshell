@@ -6,10 +6,9 @@
 }
 
 #control-center-widgets {
-	background-color: alpha(#111, 0.1);
-	box-shadow: inset 0 -0.5px 0 .5px alpha(#555, 0.7), inset 0 0.5px 0 .5px alpha(#777, 0.7);
-	border: 1px solid alpha(#111, 0.3);
-	border-top: none;
+	background-color: alpha(#000, 0.3);
+	box-shadow: inset 0 0 0 1px alpha(#aaa, 0.4);
+	border: 1px solid alpha(#111, 0.4);
 	border-radius: 1.25rem;
 	padding: .5rem;
 }
@@ -36,8 +35,8 @@
 
 .menu {
 	margin: 5px;
-	background-color: alpha(#222, 0.2);
-	border: 1px solid alpha(#222, 0.3);
+	background-color: alpha(#000, 0.3);
+	border: .5px solid alpha(#888, 0.4);
 	box-shadow: inset 0 0 200px 0 alpha(#111, 0.3);
 	border-radius: 12px;
 	padding: 1rem;
