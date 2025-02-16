@@ -17,3 +17,6 @@ venv.bak/
 
 # Nix
 shell.nix
+
+# Config
+envshell/config/latest_compiled_config.json
