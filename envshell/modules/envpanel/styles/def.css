@@ -1,4 +1,4 @@
-*:not(mark) {
+*:not(mark):not(switch) {
 	background-color: transparent;
 	box-shadow: none;
 	border: none;

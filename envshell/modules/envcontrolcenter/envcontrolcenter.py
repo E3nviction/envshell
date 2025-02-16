@@ -12,8 +12,10 @@ from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
 from fabric.widgets.svg import Svg
 from fabric.widgets.wayland import WaylandWindow as Window
+from fabric.widgets.scrolledwindow import ScrolledWindow
 from fabric.utils.helpers import exec_shell_command_async
 from fabric.audio import Audio
+from fabric.bluetooth import BluetoothClient, BluetoothDevice
 from gi.repository import GLib
 
 global envshell_service
@@ -22,6 +24,34 @@ from utils.roam import envshell_service, audio_service
 from utils.exml import exml
 
 from utils.functions import get_from_socket
+
+from .bluetooth import BluetoothDeviceSlot, BluetoohConnections
+
+class BluetoothWindow(Window):
+	def __init__(self, **kwargs):
+		super().__init__(
+			layer="top",
+			anchor="right top",
+			margin="2px 10px 0px 0px",
+			exclusivity="auto",
+			keyboard_mode="on-demand",
+			name="control-center-menu",
+			visible=False,
+			**kwargs,
+		)
+
+		self.children = Box(
+			orientation="vertical",
+			name="control-center-widgets",
+			children=[
+				BluetoohConnections()
+			]
+		)
+
+		self.add_keybinding("Escape", self.toggle_bluetooth)
+
+	def toggle_bluetooth(self, *_):
+		self.set_visible(False)
 
 
 class EnvControlCenter(Window):
@@ -54,6 +84,27 @@ class EnvControlCenter(Window):
 		self.volume_scale.connect("change-value", self.set_volume)
 		self.music_label = Label(music, name="music-widget-label", h_align="start")
 
+		self.bluetooth_widget = Button(
+			name="bluetooth-widget",
+			child=Box(
+				orientation="h",
+				children=[
+					Svg(svg_file="./assets/svgs/bluetooth.svg", style_classes="icon"),
+					Box(
+						name="bluetooth-widget-info",
+						orientation="vertical",
+						children=[
+							Label(label="Bluetooth", style_classes="title ct", h_align="start"),
+							self.bluetooth_label
+						]
+					),
+				]
+			),
+			on_clicked=self.toggle_bluetooth
+		)
+
+		self.bluetooth_window = BluetoothWindow()
+
 		# Widgets
 		self.widgets = exml(
 			file="./modules/envcontrolcenter/envcontrolcenter.xml",
@@ -70,14 +121,17 @@ class EnvControlCenter(Window):
 				"self.bluetooth_label": self.bluetooth_label,
 				"self.volume_scale": self.volume_scale,
 				"self.music_label": self.music_label,
-				"self.volume_icon": self.volume_icon
+				"self.volume_icon": self.volume_icon,
+				"self.bluetooth_widget": self.bluetooth_widget
 			}
 		)
 
-		# Add Children to Window
-		self.children = CenterBox(
-			start_children=[self.widgets],
+		self.center_box =CenterBox(
+			start_children=[self.widgets]
 		)
+
+		# Add Children to Window
+		self.children = self.center_box
 
 		self.add_keybinding("Escape", self.toggle_cc)
 
@@ -87,7 +141,15 @@ class EnvControlCenter(Window):
 	def set_volume(self, _, __, volume):
 		audio_service.speaker.volume = volume
 
-	def toggle_cc(self, button, *_): self.set_visible(not self.is_visible())
+	def toggle_bluetooth(self, *_):
+		self.set_visible(False)
+		self.bluetooth_window.set_visible(not self.bluetooth_window.is_visible())
+
+	def toggle_cc(self, button, *_):
+		if self.bluetooth_window.is_visible():
+			self.bluetooth_window.set_visible(False)
+		else:
+			self.set_visible(not self.is_visible())
 	def volume_changed(self, _, volume): GLib.idle_add(lambda: self.volume_scale.set_value(int(volume)))
 	def wlan_changed(self, _, wlan): GLib.idle_add(lambda: self.wlan_label.set_property("label", wlan))
 	def bluetooth_changed(self, _, bluetooth): GLib.idle_add(lambda: self.bluetooth_label.set_property("label", bluetooth))

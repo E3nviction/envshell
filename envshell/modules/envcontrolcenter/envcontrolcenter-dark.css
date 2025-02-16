@@ -33,6 +33,17 @@
 	color: #aaa;
 }
 
+#bluetooth-widget-title {
+	font-size: 12px;
+	font-weight: 500;
+	color: #fff;
+}
+
+#bluetooth-widget-top {
+	padding-bottom: 10px;
+	border-bottom: 1px solid alpha(#aaa, 0.3);
+}
+
 .menu {
 	margin: 5px;
 	background-color: alpha(#000, 0.3);

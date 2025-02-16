@@ -11,15 +11,7 @@
                         </BoxV>
                     </BoxH>
                 </Button>
-                <Button name="bluetooth-widget">
-                    <BoxH>
-                        <Svg path="./assets/svgs/bluetooth.svg" style_classes="icon"/>
-                        <Box name="bluetooth-widget-info" orientation="vertical">
-                            <Label label="Bluetooth" style_classes="title ct" h_align="start"/>
-                            <Ref>self.bluetooth_label</Ref>
-                        </Box>
-                    </BoxH>
-                </Button>
+                <Ref>self.bluetooth_widget</Ref>
             </BoxV>
             <BoxH name="dnd-widget" style_classes="menu" h_expand="true">
                 <Svg path="./assets/svgs/dnd.svg" name="dnd-menu-icon"/>
