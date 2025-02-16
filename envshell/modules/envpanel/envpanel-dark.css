@@ -5,3 +5,7 @@
 @import "modules/envpanel/styles/power.css";
 @import "modules/envpanel/styles/time.css";
 @import "modules/envpanel/about.css";
+
+#global-title-button label {
+	font-weight: 600;
+}
