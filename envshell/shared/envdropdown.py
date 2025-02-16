@@ -4,11 +4,13 @@ from fabric.widgets.wayland import WaylandWindow as Window
 
 from utils.roam import envshell_service
 
+dropdowns = []
+
 def dropdown_divider(comment): return Box(children=[Box(name="dropdown-divider", h_expand=True)], name="dropdown-divider-box", h_align="fill", h_expand=True, v_expand=True,)
 
 class EnvDropdown(Window):
 	"""A Dropdown for envshell"""
-	def __init__(self, x, y, w=-1, h=-1, dropdown_children=None, **kwargs):
+	def __init__(self, x, y, w=-1, h=-1, dropdown_children=None, parent=None, **kwargs):
 		super().__init__(
 			layer="top",
 			anchor="left top",
@@ -19,10 +21,14 @@ class EnvDropdown(Window):
 			**kwargs,
 		)
 
-		self.id = -1
+		self.id = len(dropdowns)
+		dropdowns.append(self)
 
 		self.set_property("width-request", w)
 		self.set_property("height-request", h)
+
+		self.x_set = x
+		self.y_set = y
 
 		envshell_service.connect("dropdowns-hide-changed", self.hide_dropdown)
 
@@ -43,18 +49,22 @@ class EnvDropdown(Window):
 
 		self.children = self.child_box
 		self.connect("event", self.hide_dropdown)
+		self.connect("button-press-event", self.hide_dropdown)
+		self.add_keybinding("Escape", self.hide_dropdown)
 
-	def toggle_dropdown(self, button):
+	def toggle_dropdown(self, button, parent=None):
+		# if parent, then set the x, and y to parent alloc
+		if parent:
+			par_alloc = parent.get_allocation()
+			self.margin = (par_alloc.y + self.y_set, 0, 0, par_alloc.x + self.x_set)
 		self.set_visible(not self.is_visible())
 		if self.is_visible():
-			if envshell_service.current_dropdown == 1:
-				self.id = 0
-				envshell_service.current_dropdown = 0
-			else:
-				self.id = 1
-				envshell_service.current_dropdown = 1
+			self.pass_through = False
+			self.keyboard_mode = "exclusive"
+			self.grab_focus()
+			envshell_service.current_dropdown = self.id
 	def hide_dropdown(self, widget, event):
 		x, y = self.get_pointer()
 		allocation = self.get_allocation()
-		if not 0 < x <= allocation.width - 1 and 0 < y <= allocation.height - 1 or envshell_service.current_dropdown != self.id:
+		if envshell_service.current_dropdown != self.id:
 			self.hide()
