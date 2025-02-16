@@ -52,8 +52,8 @@ windowrulev2 = pin,             title:(About Menu)
 - [Fabric](https://github.com/Fabric-Development/fabric)
 - [Axenide's Dotfiles for Inspiration](https://github.com/Axenide/Dotfiles)
 
-
 ## Screenshots
+
 ![screenshot-3](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-3.png)
 
 ![screenshot-4](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-4.png)
