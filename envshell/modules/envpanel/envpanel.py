@@ -10,6 +10,7 @@ from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
 from fabric.widgets.svg import Svg
+from fabric.system_tray import SystemTray
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
@@ -19,11 +20,12 @@ from gi.repository import GLib, Gtk, GdkPixbuf
 global instance
 global envshell_service
 from utils.roam import instance, envshell_service
+from shared.envdropdown import EnvDropdown, dropdown_divider
 
-from ..envcontrolcenter.envcontrolcenter import EnvControlCenter
+from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
 
-from ..envlight.envlight import EnvLight
+from modules.envlight.envlight import EnvLight
 
 from config.c import c
 
@@ -31,7 +33,7 @@ def dropdown_option(self, label: str = "", keybind: str = "", on_click="echo \"E
 	def on_click_subthread(button):
 		self.toggle_dropdown(button)
 		if on_clicked: on_clicked(button)
-		else: exec_shell_command_async(on_click, shell=True)
+		else: exec_shell_command_async(on_click)
 	return Button(
 		child=CenterBox(
 			start_children=[
@@ -51,22 +53,16 @@ def dropdown_option(self, label: str = "", keybind: str = "", on_click="echo \"E
 		h_expand=True,
 		v_expand=True,
 	)
-def dropdown_divider(comment): return Box(children=[Box(name="dropdown-divider", h_expand=True)], name="dropdown-divider-box", h_align="fill", h_expand=True, v_expand=True,)
 
-class Dropdown(Window):
+class Dropdown(EnvDropdown):
 	"""EnvMenu for envshell"""
 	def __init__(self, **kwargs):
 		super().__init__(
-			layer="top",
-			anchor="left top",
-			exclusivity="auto",
-			name="dropdown-menu",
-			visible=False,
-			**kwargs,
-		)
-
-		self.dropdown = Box(
-			children=[
+			x=0,
+			y=0,
+			w=150,
+			h=258,
+			dropdown_children=[
 				dropdown_option(self, c.get_shell_rule(rule="panel-env-menu-option-1-label"), on_clicked=lambda b: About().toggle(b)),
 				dropdown_divider("---------------------"),
 				dropdown_option(self, c.get_shell_rule(rule="panel-env-menu-option-2-label"), on_click=c.get_shell_rule(rule="panel-env-menu-option-2-on-click")),
@@ -80,15 +76,8 @@ class Dropdown(Window):
 				dropdown_divider("---------------------"),
 				dropdown_option(self, c.get_shell_rule(rule="panel-env-menu-option-8-label"), c.get_shell_rule(rule="panel-env-menu-option-8-keybind"), c.get_shell_rule(rule="panel-env-menu-option-8-on-click")),
 			],
-			h_expand=True,
-			name="dropdown-options",
-			orientation="vertical",
+			**kwargs,
 		)
-
-		self.children = CenterBox(start_children=[self.dropdown])
-	def toggle_dropdown(self, button): self.set_visible(not self.is_visible())
-	def on_enter(self, widget, event): self.show()
-	def on_leave(self, widget, event): self.hide()
 
 class EnvPanel(Window):
 	"""Top Panel for envshell"""
@@ -103,29 +92,49 @@ class EnvPanel(Window):
 			style=f"""
 				border-radius: {c.get_shell_rule(rule="panel-rounding")};
 			""",
-			size=(1920, 24),
+			size=(c.get_shell_rule(rule="panel-width"), c.get_shell_rule(rule="panel-height")),
 			**kwargs,
 		)
 
+		self.set_property("width-request", c.get_shell_rule(rule="panel-width"))
+		self.set_property("height-request", c.get_shell_rule(rule="panel-height"))
+
+
 		self.envlight = EnvLight()
 		self.date_time = DateTime(formatters=c.get_shell_rule(rule="panel-date-format"), name="date-time")
-		self.dropdown = Dropdown()
+		self.envsh_button_dropdown = Dropdown()
+
 		self.control_center = EnvControlCenter()
 		self.control_center_image = Svg("./assets/svgs/control-center.svg", name="control-center-image")
 		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
-		self.envsh_button = Button(label=c.get_shell_rule(rule="panel-icon"), name="envsh-button", style_classes="button", on_clicked=self.dropdown.toggle_dropdown)
+
+		self.envsh_button = Button(label=c.get_shell_rule(rule="panel-icon"), name="envsh-button", style_classes="button", on_clicked=self.envsh_button_dropdown.toggle_dropdown)
 		self.power_button_image = Svg("./assets/svgs/battery.svg", name="control-center-image")
 		self.power_button = Button(image=self.power_button_image, name="power-button", style_classes="button")
+
 		self.search_button_image = Svg("./assets/svgs/search.svg", name="search-button-image")
 		self.search_button = Button(image=self.search_button_image, name="search-button", style_classes="button")
 		self.search_button.connect("clicked", self.envlight.toggle)
+
 		self.wifi_button_image = Svg("./assets/svgs/wifi-clear.svg", name="wifi-button-image")
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
+		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
+		self.global_title_dropdown = EnvDropdown(
+			45,
+			0,
+			dropdown_children=[
+				self.global_title_menu_about
+			]
+		)
+		envshell_service.connect("current-active-app-name-changed", lambda _, value: self.global_title_menu_about.set_property("label", f"About {value}"))
 		self.global_title = Button(
 			child=ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window)),
 			name="global-title-button",
-			style_classes="button"
+			style_classes="button",
+			on_clicked=self.global_title_dropdown.toggle_dropdown,
 		)
+
+		self.systray = SystemTray()
 
 		self.children = CenterBox(
 			start_children=[self.envsh_button, self.global_title],
