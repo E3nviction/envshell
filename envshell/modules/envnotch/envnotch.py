@@ -43,7 +43,7 @@ class Corners(Window):
 		super().__init__(
 			name="corners",
 			layer="overlay",
-			margin=(-24, 0, -67, 0),
+			margin=(-c.get_shell_rule(rule="panel-height"), 0, -(c.get_shell_rule(rule="dock-height") + c.get_shell_rule(rule="dock-margin")[2]), 0),
 			anchor="top bottom left right",
 			exclusivity="normal",
 			pass_through=True,

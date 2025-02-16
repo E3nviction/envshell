@@ -38,10 +38,14 @@ class EnvDock(Window):
             style=f"""
                 border-radius: {c.get_shell_rule(rule="dock-rounding")};
             """,
-            margin=c.get_shell_rule(rule="dock-margin-active"),
-            size=(400, 46),
+            margin=c.get_shell_rule(rule="dock-margin"),
             **kwargs,
         )
+
+        self.set_property("width-request", c.get_shell_rule(rule="dock-width"))
+        self.set_property("height-request", c.get_shell_rule(rule="dock-height"))
+        self.set_property("margin", c.get_shell_rule(rule="dock-margin"))
+        self.set_property("anchor", c.get_shell_rule(rule="dock-position"))
 
         envshell_service.connect(
             "dock-apps-changed",
