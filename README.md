@@ -5,24 +5,27 @@
 A shell for Hyprland, designed with simplicity and aesthetics in mind, by mimicing the look of MacOS as closely as possible.
 All powered by [Fabric](https://github.com/Fabric-Development/fabric)
 
+## Experimental
+
+Please note that EnvShell is still in an experimental stage and is known to only work on the author's machine. It is not guaranteed to work on other systems. Proceed with caution and be prepared to encounter issues.
+
+If you want to make it work on your machine, I would recommend changing the config file first, as it has paths for Nix Machines.
+
 ## Structure
 
-- A TopPanel      (EnvPanel)
-- A Dock          (EnvDock)
-- A About Window  (EnvAbout)
-- A OSMenu        (EnvMenu)
-- A Notch         (EnvNotch)
-- A SpotLight     (EnvLight)
-- A ControlCenter (EnvControlCenter)
-- A Noti-Daemon   (EnvNoti)
+- A TopPanel       (EnvPanel)
+- A Dock           (EnvDock)
+- An About Window  (EnvAbout)
+- A OSMenu         (EnvMenu)
+- A Notch          (EnvNotch)
+- A SpotLight      (EnvLight)
+- A ControlCenter  (EnvControlCenter)
+- A Noti-Daemon    (EnvNoti)
 
 ## Usage
 
-### (WIP)
-
-1. `nix-shell`
-2. `source venv/bin/activate.fish`
-3. `python main.py`
+1. `cd envshell`
+2. `python main.py`
 
 ## Credits
 
