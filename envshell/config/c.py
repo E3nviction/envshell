@@ -50,13 +50,17 @@ if config.get("Shell").get("about", None) is None:
     print(SectionMissing("Shell.about"))
     config["Shell"]["about"] = default_config["Shell"]["about"]
 
-if config.get("Shell").get("env_menu", None) is None:
-    print(SectionMissing("Shell.env_menu"))
-    config["Shell"]["env_menu"] = default_config["Shell"]["env_menu"]
+if config.get("Shell").get("env-menu", None) is None:
+    print(SectionMissing("Shell.env-menu"))
+    config["Shell"]["env-menu"] = default_config["Shell"]["env-menu"]
 
 if config.get("Icons", None) is None:
     print(SectionMissing("Icons"))
     config["Icons"] = default_config["Icons"]
+
+if config.get("Bluetooth", None) is None:
+    print(SectionMissing("Bluetooth"))
+    config["Bluetooth"] = default_config["Bluetooth"]
 
 # Autohide
 for k, v in config["Window"].get("autohide", {}).get("class", {}).items():
@@ -121,7 +125,7 @@ c.shell_rule(rule="about-computer-caption", value=config["Shell"]["about"].get("
 c.shell_rule(rule="about-more-info", value=config["Shell"]["about"].get("more-info", "https://github.com/E3nviction/envshell"))
 
 env_menu_option_labels = {}
-for num, se in config["Shell"].get("env_menu", {}).get("options", {}).items():
+for num, se in config["Shell"].get("env-menu", {}).get("options", {}).items():
     env_menu_option_labels[se.get("label", "")] = [se.get("on-click", ""), se.get("keybind", "")]
 
 i = 0
@@ -131,6 +135,8 @@ for k, v in env_menu_option_labels.items():
     if len(v) > 1:
         c.shell_rule(rule=f"panel-env-menu-option-{i+1}-keybind", value=v[1])
     i += 1
+
+c.shell_rule(rule="bluetooth-show-hidden-devices", value=config["Bluetooth"].get("show-hidden-devices", False))
 
 
 # Icons

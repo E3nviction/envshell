@@ -124,7 +124,7 @@
             "computer-caption": "ESH, 2024",
             "more-info": "https://github.com/E3nviction/envshell"
         },
-        "env_menu": {
+        "env-menu": {
             "options": {
                 "1": {
                     "label": "About this PC"
@@ -163,5 +163,8 @@
     },
     "Icons": {
         "directory": "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/"
+    },
+    "Bluetooth": {
+        "show-hidden-devices": false
     }
 }
