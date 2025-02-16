@@ -4,24 +4,11 @@
 
 #env-light {
 	opacity: 1;
-	transition: opacity 250ms ease-in-out;
-}
-
-#light-content {
 	padding: 0;
 	border-radius: 15px;
 	background-color: alpha(#333, 0.3);
 	box-shadow: inset 0 0 0 0.5px alpha(#333, 0.5);
-}
-
-#light-entry {
-	font-size: 20px;
-	color: alpha(#fff, 0.8);
-}
-
-#light-header {
-	padding: 2rem;
-	border-bottom: 1px solid #555;
+	transition: opacity 250ms ease-in-out;
 }
 
 #light-suggestions {
