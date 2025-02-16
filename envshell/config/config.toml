@@ -86,7 +86,7 @@ about.window.width = 250
 about.window.height = 355
 about.window.resizable = false
 about.computer-label = "Env Shell"
-about.computer-caption = "ESH, 2024"
+about.computer-caption = "ESH 0.1.0, 2024"
 about.more-info = "https://github.com/E3nviction/envshell"
 
 env_menu.options.1.label = "About this PC"
