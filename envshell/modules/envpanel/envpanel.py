@@ -11,7 +11,7 @@ from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
 from fabric.widgets.svg import Svg
-from fabric.system_tray import SystemTray
+from fabric.system_tray.widgets import SystemTray
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
@@ -170,16 +170,27 @@ class EnvPanel(Window):
 		self.global_menu_button_window = Button(label="Window", name="global-menu-button-window", style_classes="button", on_clicked=lambda b: self.global_menu_window.toggle_dropdown(b, self.global_menu_button_window))
 		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_dropdown(b, self.global_menu_button_help))
 
-		self.systray = SystemTray()
+		self.systray = SystemTray(name="system-tray", icon_size=16, spacing=4, style_classes="hidden")
 
-		self.systray_box = Box(
-			name="system-tray-box",
+		self.systray_button = Button(
+			label="",
+			name="systray-button",
+			style_classes="button",
+			on_clicked=self.toggle_systray,
 		)
 
 		self.children = CenterBox(
 			start_children=[self.envsh_button, self.global_title, self.global_menu_button_file, self.global_menu_button_edit, self.global_menu_button_view, self.global_menu_button_go, self.global_menu_button_window, self.global_menu_button_help],
-			end_children=[self.systray_box, self.power_button, self.wifi_button, self.search_button, self.control_center_button, self.date_time],
+			end_children=[self.systray, self.systray_button, self.power_button, self.wifi_button, self.search_button, self.control_center_button, self.date_time],
 		)
+
+	def toggle_systray(self, b):
+		if "hidden" in self.systray.style_classes:
+			self.systray_button.set_property("label", "")
+			self.systray.remove_style_class("hidden")
+		else:
+			self.systray_button.set_property("label", "")
+			self.systray.add_style_class("hidden")
 
 	def format_window(self, title, wmclass):
 		name = wmclass
