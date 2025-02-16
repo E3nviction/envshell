@@ -1,0 +1,110 @@
+[Window]
+autohide.class."Hyprland" = true
+autohide.class."albert" = true
+autohide.class."main.py" = true
+autohide.class."ulauncher" = true
+
+autohide.title."Albert" = true
+
+rename.class."code" = "vscode"
+rename.class."vesktop" = "discord"
+
+ignore.class."kitty-dropterm" = true
+ignore.class."albert" = true
+ignore.class."main.py" = true
+ignore.class."ulauncher" = true
+
+translate.class."None" = "Hyprland"
+translate.class."code" ="Visual Studio Code"
+translate.class."brave-browser" ="Brave Browser"
+translate.class."discord" ="Discord"
+translate.class."vesktop" ="Vesktop"
+translate.class."kitty" ="Kitty"
+translate.class."org.keepassxc.KeePassXC" ="KeePassXC"
+translate.class."org.gnome.Terminal" ="Terminal"
+translate.class."org.gnome.Nautilus" ="Finder"
+translate.class."org.gnome.NautilusPreviewer" ="Finder"
+translate.class."org.gnome.Maps" ="Maps"
+translate.class."org.gnome.Calculator" ="Calculator"
+translate.class."org.gnome.Clocks" ="Clocks"
+translate.class."brave-chatgpt.com__-Default" ="ChatGPT"
+translate.class."obsidian" ="Obsidian"
+translate.class."blender" ="Blender"
+translate.class."spotify" ="Spotify"
+translate.class."org.gnome.Software" ="App Store"
+translate.class."org.gnome.Settings" ="Settings"
+translate.class."gnome-disks" ="Disks"
+translate.class."org.gnome.baobab" ="Disk Usage"
+translate.class."org.gnome.TextEditor" ="Text Editor"
+translate.class."org.gnome.Loupe" ="Image Viewer"
+translate.class."org.gnome.clocks" ="Clocks"
+translate.class."krita" ="Krita"
+translate.class."com.github.rafostar.Clapper" ="Media Player"
+
+[Dock]
+pinned."org.gnome.Nautilus" = "nautilus"
+pinned."org.gnome.Settings" = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
+pinned."org.gnome.Software" = "gnome-software"
+pinned."gnome-disks" = "gnome-disks"
+pinned."org.gnome.baobab" = "baobab"
+pinned."kitty" = "kitty"
+pinned."brave-browser" = "brave"
+pinned."code" = "code"
+pinned."org.gnome.Calculator" = "gnome-calculator"
+pinned."org.gnome.TextEditor" = "gnome-text-editor"
+pinned."org.gnome.Loupe" = "loupe"
+pinned."org.gnome.clocks" = "gnome-clocks"
+pinned."krita" = "krita"
+pinned."spotify" = "spotify"
+pinned."vesktop" = "vesktop"
+pinned."org.keepassxc.KeePassXC" = "keepassxc"
+pinned."com.github.rafostar.Clapper" = "clapper"
+pinned."blender" = "blender"
+pinned."obsidian" = "obsidian"
+
+[Workspace]
+ignore.id.9 = true
+
+
+[Shell]
+dock.width = 782
+dock.height = 64
+dock.position = "bottom center"
+dock.margin = [0, 0, 5, 0]
+dock.rounding = "19.2px"
+dock.orientation = "horizontal"
+
+panel.width = 1920
+panel.height = 24
+panel.position = "top left right"
+panel.margin = [0, 0, 0, 0]
+panel.rounding = "0"
+panel.date-format = "%a %b %d %H:%M"
+panel.icon = ""
+
+about.window.width = 250
+about.window.height = 355
+about.window.resizable = false
+about.computer-label = "Env Shell"
+about.computer-caption = "ESH, 2024"
+about.more-info = "https://github.com/E3nviction/envshell"
+
+env_menu.options.1.label = "About this PC"
+env_menu.options.2.label = "System Settings..."
+env_menu.options.2.on-click = "code ~/.config/"
+env_menu.options.3.label = "Nix Store..."
+env_menu.options.3.on-click = "xdg-open https://search.nixos.org/packages"
+env_menu.options.4.label = "Force Quit App"
+env_menu.options.4.on-click = "hyprctl dispatch killactive"
+env_menu.options.5.label = "Sleep"
+env_menu.options.5.on-click = "systemctl suspend"
+env_menu.options.6.label = "Restart..."
+env_menu.options.6.on-click = "systemctl restart"
+env_menu.options.7.label = "Shut Down..."
+env_menu.options.7.on-click = "shutdown now"
+env_menu.options.8.label = "Lock Screen"
+env_menu.options.8.on-click = "hyprlock"
+env_menu.options.8.keybind = "󰘳 L"
+
+[Icons]
+directory = "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/"
