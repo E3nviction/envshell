@@ -27,6 +27,8 @@ from utils.exml import exml
 
 from utils.functions import get_from_socket
 
+from config.c import c
+
 class BluetoothDeviceSlot(CenterBox):
     def __init__(self, device: BluetoothDevice, **kwargs):
         super().__init__(**kwargs)
@@ -36,33 +38,40 @@ class BluetoothDeviceSlot(CenterBox):
             "notify::closed", lambda *_: self.device.closed and self.destroy()
         )
 
-        self.connection_label = Label(label="Disconnected")
-        self.connect_button = Button(
-            label="Connect",
-            on_clicked=lambda *_: self.device.set_connecting(not self.device.connected),
+        self.styles = [
+            "connected" if self.device.connected else "",
+            "paired" if self.device.paired else "",
+        ]
+
+        self.dimage = Image(
+            icon_name=device.icon_name + "-symbolic",
+            size=5,
+            name="device-icon",
+            style_classes=" ".join(self.styles),
         )
 
         self.start_children = [
-            Image(icon_name=device.icon_name + "-symbolic", size=32),
+            Button(
+                image=self.dimage,
+                on_clicked=lambda *_: self.toggle_connecting(),
+            ),
             Label(label=device.name),
         ]
-        self.center_children = self.connection_label
-        self.end_children = self.connect_button
+
+        print(self.start_children[0].get_property("name"))
 
         self.device.emit("changed")  # to update display status
 
+    def toggle_connecting(self):
+        self.device.emit("changed")
+        self.device.set_connecting(not self.device.connected)
+
     def on_changed(self, *_):
-        self.connection_label.set_label(
-            "Connected" if self.device.connected else "Disconnected"
-        )
-        if self.device.connecting:
-            self.connect_button.set_label(
-                "Connecting..." if not self.device.connecting else "Disconnecting..."
-            )
-        else:
-            self.connect_button.set_label(
-                "Connect" if not self.device.connected else "Disconnect"
-            )
+        self.styles = [
+            "connected" if self.device.connected else "",
+            "paired" if self.device.paired else "",
+        ]
+        self.dimage.set_property("style-classes", " ".join(self.styles))
         return
 
 
@@ -76,7 +85,7 @@ class BluetoohConnections(Box):
         )
 
         self.client = BluetoothClient(on_device_added=self.on_device_added)
-        self.title = Label("Bluetooth", name="bluetooth-widget-title", h_align="start")
+        self.title = Label("Bluetooth")
         self.scan_button = Button(
             name="scan-button",
             on_clicked=lambda *_: self.client.toggle_scan()
@@ -86,12 +95,11 @@ class BluetoohConnections(Box):
             on_clicked=lambda *_: self.client.toggle_power()
         )
 
-        self.toggle_button = Gtk.Switch()
-        self.toggle_button.connect("notify::active", lambda *_: self.client.set_power(True))
-
         self.client.connect(
             "notify::enabled",
-            lambda *_: self.toggle_button.set_active(self.client.enabled)
+            lambda *_: self.toggle_button.set_label(
+                "Bluetooth " + ("On" if self.client.enabled else "Off")
+            ),
         )
         self.client.connect(
             "notify::scanning",
@@ -100,15 +108,15 @@ class BluetoohConnections(Box):
             ),
         )
 
-        self.paired_box = Box(spacing=2, orientation="vertical")
-        self.available_box = Box(spacing=2, orientation="vertical")
+        self.not_paired = Box(spacing=2, orientation="vertical")
+        self.paired = Box(spacing=2, orientation="vertical")
+
+        self.device_box = Box(spacing=2, orientation="vertical", children=[self.paired, self.not_paired])
 
         self.children = [
             CenterBox(start_children=self.title, center_children=self.scan_button, end_children=self.toggle_button, name="bluetooth-widget-top"),
-            Label("Paired Devices"),
-            ScrolledWindow(min_content_size=(400, -1), child=self.paired_box),
-            Label("Available Devices"),
-            ScrolledWindow(min_content_size=(-1, 400), child=self.available_box),
+            Label("Devices", h_align="start", name="devices-title"),
+            ScrolledWindow(min_content_size=(300, 400), max_content_size=(300, 800), child=self.device_box, overlay_scroll=True),
         ]
         self.client.notify("scanning")
         self.client.notify("enabled")
@@ -116,8 +124,10 @@ class BluetoohConnections(Box):
     def on_device_added(self, client: BluetoothClient, address: str):
         if not (device := client.get_device(address)):
             return
-        slot = BluetoothDeviceSlot(device)
+        slot = BluetoothDeviceSlot(device, paired=device.paired)
 
+        if device.name in ["", None] and not c.get_shell_rule("bluetooth-show-hidden-devices"):
+            return
         if device.paired:
-            return self.paired_box.add(slot)
-        return self.available_box.add(slot)
+            return self.paired.add(slot)
+        return self.not_paired.add(slot)
