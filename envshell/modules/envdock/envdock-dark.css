@@ -3,11 +3,10 @@
 
 #dock-box {
     padding: 10px;
-	background-color: alpha(#111, 0.1);
-	box-shadow: inset 0 -0.5px 0 .5px alpha(#777, 0.1), inset 0 0.5px 0 .5px alpha(#aaa, 0.1);
-	border: 1px solid alpha(#111, 0.3);
-	border-top: none;
-	border-radius: 20px;
+	background-color: alpha(#000, 0.3);
+	box-shadow: inset 0 -.5px 0 .5px alpha(#aaa, 0.4);
+	border: .5px solid alpha(#111, 0.4);
+	border-radius: 19.2px;
 }
 
 #dock-seperator {
@@ -21,9 +20,10 @@
     border-radius: 12px;
 }
 
-.dock-app-button:hover {
-}
-
-.dock-app-button tooltip {
-    background-color: #000;
+tooltip {
+    background-color: alpha(#000, 0.4);
+    border: 1px solid alpha(#aaa, 0.4);
+    border-radius: 5px;
+    padding: 10px;
+    color: #fff;
 }
