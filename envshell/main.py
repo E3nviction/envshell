@@ -6,6 +6,8 @@ from modules.envlight.envlight import EnvLight
 from fabric import Application
 import loguru
 
+from utils.functions import AppName
+
 if __name__ == "__main__":
 	envnotch = EnvNotch()
 	envpanel = EnvPanel()

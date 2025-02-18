@@ -1,5 +1,7 @@
 import datetime
 import os
+import subprocess
+import tomllib
 import shutil
 from typing import Dict, List, Literal
 
@@ -37,3 +39,22 @@ def get_from_socket():
     except Exception as e:
         print("Failed to read from socket:", e)
         sys.exit(1)
+
+class AppName:
+    def __init__(self, path="/run/current-system/sw/share/applications"):
+        self.files = os.listdir(path)
+        self.path = path
+
+    def get_app_name(self, wmclass):
+        desktop_file = ""
+        for f in self.files:
+            if f.startswith(wmclass + ".desktop"): desktop_file = f
+
+        if desktop_file == "": return wmclass
+        with open(os.path.join(self.path, desktop_file), "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if line.startswith("Name="):
+                    desktop_app_name = line.split("=")[1].strip()
+                    break
+        return desktop_app_name
