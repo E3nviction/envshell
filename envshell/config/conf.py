@@ -15,6 +15,7 @@ class Config:
 		self._config["workspace_rules"] = []
 		self._config["shell_rules"] = []
 		self._config["dock_pinned"] = {}
+		self._private_config = None
 
 	def window_rule(
 		self,
@@ -89,6 +90,24 @@ class Config:
 			return wmclass
 		return title
 
+	def has_title(self, wmclass=None, title=None):
+		if wmclass is None and title is None:
+			return False
+		for t in self.window_rules:
+			# from wmclass to wmclass
+			if t["from_wmclass"] == wmclass and t["to_wmclass"] not in ["", None] and wmclass != None and t["rule"] == "global-title":
+				return True
+			# from title to title
+			if t["from_title"] == title and t["to_title"] not in ["", None] and title != None and t["rule"] == "global-title":
+				return True
+			# from wmclass to title
+			if t["from_wmclass"] == wmclass and t["to_title"] not in ["", None] and wmclass != None and t["rule"] == "global-title":
+				return True
+			# from title to wmclass
+			if t["from_title"] == title and t["to_wmclass"] not in ["", None] and title != None and t["rule"] == "global-title":
+				return True
+		return False
+
 	def get_translation(self, wmclass=None) -> (str):
 		for t in self.translations:
 			# from wmclass to wmclass
@@ -131,3 +150,20 @@ class Config:
 			if t["rule"] == rule:
 				return t["value"]
 		return None
+
+	def _get_recursive(self, rule_points: list, pre=None):
+		if pre is None:
+			pre = self._private_config
+		if len(rule_points) == 0:
+			return pre
+		if rule_points[0] not in pre:
+			return None
+		return self._get_recursive(rule_points[1:], pre[rule_points[0]])
+
+	def get_rule(self, rule_path=None, default=None, _type=None):
+		rule_path = rule_path.split(".")
+		val = self._get_recursive(rule_path) or default
+		if _type == "tuple":
+			fin_val = tuple(val)
+			return fin_val
+		return val

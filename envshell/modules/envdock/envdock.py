@@ -13,14 +13,14 @@ from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import GLib
 
 
-from config.c import c, app_list, icon_list, icon_dir
+from config.c import c, app_list, icon_list
 
 # Get all the icons
-for file in os.listdir(icon_dir):
+for file in os.listdir(c.get_rule("Icons.directory")):
     if file.endswith(".svg"): icon_list.append(file.removesuffix(".svg"))
 
 # Add all the icons to the app_list
-for icon in icon_list: app_list[icon] = f"{icon_dir}{icon}.svg"
+for icon in icon_list: app_list[icon] = f"{c.get_rule("Icons.directory")}{icon}.svg"
 
 global instance
 global envshell_service
@@ -32,20 +32,22 @@ class EnvDock(Window):
     def __init__(self, **kwargs):
         super().__init__(
             layer="top",
-            anchor=c.get_shell_rule(rule="dock-position"),
+            anchor=self.get_pos(),
             exclusivity="auto",
             name="env-dock",
             style=f"""
-                border-radius: {c.get_shell_rule(rule="dock-rounding")};
+                border-radius: {c.get_rule("Dock.style.rounding")};
             """,
             margin=c.get_shell_rule(rule="dock-margin"),
             **kwargs,
         )
 
-        self.set_property("width-request", c.get_shell_rule(rule="dock-width"))
-        self.set_property("height-request", c.get_shell_rule(rule="dock-height"))
-        self.set_property("margin", c.get_shell_rule(rule="dock-margin"))
-        self.set_property("anchor", c.get_shell_rule(rule="dock-position"))
+        if self.get_orientation() == "horizontal":
+            self.set_property("height-request", c.get_rule("Dock.style.height"))
+        else:
+            self.set_property("width-request", c.get_rule("Dock.style.height"))
+        self.set_property("margin", c.get_rule("Dock.style.margin", _type="tuple"))
+        self.set_property("anchor", self.get_pos())
 
         envshell_service.connect(
             "dock-apps-changed",
@@ -53,10 +55,10 @@ class EnvDock(Window):
         )
 
         self.dock_box = Box(
-            orientation=c.get_shell_rule(rule="dock-orientation"),
+            orientation=self.get_orientation(),
             name="dock-box",
             style=f"""
-                border-radius: {c.get_shell_rule(rule="dock-rounding")};
+                border-radius: {c.get_rule("Dock.style.rounding")};
             """,
 			children=[],
             h_expand=True,
@@ -69,6 +71,31 @@ class EnvDock(Window):
         )
 
         self.start_update_thread()
+
+    def get_pos(self):
+        pos = c.get_rule("Dock.style.position")
+        full = c.get_rule("Dock.style.full")
+        if full:
+            if pos == "bottom": pos = "bottom left right center"
+            elif pos == "top": pos = "top left right center"
+            elif pos == "left": pos = "left top bottom center"
+            elif pos == "right": pos = "right top bottom center"
+        else:
+            if pos == "bottom": pos = "bottom center"
+            elif pos == "top": pos = "top center"
+            elif pos == "left": pos = "left center"
+            elif pos == "right": pos = "right center"
+        return pos
+
+    def get_orientation(self):
+        pos = c.get_rule("Dock.style.position")
+        orientation = "horizontal"
+        if pos == "bottom": orientation = "horizontal"
+        elif pos == "top": orientation = "horizontal"
+        elif pos == "left": orientation = "vertical"
+        elif pos == "right": orientation = "vertical"
+        return orientation
+
 
     def dock_apps_changed(self, _apps):
         """Update UI safely in the main thread."""
@@ -93,16 +120,16 @@ class EnvDock(Window):
             pinned_apps = dict(sorted(pinned_apps.items(), key=lambda item: list(c.dock_pinned.keys()).index(item[0])))
             for app_ in pinned_apps:
                 app, pid, title, address, active, running = pinned_apps[app_]
-                svg     = Svg(svg_file=app_list["NotFOUND"], size=(32), name="dock-app-icon")
+                svg     = Svg(svg_file=app_list["NotFOUND"], size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
                 svg_mag = Svg(svg_file=app_list["NotFOUND"], size=(64), name="dock-app-icon")
                 app_i = app
                 app_i = c.get_translation(wmclass=app)
                 if str(app_i).lower() in app_list or str(app_i) in app_list:
                     if str(app_i).lower() in app_list:
-                        svg     = Svg(svg_file=app_list[str(app_i).lower()], size=(32), name="dock-app-icon")
+                        svg     = Svg(svg_file=app_list[str(app_i).lower()], size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
                         svg_mag = Svg(svg_file=app_list[str(app_i).lower()], size=(64), name="dock-app-icon")
                     else:
-                        svg     = Svg(svg_file=app_list[str(app_i)], size=(32), name="dock-app-icon")
+                        svg     = Svg(svg_file=app_list[str(app_i)], size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
                         svg_mag = Svg(svg_file=app_list[str(app_i)], size=(64), name="dock-app-icon")
                 app = c.get_title(wmclass=app, title=title if running else None)
                 if running:

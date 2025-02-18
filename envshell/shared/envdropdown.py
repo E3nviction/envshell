@@ -10,7 +10,7 @@ def dropdown_divider(comment): return Box(children=[Box(name="dropdown-divider",
 
 class EnvDropdown(Window):
 	"""A Dropdown for envshell"""
-	def __init__(self, x, y, w=-1, h=-1, dropdown_children=None, parent=None, **kwargs):
+	def __init__(self, x=None, y=None, w=-1, h=-1, dropdown_children=None, parent=None, **kwargs):
 		super().__init__(
 			layer="top",
 			anchor="left top",

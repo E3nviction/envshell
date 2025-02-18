@@ -20,6 +20,8 @@ json.dump(config, open("./config/latest_compiled_config.json", "w"), indent=4)
 
 c = Config()
 
+c._private_config = config
+
 class SectionMissing():
     def __init__(self, section):
         return f"{section} section is missing from config.toml, using the default config"
@@ -37,14 +39,6 @@ if config.get("Dock", None) is None:
 if config.get("Shell", None) is None:
     print(SectionMissing("Shell"))
     config["Shell"] = default_config["Shell"]
-
-if config.get("Shell").get("dock", None) is None:
-    print(SectionMissing("Shell.dock"))
-    config["Shell"]["dock"] = default_config["Shell"]["dock"]
-
-if config.get("Shell").get("panel", None) is None:
-    print(SectionMissing("Shell.panel"))
-    config["Shell"]["panel"] = default_config["Shell"]["panel"]
 
 if config.get("Shell").get("about", None) is None:
     print(SectionMissing("Shell.about"))
@@ -92,30 +86,6 @@ for k, v in config["Workspace"]["ignore"]["id"].items():
         c.workspace_rule(is_id=int(k), rule="ignore")
 
 # Shell
-c.shell_rule(rule="dock-width", value=config["Shell"]["dock"].get("width", 782))
-c.shell_rule(rule="dock-height", value=config["Shell"]["dock"].get("height", 64))
-c.shell_rule(rule="dock-position", value=config["Shell"]["dock"].get("position", "bottom center"))
-c.shell_rule(rule="dock-margin", value=(
-    config["Shell"]["dock"].get("margin", (0, 0, 5, 0))[0],
-    config["Shell"]["dock"].get("margin", (0, 0, 5, 0))[1],
-    config["Shell"]["dock"].get("margin", (0, 0, 5, 0))[2],
-    config["Shell"]["dock"].get("margin", (0, 0, 5, 0))[3],
-))
-c.shell_rule(rule="dock-rounding", value=config["Shell"]["dock"].get("rounding", "19.2px"))
-c.shell_rule(rule="dock-orientation", value=config["Shell"]["dock"].get("orientation", "horizontal"))
-
-c.shell_rule(rule="panel-width", value=config["Shell"]["panel"].get("width", 1920))
-c.shell_rule(rule="panel-height", value=config["Shell"]["panel"].get("height", 24))
-c.shell_rule(rule="panel-position", value=config["Shell"]["panel"].get("position", "top left right"))
-c.shell_rule(rule="panel-margin", value=(
-    config["Shell"]["panel"].get("margin", (0, 0, 0, 0))[0],
-    config["Shell"]["panel"].get("margin", (0, 0, 0, 0))[1],
-    config["Shell"]["panel"].get("margin", (0, 0, 0, 0))[2],
-    config["Shell"]["panel"].get("margin", (0, 0, 0, 0))[3],
-))
-c.shell_rule(rule="panel-rounding", value=config["Shell"]["panel"].get("rounding", "0"))
-c.shell_rule(rule="panel-date-format", value=config["Shell"]["panel"].get("date-format", "%a %b %d %H:%M"))
-c.shell_rule(rule="panel-icon", value=config["Shell"]["panel"].get("icon", ""))
 
 c.shell_rule(rule="about-window-width", value=config["Shell"]["about"].get("width", 250))
 c.shell_rule(rule="about-window-height", value=config["Shell"]["about"].get("height", 355))
@@ -128,6 +98,11 @@ env_menu_option_labels = {}
 for num, se in config["Shell"].get("env-menu", {}).get("options", {}).items():
     env_menu_option_labels[se.get("label", "")] = [se.get("on-click", ""), se.get("keybind", "")]
 
+c.shell_rule(rule="panel-env-menu-option-settings-on-click", value=config["Shell"]["env-menu"].get("settings", {}).get("on-click", "hyprctl dispatch settings"))
+c.shell_rule(rule="panel-env-menu-option-store-label", value=config["Shell"]["env-menu"].get("store", {}).get("label", "Nix Store..."))
+c.shell_rule(rule="panel-env-menu-option-store-on-click", value=config["Shell"]["env-menu"].get("store", {}).get("on-click", "xdg-open https://search.nixos.org/packages"))
+
+
 i = 0
 for k, v in env_menu_option_labels.items():
     c.shell_rule(rule=f"panel-env-menu-option-{i+1}-label", value=k)
@@ -135,9 +110,3 @@ for k, v in env_menu_option_labels.items():
     if len(v) > 1:
         c.shell_rule(rule=f"panel-env-menu-option-{i+1}-keybind", value=v[1])
     i += 1
-
-c.shell_rule(rule="bluetooth-show-hidden-devices", value=config["Bluetooth"].get("show-hidden-devices", False))
-
-
-# Icons
-icon_dir = config["Icons"].get("directory", "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/")

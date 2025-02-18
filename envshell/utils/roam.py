@@ -4,6 +4,7 @@ from hyprpy import Hyprland
 from fabric.audio import Audio
 from fabric.notifications import Notifications
 from utils.services import EnvShellService
+from utils.functions import AppName
 
 global instance
 try:
@@ -31,6 +32,14 @@ try:
     audio_service = Audio()
 except Exception as e:
     print("Failed to create AudioService:", e)
+    sys.exit(1)
+
+
+global app_name_class
+try:
+    app_name_class = AppName()
+except Exception as e:
+    print("Failed to create AppName:", e)
     sys.exit(1)
 
 def main():

@@ -50,6 +50,8 @@ class AppName:
         for f in self.files:
             if f.startswith(wmclass + ".desktop"): desktop_file = f
 
+        desktop_app_name = wmclass
+
         if desktop_file == "": return wmclass
         with open(os.path.join(self.path, desktop_file), "r") as f:
             lines = f.readlines()

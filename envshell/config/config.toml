@@ -1,110 +1,96 @@
 [Window]
-autohide.class."Hyprland" = true
-autohide.class."albert" = true
-autohide.class."main.py" = true
-autohide.class."ulauncher" = true
+	autohide.class."Hyprland" = true
+	autohide.class."albert" = true
+	autohide.class."main.py" = true
+	autohide.class."ulauncher" = true
 
-autohide.title."Albert" = true
+	autohide.title."Albert" = true
 
-rename.class."code" = "vscode"
-rename.class."vesktop" = "discord"
+	rename.class."code" = "vscode"
+	rename.class."vesktop" = "discord"
+	[Window.ignore]
+		class."kitty-dropterm" = true
+		class."albert" = true
+		class."main.py" = true
+		class."ulauncher" = true
+	[Window.translate]
+		# Enable this, if you want to manually give each Application a Title
+		#force-manual = true
+		class."None" = "Hyprland"
+		class."brave-browser" = "Brave"
+		class."org.gnome.Nautilus" = "Finder"
+		class."org.gnome.NautilusPreviewer" = "Finder"
+		class."org.gnome.Software" = "App Store"
+		class."discord" = "Discord"
+		class."vesktop" = "Vesktop"
 
-ignore.class."kitty-dropterm" = true
-ignore.class."albert" = true
-ignore.class."main.py" = true
-ignore.class."ulauncher" = true
+[Widgets]
+	notch.enable = true
+	screencorners.enable = true
+	dock.enable = true
+	noti.enable = true
+	light.enable = true
+	panel.enable = true
 
-translate.class."None" = "Hyprland"
-translate.class."code" ="Visual Studio Code"
-translate.class."brave-browser" ="Brave Browser"
-translate.class."discord" ="Discord"
-translate.class."vesktop" ="Vesktop"
-translate.class."kitty" ="Kitty"
-translate.class."org.keepassxc.KeePassXC" ="KeePassXC"
-translate.class."org.gnome.Terminal" ="Terminal"
-translate.class."org.gnome.Nautilus" ="Finder"
-translate.class."org.gnome.NautilusPreviewer" ="Finder"
-translate.class."org.gnome.Maps" ="Maps"
-translate.class."org.gnome.Calculator" ="Calculator"
-translate.class."org.gnome.Clocks" ="Clocks"
-translate.class."brave-chatgpt.com__-Default" ="ChatGPT"
-translate.class."obsidian" ="Obsidian"
-translate.class."blender" ="Blender"
-translate.class."spotify" ="Spotify"
-translate.class."org.gnome.Software" ="App Store"
-translate.class."org.gnome.Settings" ="Settings"
-translate.class."gnome-disks" ="Disks"
-translate.class."org.gnome.baobab" ="Disk Usage"
-translate.class."org.gnome.TextEditor" ="Text Editor"
-translate.class."org.gnome.Loupe" ="Image Viewer"
-translate.class."org.gnome.clocks" ="Clocks"
-translate.class."krita" ="Krita"
-translate.class."com.github.rafostar.Clapper" ="Media Player"
+[Notch]
+	[Notch.style]
 
 [Dock]
-pinned."org.gnome.Nautilus" = "nautilus"
-pinned."org.gnome.Settings" = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
-pinned."org.gnome.Software" = "gnome-software"
-pinned."gnome-disks" = "gnome-disks"
-pinned."org.gnome.baobab" = "baobab"
-pinned."kitty" = "kitty"
-pinned."brave-browser" = "brave"
-pinned."code" = "code"
-pinned."org.gnome.Calculator" = "gnome-calculator"
-pinned."org.gnome.TextEditor" = "gnome-text-editor"
-pinned."org.gnome.Loupe" = "loupe"
-pinned."org.gnome.clocks" = "gnome-clocks"
-pinned."krita" = "krita"
-pinned."spotify" = "spotify"
-pinned."vesktop" = "vesktop"
-pinned."org.keepassxc.KeePassXC" = "keepassxc"
-pinned."com.github.rafostar.Clapper" = "clapper"
-pinned."blender" = "blender"
-pinned."obsidian" = "obsidian"
+	[Dock.style]
+		exclusive = false # TODO
+		autohide = true # TODO
+		full = false
+		height = 64
+		icon-size = 32
+		position = "bottom" # top, left, right, bottom
+		margin = [0,0,5,0]
+		rounding = "19.2px"
+	[Dock.pinned]
+		"org.gnome.Nautilus" = "nautilus"
+		"org.gnome.Settings" = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
+		"org.gnome.Software" = "gnome-software"
+		"gnome-disks" = "gnome-disks"
+		"org.gnome.baobab" = "baobab"
+		"kitty" = "kitty"
+		"brave-browser" = "brave"
+		"code" = "code"
+		"org.gnome.Calculator" = "gnome-calculator"
+		"org.gnome.TextEditor" = "gnome-text-editor"
+		"org.gnome.Loupe" = "loupe"
+		"org.gnome.clocks" = "gnome-clocks"
+		"krita" = "krita"
+		"spotify" = "spotify"
+		"vesktop" = "vesktop"
+		"org.keepassxc.KeePassXC" = "keepassxc"
+		"com.github.rafostar.Clapper" = "clapper"
+		"blender" = "blender"
+		"obsidian" = "obsidian"
+
+[Panel]
+	[Panel.style]
+		height = 24
+		full = true
+		position = "top" # top, left, right, bottom
+		margin = [0, 0, 0, 0]
+		rounding = "0"
+		date-format = "%a %b %d %H:%M"
+		icon = ""
 
 [Workspace]
 ignore.id.9 = true
 
-
 [Shell]
-dock.width = 782
-dock.height = 64
-dock.position = "bottom center"
-dock.margin = [0, 0, 5, 0]
-dock.rounding = "19.2px"
-dock.orientation = "horizontal"
-
-panel.width = 1920
-panel.height = 24
-panel.position = "top left right"
-panel.margin = [0, 0, 0, 0]
-panel.rounding = "0"
-panel.date-format = "%a %b %d %H:%M"
-panel.icon = ""
-
-about.window.width = 250
-about.window.height = 355
-about.window.resizable = false
-about.computer-label = "Env Shell"
-about.computer-caption = "ESH 0.1.0, 2024"
-about.more-info = "https://github.com/E3nviction/envshell"
-
-env-menu.options.1.label = "About this PC"
-env-menu.options.2.label = "System Settings..."
-env-menu.options.2.on-click = "code ~/.config/"
-env-menu.options.3.label = "Nix Store..."
-env-menu.options.3.on-click = "xdg-open https://search.nixos.org/packages"
-env-menu.options.4.label = "Force Quit App"
-env-menu.options.4.on-click = "hyprctl dispatch killactive"
-env-menu.options.5.label = "Sleep"
-env-menu.options.5.on-click = "systemctl suspend"
-env-menu.options.6.label = "Restart..."
-env-menu.options.6.on-click = "systemctl restart"
-env-menu.options.7.label = "Shut Down..."
-env-menu.options.7.on-click = "shutdown now"
-env-menu.options.8.label = "Lock Screen"
-env-menu.options.8.on-click = "hyprlock"
-env-menu.options.8.keybind = "󰘳 L"
+	[Shell.about]
+		window.width = 250
+		window.height = 355
+		window.resizable = false
+		computer-label = "Env Shell"
+		computer-caption = "ESH 0.1.0, 2024"
+		more-info = "https://github.com/E3nviction/envshell"
+	[Shell.env-menu]
+		options.settings.on-click = "code ~/.config/"
+		options.store.label = "Nix Store..."
+		options.store.on-click = "xdg-open https://search.nixos.org/packages"
 
 [Icons]
 directory = "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/"

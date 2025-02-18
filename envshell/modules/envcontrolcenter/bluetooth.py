@@ -126,7 +126,7 @@ class BluetoohConnections(Box):
             return
         slot = BluetoothDeviceSlot(device, paired=device.paired)
 
-        if device.name in ["", None] and not c.get_shell_rule("bluetooth-show-hidden-devices"):
+        if device.name in ["", None] and not c.get_rule("Bluetooth.show-hidden-devices"):
             return
         if device.paired:
             return self.paired.add(slot)
