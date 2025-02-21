@@ -81,10 +81,6 @@ class EnvLight(Window):
 			]
 		)
 		should_resize = operator.length_hint(filtered_apps_iter) == len(self._all_apps)
-
-		# start the process of adding slots with a lazy executor
-		# using this method makes the process of adding slots way more less
-		# resource expensive without blocking the main thread and resulting in a lock
 		self._arranger_handler = idle_add(
 			lambda *args: self.add_next_application(*args)
 			or (self.resize_viewport() if should_resize else False),
