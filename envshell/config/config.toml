@@ -25,11 +25,7 @@
 		class."vesktop" = "Vesktop"
 
 [Widgets]
-	notch.enable = true
-	screencorners.enable = true
 	dock.enable = true
-	noti.enable = true
-	light.enable = true
 	panel.enable = true
 
 [Notch]
@@ -37,14 +33,12 @@
 
 [Dock]
 	[Dock.style]
-		exclusive = false # TODO
-		autohide = true # TODO
-		full = false
+		exclusive = false
+		autohide = true
+		mode = "center" # center, full
 		height = 64
 		icon-size = 32
-		position = "bottom" # top, left, right, bottom
-		margin = [0,0,5,0]
-		rounding = "19.2px"
+		position = "bottom" # left, right, bottom
 	[Dock.pinned]
 		"org.gnome.Nautilus" = "nautilus"
 		"org.gnome.Settings" = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
@@ -65,7 +59,8 @@
 		"com.github.rafostar.Clapper" = "clapper"
 		"blender" = "blender"
 		"obsidian" = "obsidian"
-
+[Corners]
+	[Corners.style]
 [Panel]
 	[Panel.style]
 		height = 24

@@ -37,10 +37,9 @@ class EnvDock(Window):
 			anchor=self.get_pos(),
 			exclusivity="auto",
 			name="env-dock",
-			style=f"""
-				border-radius: {c.get_rule("Dock.style.rounding")};
-			""",
-			margin=c.get_shell_rule(rule="dock-margin"),
+			h_expand=True,
+			v_expand=True,
+			margin=(0,0,0,0) if c.get_rule("Dock.style.mode") == "full" else (5,5,5,5),
 			**kwargs,
 		)
 
@@ -48,7 +47,7 @@ class EnvDock(Window):
 			self.set_property("height-request", c.get_rule("Dock.style.height"))
 		else:
 			self.set_property("width-request", c.get_rule("Dock.style.height"))
-		self.set_property("margin", c.get_rule("Dock.style.margin", _type="tuple"))
+		self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.style.mode") == "full" else (5,5,5,5))
 		self.set_property("anchor", self.get_pos())
 
 		envshell_service.connect(
@@ -59,32 +58,29 @@ class EnvDock(Window):
 		self.dock_box = Box(
 			orientation=self.get_orientation(),
 			name="dock-box",
-			style=f"""
-				border-radius: {c.get_rule("Dock.style.rounding")};
-			""",
 			children=[],
+			style=f"""
+			border-radius: {0 if c.get_rule('Dock.style.mode') == 'full' else 19.2}px;
+			""",
 			h_expand=True,
 			v_expand=True,
+			h_align="fill" if c.get_rule("Dock.style.mode") == "full" else "center",
+			v_align="fill" if c.get_rule("Dock.style.mode") == "full" else "center",
 		)
 
-		self.children = CenterBox(
-			name="dock-center",
-			start_children=[self.dock_box],
-		)
+		self.children = self.dock_box
 
 		self.start_update_thread()
 
 	def get_pos(self):
 		pos = c.get_rule("Dock.style.position")
-		full = c.get_rule("Dock.style.full")
+		full = c.get_rule("Dock.style.mode") == "full"
 		if full:
 			if pos == "bottom": pos = "bottom left right center"
-			elif pos == "top": pos = "top left right center"
 			elif pos == "left": pos = "left top bottom center"
 			elif pos == "right": pos = "right top bottom center"
 		else:
 			if pos == "bottom": pos = "bottom center"
-			elif pos == "top": pos = "top center"
 			elif pos == "left": pos = "left center"
 			elif pos == "right": pos = "right center"
 		return pos
@@ -93,7 +89,6 @@ class EnvDock(Window):
 		pos = c.get_rule("Dock.style.position")
 		orientation = "horizontal"
 		if pos == "bottom": orientation = "horizontal"
-		elif pos == "top": orientation = "horizontal"
 		elif pos == "left": orientation = "vertical"
 		elif pos == "right": orientation = "vertical"
 		return orientation
@@ -187,9 +182,7 @@ class EnvDock(Window):
 							style_classes=("active" if active else "", "dock-app-button", address),
 							h_align="center",
 							v_align="center",
-							# we run a function here, because if we would use a lambda _: print(address) function it wouldn't work
-							on_clicked= focus,
-							# add app name and title (constrained to max 25 chars)
+							on_clicked=focus,
 							tooltip_text=f"{app} ({f"{title[:25]}..."})",
 						),
 						Svg(svg_file="./assets/svgs/indicator.svg", size=(6), name="dock-app-indicator", h_align="center", v_align="center"),
