@@ -38,7 +38,7 @@ class NotchCorner(Box):
 			),
 		)
 
-class Corners(Window):
+class EnvCorners(Window):
 	def __init__(self):
 		super().__init__(
 			name="corners",
@@ -173,8 +173,7 @@ class EnvNotch(Window):
 						self.corner_right,
 					]
 				) if c.get_rule("Widgets.screencorners.enable") else Box(),
-			),
-			self.corners,
+			)
 		]
 		self.show_all()
 
