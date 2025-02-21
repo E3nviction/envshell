@@ -65,7 +65,6 @@
 	[Panel.style]
 		height = 24
 		full = true
-		position = "top" # top, left, right, bottom
 		margin = [0, 0, 0, 0]
 		rounding = "0"
 		date-format = "%a %b %d %H:%M"

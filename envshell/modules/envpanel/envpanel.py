@@ -193,27 +193,11 @@ class EnvPanel(Window):
 			self.systray.add_style_class("hidden")
 
 	def get_pos(self):
-		pos = c.get_rule("Panel.style.position")
 		full = c.get_rule("Panel.style.full")
-		if full:
-			if pos == "bottom": pos = "bottom left right center"
-			elif pos == "top": pos = "top left right center"
-			elif pos == "left": pos = "left top bottom center"
-			elif pos == "right": pos = "right top bottom center"
-		else:
-			if pos == "bottom": pos = "bottom center"
-			elif pos == "top": pos = "top center"
-			elif pos == "left": pos = "left center"
-			elif pos == "right": pos = "right center"
-		return pos
+		return "top left right center" if full else "top center"
 
 	def get_orientation(self):
-		pos = c.get_rule("Panel.style.position")
 		orientation = "horizontal"
-		if pos == "bottom": orientation = "horizontal"
-		elif pos == "top": orientation = "horizontal"
-		elif pos == "left": orientation = "vertical"
-		elif pos == "right": orientation = "vertical"
 		return orientation
 
 	def format_window(self, title, wmclass):
