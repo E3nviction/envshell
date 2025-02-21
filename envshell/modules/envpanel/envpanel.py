@@ -84,7 +84,7 @@ class EnvPanel(Window):
 			layer="top",
 			anchor=self.get_pos(),
 			exclusivity="auto",
-			margin=c.get_rule("Panel.style.margin", _type=tuple, default=(0, 0, 0, 0)),
+			margin=c.get_rule("Panel.style.margin", _type="tuple", default=(0, 0, 0, 0)),
 			name="env-panel",
 			style_classes="",
 			style=f"""
