@@ -65,8 +65,7 @@
 	[Panel.style]
 		height = 24
 		full = true
-		margin = [0, 0, 0, 0]
-		rounding = "0"
+		mode = "normal" # floating, normal
 		date-format = "%a %b %d %H:%M"
 		icon = ""
 

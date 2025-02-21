@@ -8,8 +8,9 @@ icon_list = []
 app_list = {
     "NotFOUND": "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/abrt.svg",
 }
-with open("./config/default_config.json", "r") as f:
-    default_config = json.load(f)
+with open("./config/default_config.toml", "r") as f:
+    default_config = tomllib.load(f)
+    config = default_config
 try:
     with open("./config/config.toml", "rb") as f:
         config = tomllib.load(f)
@@ -21,40 +22,6 @@ json.dump(config, open("./config/latest_compiled_config.json", "w"), indent=4)
 c = Config()
 
 c._private_config = config
-
-class SectionMissing():
-    def __init__(self, section):
-        return f"{section} section is missing from config.toml, using the default config"
-
-# Error Checking
-
-if config.get("Window", None) is None:
-    print(SectionMissing("Window"))
-    config["Window"] = default_config["Window"]
-
-if config.get("Dock", None) is None:
-    print(SectionMissing("Dock"))
-    config["Dock"] = default_config["Dock"]
-
-if config.get("Shell", None) is None:
-    print(SectionMissing("Shell"))
-    config["Shell"] = default_config["Shell"]
-
-if config.get("Shell").get("about", None) is None:
-    print(SectionMissing("Shell.about"))
-    config["Shell"]["about"] = default_config["Shell"]["about"]
-
-if config.get("Shell").get("env-menu", None) is None:
-    print(SectionMissing("Shell.env-menu"))
-    config["Shell"]["env-menu"] = default_config["Shell"]["env-menu"]
-
-if config.get("Icons", None) is None:
-    print(SectionMissing("Icons"))
-    config["Icons"] = default_config["Icons"]
-
-if config.get("Bluetooth", None) is None:
-    print(SectionMissing("Bluetooth"))
-    config["Bluetooth"] = default_config["Bluetooth"]
 
 # Autohide
 for k, v in config["Window"].get("autohide", {}).get("class", {}).items():

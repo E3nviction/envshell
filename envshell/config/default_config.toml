@@ -1,0 +1,57 @@
+[Window]
+	autohide.class."main.py" = true
+	[Window.ignore]
+		class."main.py" = true
+	[Window.translate]
+		class."None" = "Hyprland"
+
+[Widgets]
+	dock.enable = true
+	panel.enable = true
+
+[Notch]
+	[Notch.style]
+[Dock]
+	[Dock.style]
+		exclusive = false
+		autohide = true
+		mode = "center"
+		height = 64
+		icon-size = 32
+		position = "bottom"
+	[Dock.pinned]
+		"org.gnome.Nautilus" = "nautilus"
+		"kitty" = "kitty"
+		"brave-browser" = "brave"
+[Corners]
+	[Corners.style]
+[Panel]
+	[Panel.style]
+		height = 24
+		full = true
+		mode = "normal"
+		date-format = "%a %b %d %H:%M"
+		icon = ""
+
+[Workspace]
+	[Workspace.ignore]
+		id.9 = true
+
+[Shell]
+	[Shell.about]
+		window.width = 250
+		window.height = 355
+		window.resizable = false
+		computer-label = "Env Shell"
+		computer-caption = "ESH 0.1.0, 2024"
+		more-info = "https://github.com/E3nviction/envshell"
+	[Shell.env-menu]
+		options.settings.on-click = "code ~/.config/"
+		options.store.label = "Nix Store..."
+		options.store.on-click = "xdg-open https://search.nixos.org/packages"
+
+[Icons]
+directory = "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/"
+
+[Bluetooth]
+show-hidden-devices = false
