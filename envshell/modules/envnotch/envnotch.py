@@ -16,17 +16,6 @@ from gi.repository import GLib
 from config.c import c
 from utils.functions import get_from_socket
 
-class ScreenCorner(Box):
-	def __init__(self, corner, size=20):
-		super().__init__(
-			name="corner-container",
-			children=Corner(
-				name="corner",
-				orientation=corner,
-				size=size,
-			),
-		)
-
 class NotchCorner(Box):
 	def __init__(self, corner, size=20):
 		super().__init__(
@@ -37,56 +26,6 @@ class NotchCorner(Box):
 				size=size,
 			),
 		)
-
-class EnvCorners(Window):
-	def __init__(self):
-		super().__init__(
-			name="corners",
-			layer="overlay",
-			margin=(-c.get_rule("Panel.style.height"), 0, -(c.get_rule("Dock.style.height") + c.get_rule("Dock.style.margin", _type="tuple", default=(0, 0, 0, 0))[2]), 0),
-			anchor="top bottom left right",
-			exclusivity="normal",
-			pass_through=True,
-			visible=False,
-			all_visible=False,
-		)
-
-		self.all_corners = Box(
-			name="all-corners",
-			orientation="v",
-			h_expand=True,
-			v_expand=True,
-			h_align="fill",
-			v_align="fill",
-			children=[
-				Box(
-					name="top-corners",
-					orientation="h",
-					h_align="fill",
-					children=[
-						ScreenCorner("top-left"),
-						Box(h_expand=True),
-						ScreenCorner("top-right"),
-					],
-				),
-				Box(v_expand=True),
-				Box(
-					name="bottom-corners",
-					orientation="h",
-					h_align="fill",
-					children=[
-						ScreenCorner("bottom-left"),
-						Box(h_expand=True),
-						ScreenCorner("bottom-right"),
-					],
-				),
-			],
-		)
-
-		self.add(self.all_corners)
-
-		self.show_all()
-
 
 class EnvNotch(Window):
 	"""Desktop Notch for envshell"""
@@ -102,30 +41,27 @@ class EnvNotch(Window):
 			**kwargs,
 		)
 
-		self.corners = Corners()
-
 		self.hidden = False
 
-		if c.get_rule("Widgets.screencorners.enable"):
-			self.corner_left = Box(
-				name="notch-corner-left",
-				orientation="h",
-				v_align="start",
-				h_align="start",
-				children=[
-					NotchCorner("top-right", 5)
-				]
-			)
+		self.corner_left = Box(
+			name="notch-corner-left",
+			orientation="h",
+			v_align="start",
+			h_align="start",
+			children=[
+				NotchCorner("top-right", 5)
+			]
+		)
 
-			self.corner_right = Box(
-				name="notch-corner-right",
-				orientation="h",
-				v_align="start",
-				h_align="start",
-				children=[
-					NotchCorner("top-left", 5)
-				]
-			)
+		self.corner_right = Box(
+			name="notch-corner-right",
+			orientation="h",
+			v_align="start",
+			h_align="start",
+			children=[
+				NotchCorner("top-left", 5)
+			]
+		)
 
 		self.button = Button(
 			name="notch-button",
@@ -164,7 +100,7 @@ class EnvNotch(Window):
 					children=[
 						self.corner_left,
 					],
-				) if c.get_rule("Widgets.screencorners.enable") else Box(),
+				),
 				center_children=[
 					self.notch
 				],
@@ -172,7 +108,7 @@ class EnvNotch(Window):
 					children=[
 						self.corner_right,
 					]
-				) if c.get_rule("Widgets.screencorners.enable") else Box(),
+				)
 			)
 		]
 		self.show_all()
