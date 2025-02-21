@@ -84,14 +84,20 @@ class EnvPanel(Window):
 			layer="top",
 			anchor=self.get_pos(),
 			exclusivity="auto",
-			margin=c.get_rule("Panel.style.margin", _type="tuple", default=(0, 0, 0, 0)),
+			margin=(0,0,0,0),
 			name="env-panel",
 			style_classes="",
 			style=f"""
-				border-radius: {c.get_rule("Panel.style.rounding")};
+				border-radius: {10 if c.get_rule("Panel.style.mode") == "floating" else 0}px;
 			""",
+			size=(1920, 24),
 			**kwargs,
 		)
+
+		if c.get_rule("Panel.style.mode") == "floating":
+			self.set_property("margin", (5, 5, 5, 5))
+		elif c.get_rule("Panel.style.mode") == "normal":
+			self.set_property("margin", (0, 0, 0, 0))
 
 		if self.get_orientation() == "horizontal":
 			self.set_property("height-request", c.get_rule("Panel.style.height"))
