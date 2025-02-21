@@ -2,6 +2,7 @@ from modules.envnotch.envnotch import EnvNotch
 from modules.envpanel.envpanel import EnvPanel
 from modules.envnoti.envnoti import EnvNoti
 from modules.envdock.envdock import EnvDock
+from modules.envcorners.envcorners import EnvCorners
 from modules.envlight.envlight import EnvLight
 from fabric import Application
 import loguru
@@ -10,23 +11,25 @@ from utils.functions import AppName
 from config.c import c
 
 if __name__ == "__main__":
-	if c.get_rule("Widgets.notch.enable"):
-		envnotch = EnvNotch()
+	envnoti = EnvNoti()
+	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
+	envnotch = EnvNotch()
+	envdock = None
+	envpanel = None
 	if c.get_rule("Widgets.panel.enable"):
 		envpanel = EnvPanel()
-	if c.get_rule("Widgets.noti.enable"):
-		envnoti = EnvNoti()
 	if c.get_rule("Widgets.dock.enable"):
 		envdock = EnvDock()
-	if c.get_rule("Widgets.light.enable"):
-		envlight = EnvLight()
+	apps = [
+		envnoti,
+		envnotch,
+		envdock,
+		envpanel,
+	]
+	apps = list(filter(lambda x: x is not None, apps))
 	app = Application(
 		"envshell",
-		envnoti if c.get_rule("Widgets.noti.enable") else None,
-		envnotch if c.get_rule("Widgets.notch.enable") else None,
-		envdock if c.get_rule("Widgets.dock.enable") else None,
-		envpanel if c.get_rule("Widgets.panel.enable") else None,
-		envlight if c.get_rule("Widgets.dock.enable") else None
+		*apps,
 	)
 
 	def set_css():
