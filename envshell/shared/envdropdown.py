@@ -17,7 +17,7 @@ class EnvDropdown(Window):
 			exclusivity="auto",
 			name="dropdown-menu",
 			visible=False,
-			margin=(y, 0, 0, x),
+			margin=(0 if y is None else y, 0, 0, 0 if x is None else x),
 			**kwargs,
 		)
 
