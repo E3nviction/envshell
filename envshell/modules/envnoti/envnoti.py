@@ -9,6 +9,8 @@ from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.notifications import Notifications, Notification
 from fabric.utils import invoke_repeater, get_relative_path
 
+from utils.roam import envshell_service
+
 from widgets.customimage import CustomImage
 
 from gi.repository import GdkPixbuf
@@ -29,6 +31,8 @@ class NotificationWidget(Box):
 		)
 
 		self._notification = notification
+
+		envshell_service.cache_notification(self._notification)
 
 		body_container = Box(spacing=4, orientation="h")
 
@@ -53,12 +57,10 @@ class NotificationWidget(Box):
 						orientation="h",
 						children=[
 							Label(
-								label=self._notification.summary,
+								markup=self._notification.summary,
 								ellipsization="middle",
+								style_classes="summary",
 							)
-							.build()
-							.add_style_class("summary")
-							.unwrap(),
 						],
 						h_expand=True,
 						v_expand=True,
@@ -85,10 +87,8 @@ class NotificationWidget(Box):
 						line_wrap="word-char",
 						v_align="start",
 						h_align="start",
+						style_classes="body",
 					)
-					.build()
-					.add_style_class("body")
-					.unwrap(),
 				],
 				h_expand=True,
 				v_expand=True,
@@ -117,10 +117,7 @@ class NotificationWidget(Box):
 		# destroy this widget once the notification is closed
 		self._notification.connect(
 			"closed",
-			lambda *_: (
-				parent.remove(self) if (parent := self.get_parent()) else None,  # type: ignore
-				self.destroy(),
-			),
+			self.destroy_noti,
 		)
 
 		# automatically close the notification after the timeout period
@@ -129,6 +126,11 @@ class NotificationWidget(Box):
 			lambda: self._notification.close("expired"),
 			initial_call=False,
 		)
+
+	def destroy_noti(self, *_):
+		envshell_service.remove_notification(self._notification["id"])
+		parent.remove(self) if (parent := self.get_parent()) else None,  # type: ignore
+		self.destroy(),
 
 class EnvNoti(Window):
 	def __init__(self, **kwargs):
