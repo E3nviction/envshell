@@ -7,7 +7,7 @@ class EnvShellService(Service):
 	def bluetooth_changed(self, new_bluetooth: str) -> None:
 		...
 	@Signal
-	def volume_changed(self, new_volume: str) -> None:
+	def volume_changed(self, new_volume: int) -> None:
 		...
 	@Signal
 	def wlan_changed(self, new_wlan: str) -> None:
@@ -52,8 +52,8 @@ class EnvShellService(Service):
 	@Property(str, flags="read-write")
 	def wlan(self) -> str:
 		return self._wlan
-	@Property(str, flags="read-write")
-	def volume(self) -> str:
+	@Property(int, flags="read-write")
+	def volume(self) -> int:
 		return self._volume
 	@Property(str, flags="read-write")
 	def dock_apps(self) -> str:
@@ -86,7 +86,7 @@ class EnvShellService(Service):
 			self._current_active_app_name = value
 			self.current_active_app_name_changed(value)
 	@volume.setter
-	def volume(self, value: str):
+	def volume(self, value: int):
 		if value != self._volume:
 			self._name = value
 			self.volume_changed(value)
@@ -143,7 +143,7 @@ class EnvShellService(Service):
 
 	def __init__(self):
 		super().__init__()
-		self._volume = ""
+		self._volume = 0
 		self._wlan = ""
 		self._bluetooth = ""
 		self._dock_apps = ""
