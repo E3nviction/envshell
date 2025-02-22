@@ -32,7 +32,7 @@ class EnvCorners(Window):
 		super().__init__(
 			name="corners",
 			layer="overlay",
-			margin=(-c.get_rule("Panel.style.height"), 0, -(c.get_rule("Dock.style.height") + 0 if c.get_rule("Dock.style.mode") == "full" else 10), 0),
+			margin=(-c.get_rule("Panel.height"), 0, -(round(c.get_rule("Dock.size") * 64) + 0 if c.get_rule("Dock.mode") == "full" else 10), 0),
 			anchor="top bottom left right",
 			exclusivity="normal",
 			pass_through=True,
