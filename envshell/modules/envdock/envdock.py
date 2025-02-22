@@ -6,6 +6,7 @@ import os
 from fabric import Application
 from fabric.widgets.button import Button
 from fabric.widgets.svg import Svg
+from fabric.widgets.image import Image
 from fabric.widgets.label import Label
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
@@ -13,16 +14,10 @@ from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import GLib
 
 
-from config.c import c, app_list, icon_list
+from config.c import c, app_list
 
-from utils.roam import app_name_class
-
-# Get all the icons
-for file in os.listdir(c.get_rule("Icons.directory")):
-	if file.endswith(".svg"): icon_list.append(file.removesuffix(".svg"))
-
-# Add all the icons to the app_list
-for icon in icon_list: app_list[icon] = f"{c.get_rule("Icons.directory")}{icon}.svg"
+from utils.functions import app_name_class
+from utils.icon_resolver import IconResolver
 
 global instance
 global envshell_service
@@ -42,6 +37,8 @@ class EnvDock(Window):
 			margin=(0,0,0,0) if c.get_rule("Dock.style.mode") == "full" else (5,5,5,5),
 			**kwargs,
 		)
+
+		self.icon_resolver = IconResolver()
 
 		if self.get_orientation() == "horizontal":
 			self.set_property("height-request", c.get_rule("Dock.style.height"))
@@ -121,13 +118,9 @@ class EnvDock(Window):
 				svg_mag = Svg(svg_file=app_list["NotFOUND"], size=(64), name="dock-app-icon")
 				app_i = app
 				app_i = c.get_translation(wmclass=app)
-				if str(app_i).lower() in app_list or str(app_i) in app_list:
-					if str(app_i).lower() in app_list:
-						svg     = Svg(svg_file=app_list[str(app_i).lower()], size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
-						svg_mag = Svg(svg_file=app_list[str(app_i).lower()], size=(64), name="dock-app-icon")
-					else:
-						svg     = Svg(svg_file=app_list[str(app_i)], size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
-						svg_mag = Svg(svg_file=app_list[str(app_i)], size=(64), name="dock-app-icon")
+				icon_svg = self.icon_resolver.get_icon_pixbuf(app_i, c.get_rule("Dock.style.icon-size", 32))
+				svg     = Image(pixbuf=icon_svg, size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
+				svg_mag = Image(pixbuf=icon_svg, size=(64), name="dock-app-icon")
 				app = self.format_window(wmclass=app, title=title)
 				if running:
 					self.button = Button(
@@ -166,12 +159,8 @@ class EnvDock(Window):
 				self.dock_box.add(Box(orientation="horizontal", name="dock-seperator", h_expand=True, v_expand=True))
 			for app, pid, title, address, active in apps:
 				app = c.get_translation(wmclass=app)
-				svg = Svg(svg_file=app_list["NotFOUND"], size=(32), name="dock-app-icon")
-				if str(app).lower() in app_list or str(app) in app_list:
-					if str(app).lower() in app_list:
-						svg = Svg(svg_file=app_list[str(app).lower()], size=(32), name="dock-app-icon")
-					else:
-						svg = Svg(svg_file=app_list[str(app)], size=(32), name="dock-app-icon")
+				icon_svg = self.icon_resolver.get_icon_pixbuf(app, c.get_rule("Dock.style.icon-size", 32))
+				svg = Image(pixbuf=icon_svg, size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
 				app = self.format_window(wmclass=app, title=title)
 				app_button = Box(
 					orientation="vertical",
@@ -193,14 +182,11 @@ class EnvDock(Window):
 
 		GLib.idle_add(dock_apps_changed_update)
 
+		envshell_service.dock_width = self.get_allocation().width
+		envshell_service.dock_height = self.get_allocation().height
+
 	def format_window(self, title, wmclass):
-		name = wmclass
-		if name == "": name = title
-		manual = c.get_rule("Window.translate.force-manual")
-		if c.has_title(wmclass=wmclass, title=title):
-			name = c.get_title(wmclass=wmclass, title=title)
-		else:
-			name = app_name_class.get_app_name(wmclass=wmclass)
+		name = app_name_class.format_app_name(title, wmclass, False)
 		return name
 
 	def start_update_thread(self):
@@ -228,3 +214,33 @@ class EnvDock(Window):
 				time.sleep(0.25)
 
 		threading.Thread(target=run, daemon=True).start()
+
+class EnvDockHotspot(Window):
+	def __init__(self, dock, **kwargs):
+		super().__init__(
+			name="envdock-hotspot",
+			layer="bottom",
+			anchor="left top",
+			size=(64, 64),
+			margin=(0, 0, 0, 0),
+			style="background-color: #f00;",
+			visible=True,
+			style_classes="envdock-hotspot",
+			**kwargs
+		)
+
+		self.dock = dock
+
+		x = self.dock.get_allocation().x
+		y = self.dock.get_allocation().y
+		self.set_property("margin", (0 if y is None else y, 0, 0, 0 if x is None else x))
+
+		envshell_service.connect(
+			"dock-width-changed",
+			lambda _, width: self.set_property("width-request", width),
+		)
+
+		envshell_service.connect(
+			"dock-height-changed",
+			lambda _, height: self.set_property("height-request", height),
+		)
