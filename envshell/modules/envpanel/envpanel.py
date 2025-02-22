@@ -20,8 +20,9 @@ from gi.repository import GLib, Gtk, GdkPixbuf
 
 global instance
 global envshell_service
-from utils.roam import instance, envshell_service, app_name_class
-from shared.envdropdown import EnvDropdown, dropdown_divider
+from utils.roam import instance, envshell_service
+from utils.functions import app_name_class
+from widgets.envdropdown import EnvDropdown, dropdown_divider
 
 from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
@@ -59,6 +60,8 @@ class Dropdown(EnvDropdown):
 	"""EnvMenu for envshell"""
 	def __init__(self, parent, **kwargs):
 		super().__init__(
+			x=0,
+			y=0,
 			parent=parent,
 			dropdown_children=[
 				dropdown_option(self, "About this PC", on_clicked=lambda b: About().toggle(b)),
@@ -113,7 +116,7 @@ class EnvPanel(Window):
 		self.control_center_image = Svg("./assets/svgs/control-center.svg", name="control-center-image")
 		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
 
-		self.envsh_button = Button(label=c.get_rule("Panel.style.icon"), name="envsh-button", style_classes="button", on_clicked=self.envsh_button_dropdown.toggle_dropdown)
+		self.envsh_button = Button(label=c.get_rule("Panel.style.icon"), name="envsh-button", style_classes="button", on_clicked=lambda b: self.envsh_button_dropdown.toggle_dropdown(b, self.envsh_button))
 		self.power_button_image = Svg("./assets/svgs/battery.svg", name="control-center-image")
 		self.power_button = Button(image=self.power_button_image, name="power-button", style_classes="button")
 
@@ -124,12 +127,20 @@ class EnvPanel(Window):
 		self.wifi_button_image = Svg("./assets/svgs/wifi-clear.svg", name="wifi-button-image")
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
 		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
-		self.global_title_dropdown = EnvDropdown(
+		self.global_menu_title = EnvDropdown(0, 0,
 			parent=self,
 			dropdown_children=[
 				self.global_title_menu_about
 			]
 		)
+
+		self.notch_spot = Box(
+			name="notch-spot",
+			size=(400, c.get_rule("Panel.style.height")),
+			h_expand=True,
+			v_expand=True
+		)
+
 		self.global_menu_file   = None
 		self.global_menu_edit   = None
 		self.global_menu_view   = EnvDropdown(0, 0,
@@ -162,11 +173,11 @@ class EnvPanel(Window):
 			]
 		)
 		envshell_service.connect("current-active-app-name-changed", lambda _, value: self.global_title_menu_about.set_property("label", f"About {value}"))
-		self.global_title = Button(
+		self.global_menu_button_title = Button(
 			child=ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window)),
 			name="global-title-button",
 			style_classes="button",
-			on_clicked=self.global_title_dropdown.toggle_dropdown,
+			on_clicked=lambda b: self.global_menu_title.toggle_dropdown(b, self.global_title),
 		)
 
 		self.global_menu_button_file   = Button(label="File",   name="global-menu-button-file",   style_classes="button")
@@ -186,7 +197,10 @@ class EnvPanel(Window):
 		)
 
 		self.children = CenterBox(
-			start_children=[self.envsh_button, self.global_title, self.global_menu_button_file, self.global_menu_button_edit, self.global_menu_button_view, self.global_menu_button_go, self.global_menu_button_window, self.global_menu_button_help],
+			h_expand=True,
+			h_align="fill",
+			start_children=[self.envsh_button, self.global_menu_button_title, self.global_menu_button_file, self.global_menu_button_edit, self.global_menu_button_view, self.global_menu_button_go, self.global_menu_button_window, self.global_menu_button_help],
+			center_children=[self.notch_spot],
 			end_children=[self.systray, self.systray_button, self.power_button, self.wifi_button, self.search_button, self.control_center_button, self.date_time],
 		)
 
@@ -207,14 +221,7 @@ class EnvPanel(Window):
 		return orientation
 
 	def format_window(self, title, wmclass):
-		name = wmclass
-		if name == "": name = title
-		manual = c.get_rule("Window.translate.force-manual")
-		if c.has_title(wmclass=wmclass, title=title):
-			name = c.get_title(wmclass=wmclass, title=title)
-		else:
-			name = app_name_class.get_app_name(wmclass=wmclass)
-		envshell_service.current_active_app_name = name
+		name = app_name_class.format_app_name(title, wmclass, True)
 		if c.is_window_autohide(wmclass=name, title=name):
 			self.add_style_class("empty")
 		else:
