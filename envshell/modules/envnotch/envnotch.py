@@ -41,9 +41,9 @@ class EnvNotch(Window):
 			**kwargs,
 		)
 
-		if c.get_rule("Panel.style.mode") == "floating":
+		if c.get_rule("Panel.mode") == "floating":
 			self.set_property("margin", (-34, 10, 10, 10))
-		elif c.get_rule("Panel.style.mode") == "normal":
+		elif c.get_rule("Panel.mode") == "normal":
 			self.set_property("margin", (-24, 10, 10, 10))
 
 		self.hidden = False
