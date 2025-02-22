@@ -60,8 +60,6 @@ class Dropdown(EnvDropdown):
 	"""EnvMenu for envshell"""
 	def __init__(self, parent, **kwargs):
 		super().__init__(
-			x=0,
-			y=0,
 			parent=parent,
 			dropdown_children=[
 				dropdown_option(self, "About this PC", on_clicked=lambda b: About().toggle(b)),
@@ -117,6 +115,7 @@ class EnvPanel(Window):
 		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
 
 		self.envsh_button = Button(label=c.get_rule("Panel.style.icon"), name="envsh-button", style_classes="button", on_clicked=lambda b: self.envsh_button_dropdown.toggle_dropdown(b, self.envsh_button))
+		self.envsh_button_dropdown.set_pointing_to(self.envsh_button)
 		self.power_button_image = Svg("./assets/svgs/battery.svg", name="control-center-image")
 		self.power_button = Button(image=self.power_button_image, name="power-button", style_classes="button")
 
@@ -127,7 +126,7 @@ class EnvPanel(Window):
 		self.wifi_button_image = Svg("./assets/svgs/wifi-clear.svg", name="wifi-button-image")
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
 		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
-		self.global_menu_title = EnvDropdown(0, 0,
+		self.global_menu_title = EnvDropdown(
 			parent=self,
 			dropdown_children=[
 				self.global_title_menu_about
@@ -143,14 +142,14 @@ class EnvPanel(Window):
 
 		self.global_menu_file   = None
 		self.global_menu_edit   = None
-		self.global_menu_view   = EnvDropdown(0, 0,
+		self.global_menu_view   = EnvDropdown(
 			parent=self,
 			dropdown_children=[
 				dropdown_option(self, "Enter Full Screen", on_click="hyprctl dispatch fullscreen"),
 			]
 		)
 		self.global_menu_go     = None
-		self.global_menu_window = EnvDropdown(0, 0,
+		self.global_menu_window = EnvDropdown(
 			parent=self,
 			dropdown_children=[
 				dropdown_option(self, "Zoom", on_clicked=lambda b: subprocess.run("bash ~/.config/scripts/zoomer.sh", shell=True)),
@@ -164,7 +163,7 @@ class EnvPanel(Window):
 				dropdown_option(self, "Pin", on_clicked=lambda b: subprocess.run("bash ~/.config/scripts/winpin.sh", shell=True)),
 			]
 		)
-		self.global_menu_help   = EnvDropdown(0, 0,
+		self.global_menu_help   = EnvDropdown(
 			parent=self,
 			dropdown_children=[
 				dropdown_option(self, "EnvShell", on_clicked=lambda b: subprocess.run("xdg-open https://github.com/E3nviction/envshell", shell=True)),
@@ -177,15 +176,19 @@ class EnvPanel(Window):
 			child=ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window)),
 			name="global-title-button",
 			style_classes="button",
-			on_clicked=lambda b: self.global_menu_title.toggle_dropdown(b, self.global_title),
+			on_clicked=lambda b: self.global_menu_title.toggle_dropdown(b, self.global_menu_button_title),
 		)
+		self.global_menu_title.set_pointing_to(self.global_menu_button_title)
 
 		self.global_menu_button_file   = Button(label="File",   name="global-menu-button-file",   style_classes="button")
 		self.global_menu_button_edit   = Button(label="Edit",   name="global-menu-button-edit",   style_classes="button")
 		self.global_menu_button_view   = Button(label="View",   name="global-menu-button-view",   style_classes="button", on_clicked=lambda b: self.global_menu_view.toggle_dropdown(b, self.global_menu_button_view))
+		self.global_menu_view.set_pointing_to(self.global_menu_button_view)
 		self.global_menu_button_go     = Button(label="Go",     name="global-menu-button-go",     style_classes="button")
 		self.global_menu_button_window = Button(label="Window", name="global-menu-button-window", style_classes="button", on_clicked=lambda b: self.global_menu_window.toggle_dropdown(b, self.global_menu_button_window))
+		self.global_menu_window.set_pointing_to(self.global_menu_button_window)
 		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_dropdown(b, self.global_menu_button_help))
+		self.global_menu_help.set_pointing_to(self.global_menu_button_help)
 
 		self.systray = SystemTray(name="system-tray", icon_size=16, spacing=4, style_classes="hidden")
 

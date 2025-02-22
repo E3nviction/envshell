@@ -1,6 +1,9 @@
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.box import Box
+from fabric.widgets.eventbox import EventBox
 from fabric.widgets.wayland import WaylandWindow as Window
+
+from widgets.popup_window import PopupWindow
 
 from utils.roam import envshell_service
 
@@ -8,27 +11,20 @@ dropdowns = []
 
 def dropdown_divider(comment): return Box(children=[Box(name="dropdown-divider", h_expand=True)], name="dropdown-divider-box", h_align="fill", h_expand=True, v_expand=True,)
 
-class EnvDropdown(Window):
+class EnvDropdown(PopupWindow):
 	"""A Dropdown for envshell"""
-	def __init__(self, x=None, y=None, w=-1, h=-1, dropdown_children=None, parent=None, **kwargs):
+	def __init__(self, dropdown_children=None, **kwargs):
 		super().__init__(
 			layer="top",
-			anchor="left top",
 			exclusivity="auto",
 			name="dropdown-menu",
+			keyboard_mode="none",
 			visible=False,
-			margin=(0 if y is None else y, 0, 0, 0 if x is None else x),
 			**kwargs,
 		)
 
 		self.id = len(dropdowns)
 		dropdowns.append(self)
-
-		self.set_property("width-request", w)
-		self.set_property("height-request", h)
-
-		self.x_set = x
-		self.y_set = y
 
 		envshell_service.connect("dropdowns-hide-changed", self.hide_dropdown)
 
@@ -39,32 +35,32 @@ class EnvDropdown(Window):
 			orientation="vertical",
 		)
 
-		self.dropdown.set_property("width-request", w)
-		self.dropdown.set_property("height-request", h)
-
 		self.child_box = CenterBox(start_children=[self.dropdown])
 
-		self.child_box.set_property("width-request", w)
-		self.child_box.set_property("height-request", h)
+		self.event_box = EventBox(
+			events=["enter-notify-event", "leave-notify-event"],
+			child=self.child_box,
+			all_visible=True,
+		)
 
-		self.children = self.child_box
-		self.connect("event", self.hide_dropdown)
+		self.children = [self.event_box]
+		self.event_box.connect("enter-notify-event", self.on_cursor_enter)
+		self.event_box.connect("leave-notify-event", self.on_cursor_leave)
 		self.connect("button-press-event", self.hide_dropdown)
 		self.add_keybinding("Escape", self.hide_dropdown)
 
 	def toggle_dropdown(self, button, parent=None):
-		# if parent, then set the x, and y to parent alloc
-		if parent:
-			par_alloc = parent.get_allocation()
-			self.margin = (par_alloc.y + self.y_set, 0, 0, par_alloc.x + self.x_set)
 		self.set_visible(not self.is_visible())
 		if self.is_visible():
-			self.pass_through = False
-			self.keyboard_mode = "exclusive"
-			self.grab_focus()
 			envshell_service.current_dropdown = self.id
 	def hide_dropdown(self, widget, event):
-		x, y = self.get_pointer()
-		allocation = self.get_allocation()
 		if envshell_service.current_dropdown != self.id:
 			self.hide()
+
+	def on_cursor_enter(self, *_):
+		self.set_visible(True)
+
+	def on_cursor_leave(self, *_):
+		if self.is_hovered():
+			return
+		self.set_visible(False)

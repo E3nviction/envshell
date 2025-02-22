@@ -9,8 +9,10 @@ from fabric.widgets.label import Label
 from fabric.widgets.overlay import Overlay
 from fabric.widgets.button import Button
 from fabric.widgets.box import Box
+from fabric.widgets.eventbox import EventBox
 from fabric.widgets.scale import Scale
 from fabric.widgets.svg import Svg
+from fabric.widgets.revealer import Revealer
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.widgets.scrolledwindow import ScrolledWindow
 from fabric.utils.helpers import exec_shell_command_async
@@ -25,11 +27,14 @@ from utils.exml import exml
 
 from utils.functions import get_from_socket
 
+from widgets.popup_window import PopupWindow
+
 from .bluetooth import BluetoothDeviceSlot, BluetoohConnections
 
-class BluetoothWindow(Window):
-	def __init__(self, **kwargs):
+class BluetoothWindow(PopupWindow):
+	def __init__(self, parent, **kwargs):
 		super().__init__(
+			parent=parent,
 			layer="top",
 			anchor="right top",
 			margin="2px 10px 0px 0px",
@@ -40,13 +45,17 @@ class BluetoothWindow(Window):
 			**kwargs,
 		)
 
-		self.children = Box(
+		self.box = Box(
 			orientation="vertical",
 			name="control-center-widgets",
 			children=[
 				BluetoohConnections()
 			]
 		)
+
+		self.event_box = EventBox(child=self.box, all_visible=True)
+
+		self.children = [self.event_box]
 
 		self.add_keybinding("Escape", self.toggle_bluetooth)
 
@@ -68,7 +77,6 @@ class EnvControlCenter(Window):
 			**kwargs,
 		)
 
-		# Default Values
 		volume = envshell_service.sc("volume-changed", self.volume_changed, 100)
 		wlan = envshell_service.sc("wlan-changed", self.wlan_changed)
 		bluetooth = envshell_service.sc("bluetooth-changed", self.bluetooth_changed)
@@ -76,13 +84,14 @@ class EnvControlCenter(Window):
 
 		audio_service.connect("changed", self.audio_changed)
 
-		# Labels
 		self.wlan_label = Label(wlan, name="wifi-widget-label", h_align="start")
 		self.bluetooth_label = Label(bluetooth, name="bluetooth-widget-label", h_align="start")
 		self.volume_icon = Label(" ", name="volume-widget-icon", h_align="start")
 		self.volume_scale = Scale(value=volume, min_value=0, max_value=100, name="volume-widget-slider", size=30, h_expand=True)
 		self.volume_scale.connect("change-value", self.set_volume)
 		self.music_label = Label(music, name="music-widget-label", h_align="start")
+
+		self.bluetooth_window = BluetoothWindow(parent=self)
 
 		self.bluetooth_widget = Button(
 			name="bluetooth-widget",
@@ -102,10 +111,8 @@ class EnvControlCenter(Window):
 			),
 			on_clicked=self.toggle_bluetooth
 		)
+		self.bluetooth_window.set_pointing_to(self.bluetooth_widget)
 
-		self.bluetooth_window = BluetoothWindow()
-
-		# Widgets
 		self.widgets = exml(
 			file="./modules/envcontrolcenter/envcontrolcenter.xml",
 			root=Box,
@@ -130,12 +137,10 @@ class EnvControlCenter(Window):
 			start_children=[self.widgets]
 		)
 
-		# Add Children to Window
 		self.children = self.center_box
 
 		self.add_keybinding("Escape", self.toggle_cc)
 
-		# Start Update Thread
 		self.start_update_thread()
 
 	def set_volume(self, _, __, volume):
