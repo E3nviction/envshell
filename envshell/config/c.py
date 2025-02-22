@@ -4,7 +4,6 @@ import tomllib
 import json
 
 
-icon_list = []
 app_list = {
     "NotFOUND": "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/abrt.svg",
 }
