@@ -10,6 +10,7 @@ from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
+from fabric.widgets.scale import ScaleMark
 from fabric.widgets.svg import Svg
 from fabric.system_tray.widgets import SystemTray
 from fabric.hyprland.widgets import ActiveWindow
@@ -20,9 +21,10 @@ from gi.repository import GLib, Gtk, GdkPixbuf
 
 global instance
 global envshell_service
-from utils.roam import instance, envshell_service
+from utils.roam import instance, envshell_service, audio_service
 from utils.functions import app_name_class
 from widgets.envdropdown import EnvDropdown, dropdown_divider
+from widgets.osd_widget import OsdWindow
 
 from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
@@ -89,32 +91,32 @@ class EnvPanel(Window):
 			name="env-panel",
 			style_classes="",
 			style=f"""
-				border-radius: {10 if c.get_rule("Panel.style.mode") == "floating" else 0}px;
+				border-radius: {10 if c.get_rule("Panel.mode") == "floating" else 0}px;
 			""",
 			size=(1920, 24),
 			**kwargs,
 		)
 
-		if c.get_rule("Panel.style.mode") == "floating":
+		if c.get_rule("Panel.mode") == "floating":
 			self.set_property("margin", (5, 5, 5, 5))
-		elif c.get_rule("Panel.style.mode") == "normal":
+		elif c.get_rule("Panel.mode") == "normal":
 			self.set_property("margin", (0, 0, 0, 0))
 
 		if self.get_orientation() == "horizontal":
-			self.set_property("height-request", c.get_rule("Panel.style.height"))
+			self.set_property("height-request", c.get_rule("Panel.height"))
 		else:
-			self.set_property("width-request", c.get_rule("Panel.style.height"))
+			self.set_property("width-request", c.get_rule("Panel.height"))
 
 
 		self.envlight = EnvLight()
-		self.date_time = DateTime(formatters=c.get_rule("Panel.style.date-format"), name="date-time")
+		self.date_time = DateTime(formatters=c.get_rule("Panel.date-format"), name="date-time")
 		self.envsh_button_dropdown = Dropdown(parent=self)
 
 		self.control_center = EnvControlCenter()
 		self.control_center_image = Svg("./assets/svgs/control-center.svg", name="control-center-image")
 		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
 
-		self.envsh_button = Button(label=c.get_rule("Panel.style.icon"), name="envsh-button", style_classes="button", on_clicked=lambda b: self.envsh_button_dropdown.toggle_dropdown(b, self.envsh_button))
+		self.envsh_button = Button(label=c.get_rule("Panel.icon"), name="envsh-button", style_classes="button", on_clicked=lambda b: self.envsh_button_dropdown.toggle_dropdown(b, self.envsh_button))
 		self.envsh_button_dropdown.set_pointing_to(self.envsh_button)
 		self.power_button_image = Svg("./assets/svgs/battery.svg", name="control-center-image")
 		self.power_button = Button(image=self.power_button_image, name="power-button", style_classes="button")
@@ -135,10 +137,60 @@ class EnvPanel(Window):
 
 		self.notch_spot = Box(
 			name="notch-spot",
-			size=(400, c.get_rule("Panel.style.height")),
+			size=(400, c.get_rule("Panel.height")),
 			h_expand=True,
 			v_expand=True
 		)
+
+		self.osd_window_scale = Scale(
+			orientation="horizontal",
+			name="osd-window-scale",
+			h_align="center",
+			v_align="center",
+			h_expand=True,
+			v_expand=True,
+			min_value=0,
+			max_value=100,
+			increments=(1, 1),
+			marks=[ScaleMark(x, position="bottom", markup=str(x) if x % 20 == 0 else "") for x in range(10, 96, 10)],
+			size=(230, 16),
+		)
+
+		self.osd_window_image = Svg("./assets/svgs/audio-volume.svg", size=(64, 250), name="osd-image", h_align="center", v_align="center", h_expand=True, v_expand=True)
+
+		self.osd_window = OsdWindow(
+			_children=[
+				self.osd_window_image,
+				self.osd_window_scale
+			],
+			margin=(0, 0, 120, 0),
+            anchor="center bottom",
+            visible=False,
+            all_visible=False,
+			name="osd-window",
+			h_expand=True,
+			v_expand=True,
+			h_align="center",
+			v_align="center",
+		)
+
+		def update_osd_window(*_):
+			if not audio_service.speaker:
+				return
+			if audio_service.speaker.muted:
+				self.osd_window.show()
+				GLib.idle_add(lambda: self.osd_window_scale.set_value(0))
+				return
+			if round(audio_service.speaker.volume) == round(self.osd_window_scale.get_value()):
+				return
+			self.osd_window.show()
+			GLib.idle_add(lambda: self.osd_window_scale.set_value(int(audio_service.speaker.volume)))
+
+		audio_service.connect("changed", update_osd_window)
+
+		self.osd_window.set_property("width-request", 250)
+		self.osd_window.set_property("height-request", 250)
+
 
 		self.global_menu_file   = None
 		self.global_menu_edit   = None
@@ -216,7 +268,7 @@ class EnvPanel(Window):
 			self.systray.add_style_class("hidden")
 
 	def get_pos(self):
-		full = c.get_rule("Panel.style.full")
+		full = c.get_rule("Panel.full")
 		return "top left right center" if full else "top center"
 
 	def get_orientation(self):
