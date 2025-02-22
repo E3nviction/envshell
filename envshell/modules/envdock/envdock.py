@@ -30,21 +30,21 @@ class EnvDock(Window):
 		super().__init__(
 			layer="top",
 			anchor=self.get_pos(),
-			exclusivity="auto",
+			exclusivity="auto" if c.get_rule("Dock.exclusive") else "none",
 			name="env-dock",
 			h_expand=True,
 			v_expand=True,
-			margin=(0,0,0,0) if c.get_rule("Dock.style.mode") == "full" else (5,5,5,5),
+			margin=(0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5),
 			**kwargs,
 		)
 
 		self.icon_resolver = IconResolver()
 
 		if self.get_orientation() == "horizontal":
-			self.set_property("height-request", c.get_rule("Dock.style.height"))
+			self.set_property("height-request", round(c.get_rule("Dock.size") * 64))
 		else:
-			self.set_property("width-request", c.get_rule("Dock.style.height"))
-		self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.style.mode") == "full" else (5,5,5,5))
+			self.set_property("width-request", round(c.get_rule("Dock.size") * 64))
+		self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5))
 		self.set_property("anchor", self.get_pos())
 
 		envshell_service.connect(
@@ -57,12 +57,12 @@ class EnvDock(Window):
 			name="dock-box",
 			children=[],
 			style=f"""
-			border-radius: {0 if c.get_rule('Dock.style.mode') == 'full' else 19.2}px;
+			border-radius: {0 if c.get_rule('Dock.mode') == 'full' else 19.2}px;
 			""",
 			h_expand=True,
 			v_expand=True,
-			h_align="fill" if c.get_rule("Dock.style.mode") == "full" else "center",
-			v_align="fill" if c.get_rule("Dock.style.mode") == "full" else "center",
+			h_align="fill" if c.get_rule("Dock.mode") == "full" else "center",
+			v_align="fill" if c.get_rule("Dock.mode") == "full" else "center",
 		)
 
 		self.children = self.dock_box
@@ -70,8 +70,8 @@ class EnvDock(Window):
 		self.start_update_thread()
 
 	def get_pos(self):
-		pos = c.get_rule("Dock.style.position")
-		full = c.get_rule("Dock.style.mode") == "full"
+		pos = c.get_rule("Dock.position")
+		full = c.get_rule("Dock.mode") == "full"
 		if full:
 			if pos == "bottom": pos = "bottom left right center"
 			elif pos == "left": pos = "left top bottom center"
@@ -83,7 +83,7 @@ class EnvDock(Window):
 		return pos
 
 	def get_orientation(self):
-		pos = c.get_rule("Dock.style.position")
+		pos = c.get_rule("Dock.position")
 		orientation = "horizontal"
 		if pos == "bottom": orientation = "horizontal"
 		elif pos == "left": orientation = "vertical"
@@ -98,6 +98,7 @@ class EnvDock(Window):
 		def dock_apps_changed_update():
 			self.dock_box.children = []
 			apps = _apps
+			total_apps = len(apps)
 			# We have to eval the string to get the list, because Signals don't work with lists. Atleast I haven't found a way
 			if apps[0] == "[" and apps[-1] == "]": apps: list = eval(apps)
 			pinned_apps = {}
@@ -114,13 +115,11 @@ class EnvDock(Window):
 			pinned_apps = dict(sorted(pinned_apps.items(), key=lambda item: list(c.dock_pinned.keys()).index(item[0])))
 			for app_ in pinned_apps:
 				app, pid, title, address, active, running = pinned_apps[app_]
-				svg     = Svg(svg_file=app_list["NotFOUND"], size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
-				svg_mag = Svg(svg_file=app_list["NotFOUND"], size=(64), name="dock-app-icon")
+				svg     = Svg(svg_file=app_list["NotFOUND"], size=(round(c.get_rule("Dock.size") * 32)), name="dock-app-icon")
 				app_i = app
 				app_i = c.get_translation(wmclass=app)
-				icon_svg = self.icon_resolver.get_icon_pixbuf(app_i, c.get_rule("Dock.style.icon-size", 32))
-				svg     = Image(pixbuf=icon_svg, size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
-				svg_mag = Image(pixbuf=icon_svg, size=(64), name="dock-app-icon")
+				icon_svg = self.icon_resolver.get_icon_pixbuf(app_i, round(c.get_rule("Dock.size") * 32))
+				svg     = Image(pixbuf=icon_svg, size=(round(c.get_rule("Dock.size") * 32)), name="dock-app-icon")
 				app = self.format_window(wmclass=app, title=title)
 				if running:
 					self.button = Button(
@@ -159,8 +158,8 @@ class EnvDock(Window):
 				self.dock_box.add(Box(orientation="horizontal", name="dock-seperator", h_expand=True, v_expand=True))
 			for app, pid, title, address, active in apps:
 				app = c.get_translation(wmclass=app)
-				icon_svg = self.icon_resolver.get_icon_pixbuf(app, c.get_rule("Dock.style.icon-size", 32))
-				svg = Image(pixbuf=icon_svg, size=(c.get_rule("Dock.style.icon-size", 32)), name="dock-app-icon")
+				icon_svg = self.icon_resolver.get_icon_pixbuf(app, round(c.get_rule("Dock.size") * 32))
+				svg = Image(pixbuf=icon_svg, size=(round(c.get_rule("Dock.size") * 32)), name="dock-app-icon")
 				app = self.format_window(wmclass=app, title=title)
 				app_button = Box(
 					orientation="vertical",
@@ -172,7 +171,7 @@ class EnvDock(Window):
 							h_align="center",
 							v_align="center",
 							on_clicked=focus,
-							tooltip_text=f"{app} ({f"{title[:25]}..."})",
+							tooltip_text=f"{app} ({f"{title[:c.get_rule('Dock.title.limit')]}..."})",
 						),
 						Svg(svg_file="./assets/svgs/indicator.svg", size=(6), name="dock-app-indicator", h_align="center", v_align="center"),
 					],
