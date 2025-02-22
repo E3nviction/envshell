@@ -32,13 +32,12 @@
 	[Notch.style]
 
 [Dock]
-	[Dock.style]
-		exclusive = false
-		autohide = true
-		mode = "center" # center, full
-		height = 64
-		icon-size = 32
-		position = "bottom" # left, right, bottom
+	title.limit = 25
+	exclusive = true
+	autohide = true
+	mode = "center" # center, full
+	size = 1 # 0.1 to 3
+	position = "bottom" # left, right, bottom
 	[Dock.pinned]
 		"org.gnome.Nautilus" = "nautilus"
 		"org.gnome.Settings" = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
@@ -62,12 +61,11 @@
 [Corners]
 	[Corners.style]
 [Panel]
-	[Panel.style]
-		height = 24
-		full = true
-		mode = "normal" # floating, normal
-		date-format = "%a %b %d %H:%M"
-		icon = ""
+	height = 24
+	full = true
+	mode = "normal" # floating, normal
+	date-format = "%a %b %d %H:%M"
+	icon = ""
 
 [Workspace]
 ignore.id.9 = true

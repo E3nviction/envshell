@@ -1,41 +1,39 @@
 [Window]
+	autohide.class."Hyprland" = true
 	autohide.class."main.py" = true
+	rename.class."code" = "vscode"
 	[Window.ignore]
 		class."main.py" = true
 	[Window.translate]
+		smart-title = true
 		class."None" = "Hyprland"
+		class."org.gnome.Nautilus" = "Finder"
+		class."org.gnome.NautilusPreviewer" = "Finder"
 
 [Widgets]
 	dock.enable = true
 	panel.enable = true
-
 [Notch]
-	[Notch.style]
 [Dock]
-	[Dock.style]
-		exclusive = false
-		autohide = true
-		mode = "center"
-		height = 64
-		icon-size = 32
-		position = "bottom"
+	title.limit = 25
+	exclusive = true
+	autohide = true
+	mode = "center"
+	size = 1
+	position = "bottom"
 	[Dock.pinned]
 		"org.gnome.Nautilus" = "nautilus"
 		"kitty" = "kitty"
-		"brave-browser" = "brave"
 [Corners]
-	[Corners.style]
 [Panel]
-	[Panel.style]
-		height = 24
-		full = true
-		mode = "normal"
-		date-format = "%a %b %d %H:%M"
-		icon = ""
+	height = 24
+	full = true
+	mode = "normal"
+	date-format = "%a %b %d %H:%M"
+	icon = ""
 
 [Workspace]
-	[Workspace.ignore]
-		id.9 = true
+ignore.id.9 = true
 
 [Shell]
 	[Shell.about]
@@ -50,8 +48,8 @@
 		options.store.label = "Nix Store..."
 		options.store.on-click = "xdg-open https://search.nixos.org/packages"
 
-[Icons]
-directory = "/run/current-system/sw/share/icons/WhiteSur-dark/apps/scalable/"
+[Cache]
+directory = "envshell"
 
 [Bluetooth]
 show-hidden-devices = false
