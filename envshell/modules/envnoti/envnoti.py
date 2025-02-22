@@ -9,6 +9,8 @@ from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.notifications import Notifications, Notification
 from fabric.utils import invoke_repeater, get_relative_path
 
+from widgets.customimage import CustomImage
+
 from gi.repository import GdkPixbuf
 
 NOTIFICATION_WIDTH = 360
@@ -32,7 +34,7 @@ class NotificationWidget(Box):
 
 		if image_pixbuf := self._notification.image_pixbuf:
 			body_container.add(
-				Image(
+				CustomImage(
 					pixbuf=image_pixbuf.scale_simple(
 						NOTIFICATION_IMAGE_SIZE,
 						NOTIFICATION_IMAGE_SIZE,
@@ -65,7 +67,7 @@ class NotificationWidget(Box):
                     .build(
                         lambda box, _: box.pack_end(
                             Button(
-                                image=Image(
+                                image=CustomImage(
                                     icon_name="close-symbolic",
                                     icon_size=18,
                                 ),
