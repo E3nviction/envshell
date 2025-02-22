@@ -87,17 +87,17 @@
 #volume-widget-icon {
 	margin-top: -24px;
 	margin-right: -30px;
-	color: alpha(#fff, 0.6);
+	color: alpha(#111, 0.6);
 }
 
 #brightness-widget-icon {
 	margin-top: -24px;
 	margin-right: -25px;
-	color: alpha(#fff, 0.6);
+	color: alpha(#111, 0.6);
 }
 
 slider {
-	background-color: alpha(#fff, 0.3);
+	background-color: transparent;
 	padding: 2px;
 	border-radius: 20px;
 }
@@ -107,4 +107,16 @@ scale {
 	border: 1px solid alpha(#444, 0.3);
 	margin-top: 10px;
 	border-radius: 20px;
+}
+
+trough {
+    min-width: 25px;
+    border-radius: 99px;
+    background: transparent;
+}
+
+highlight {
+    min-width: 20px;
+    background: alpha(#fff, 0.8);
+    border-radius: 99px;
 }
