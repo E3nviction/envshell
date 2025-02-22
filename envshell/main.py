@@ -12,6 +12,8 @@ from config.c import c
 
 loguru.logger.disable("fabric.hyprland.widgets")
 loguru.logger.disable("fabric.widgets.wayland")
+loguru.logger.disable("fabric.audio.service")
+loguru.logger.disable("fabric.bluetooth.service")
 
 if __name__ == "__main__":
 	envnoti = EnvNoti()
