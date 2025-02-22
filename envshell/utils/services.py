@@ -36,6 +36,12 @@ class EnvShellService(Service):
 	@Signal
 	def dropdowns_hide_changed(self, value: bool) -> None:
 		...
+	@Signal
+	def dock_width_changed(self, value: int) -> None:
+		...
+	@Signal
+	def dock_height_changed(self, value: int) -> None:
+		...
 
 	@Property(str, flags="read-write")
 	def current_active_app_name(self) -> str:
@@ -67,6 +73,13 @@ class EnvShellService(Service):
 	@Property(bool, flags="read-write", default_value=False)
 	def dropdowns_hide(self) -> bool:
 		return self._dropdowns_hide
+	@Property(int, flags="read-write")
+	def dock_width(self) -> int:
+		return self._dock_width
+	@Property(int, flags="read-write")
+	def dock_height(self) -> int:
+		return self._dock_height
+
 	@current_active_app_name.setter
 	def current_active_app_name(self, value: str):
 		if value != self._current_active_app_name:
@@ -113,6 +126,16 @@ class EnvShellService(Service):
 		if value != self._dropdowns_hide:
 			self._dropdowns_hide = value
 			self.dropdowns_hide_changed(value)
+	@dock_width.setter
+	def dock_width(self, value: int):
+		if value != self._dock_width:
+			self._dock_width = value
+			self.dock_width_changed(value)
+	@dock_height.setter
+	def dock_height(self, value: int):
+		if value != self._dock_height:
+			self._dock_height = value
+			self.dock_height_changed(value)
 
 	def sc(self, signal_name: str, callback: callable, def_value="..."):
 		self.connect(signal_name, callback)
@@ -131,6 +154,9 @@ class EnvShellService(Service):
 		self._music = ""
 		self._current_dropdown = 0
 		self._dropdowns_hide = False
+
+		self._dock_width = 0
+		self._dock_height = 0
 
 		self.notifications = []
 
