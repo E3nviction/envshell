@@ -10,6 +10,9 @@ import loguru
 from utils.functions import AppName
 from config.c import c
 
+loguru.logger.disable("fabric.hyprland.widgets")
+loguru.logger.disable("fabric.widgets.wayland")
+
 if __name__ == "__main__":
 	envnoti = EnvNoti()
 	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
