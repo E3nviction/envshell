@@ -97,14 +97,14 @@
 }
 
 slider {
+	background-image: none;
 	background-color: transparent;
 	padding: 2px;
 	border-radius: 20px;
 }
 
 scale {
-	background-color: alpha(#666, 0.5);
-	border: 1px solid alpha(#444, 0.3);
+	background-color: transparent;
 	margin-top: 10px;
 	border-radius: 20px;
 }
@@ -112,11 +112,11 @@ scale {
 trough {
     min-width: 25px;
     border-radius: 99px;
-    background: transparent;
+	background-color: alpha(#666, 0.5);
+	border: 1px solid alpha(#444, 0.3);
 }
 
 highlight {
-    min-width: 20px;
     background: alpha(#fff, 0.8);
     border-radius: 99px;
 }
