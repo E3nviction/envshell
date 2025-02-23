@@ -34,9 +34,14 @@ class EnvDock(Window):
 			name="env-dock",
 			h_expand=True,
 			v_expand=True,
+			size=(round(c.get_rule("Dock.size") * 64), round(c.get_rule("Dock.size") * 64)),
 			margin=(0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5),
 			**kwargs,
 		)
+
+		if c.get_rule("Dock.autohide"):
+			self.hotspot = EnvDockHotspot(self)
+			envshell_service.dock_hidden = True
 
 		self.icon_resolver = IconResolver()
 
@@ -65,9 +70,54 @@ class EnvDock(Window):
 			v_align="fill" if c.get_rule("Dock.mode") == "full" else "center",
 		)
 
+		self.connect("size-allocate", self.update_size)
+		envshell_service.dock_width = self.get_allocation().width
+		envshell_service.dock_height = self.get_allocation().height
+
+
 		self.children = self.dock_box
 
+		self.connect("enter-notify-event", self.do_check_hide)
+		self.connect("leave-notify-event", self.do_check_hide)
+
+		if c.get_rule("Dock.autohide"):
+			envshell_service.connect(
+				"dock-hidden-changed",
+				self.do_check_hide,
+			)
+
 		self.start_update_thread()
+
+	def show_dock(self, *_):
+		envshell_service.dock_hidden = True
+
+	def do_check_hover(self, *_):
+		x, y = self.get_pointer()
+		allocation = self.get_allocation()
+		print(x,y)
+		if y == 0:
+			envshell_service.dock_hidden = False
+			return
+		if not (0 < x < allocation.width and 0 < y < allocation.height + 5):
+			envshell_service.dock_hidden = True
+		else:
+			envshell_service.dock_hidden = False
+
+	def do_check_hide(self, *_):
+		if envshell_service.dock_hidden:
+			self.set_property("margin", (0,0,-(self.get_allocation().height),0))
+			if self.get_orientation() == "vertical":
+				if c.get_rule("Dock.position") == "left":
+					self.set_property("margin", (0,0,0,-(self.get_allocation().width)))
+				elif c.get_rule("Dock.position") == "right":
+					self.set_property("margin", (0,-(self.get_allocation().width),0,0))
+		else:
+			self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5))
+
+
+	def update_size(self, *_):
+		envshell_service.dock_width = self.get_allocation().width
+		envshell_service.dock_height = self.get_allocation().height
 
 	def get_pos(self):
 		pos = c.get_rule("Dock.position")
@@ -181,9 +231,6 @@ class EnvDock(Window):
 
 		GLib.idle_add(dock_apps_changed_update)
 
-		envshell_service.dock_width = self.get_allocation().width
-		envshell_service.dock_height = self.get_allocation().height
-
 	def format_window(self, title, wmclass):
 		name = app_name_class.format_app_name(title, wmclass, False)
 		return name
@@ -218,28 +265,106 @@ class EnvDockHotspot(Window):
 	def __init__(self, dock, **kwargs):
 		super().__init__(
 			name="envdock-hotspot",
-			layer="bottom",
-			anchor="left top",
-			size=(64, 64),
+			layer="top",
+			anchor=self.get_pos(),
+			style="background-color: alpha(#f00, 0.1);" if c.get_rule("Dock.debug") else "",
+			size=(768, c.get_rule("Dock.size") * 64),
 			margin=(0, 0, 0, 0),
-			style="background-color: #f00;",
 			visible=True,
 			style_classes="envdock-hotspot",
 			**kwargs
 		)
 
 		self.dock = dock
-
-		x = self.dock.get_allocation().x
-		y = self.dock.get_allocation().y
-		self.set_property("margin", (0 if y is None else y, 0, 0, 0 if x is None else x))
+		if self.get_orientation() == "horizontal":
+			self.dock_height = c.get_rule("Dock.size") * 64
+			self.dock_width = 768
+		else:
+			self.dock_height = 768
+			self.dock_width = c.get_rule("Dock.size") * 64
 
 		envshell_service.connect(
 			"dock-width-changed",
-			lambda _, width: self.set_property("width-request", width),
+			self.set_width,
 		)
 
 		envshell_service.connect(
 			"dock-height-changed",
-			lambda _, height: self.set_property("height-request", height),
+			self.set_height,
 		)
+
+		envshell_service.connect(
+			"dock-hidden-changed",
+			self.do_check_hide,
+		)
+
+		self.connect("enter-notify-event", self.show_dock)
+
+	def show_dock(self, *_):
+		envshell_service.dock_hidden = not envshell_service.dock_hidden
+
+	def do_check_hide(self, *_):
+		if envshell_service.dock_hidden:
+			pos = c.get_rule("Dock.position")
+			full = c.get_rule("Dock.mode") == "full"
+			if not full:
+				if pos == "left":
+					self.set_property("anchor", "left center")
+				elif pos == "right":
+					self.set_property("anchor", "right center")
+				else:
+					self.set_property("anchor", "bottom center")
+			self.set_property("width-request", self.dock_width)
+			self.set_property("height-request", self.dock_height)
+			if self.get_orientation() == "vertical":
+				if c.get_rule("Dock.position") == "left":
+					self.set_property("margin", (0,0,0,-(self.dock_width - 1)))
+				elif c.get_rule("Dock.position") == "right":
+					self.set_property("margin", (0,-(self.dock_width - 1),0,0))
+			else:
+				self.set_property("margin", (0,0,-(self.dock_height),0))
+		else:
+			self.set_property("anchor", self.get_pos())
+			if self.get_orientation() == "horizontal":
+				self.set_property("width-request", 1920)
+			else:
+				self.set_property("height-request", 1080)
+			if not c.get_rule("Dock.exclusive"):
+				if self.get_orientation() == "vertical":
+					if c.get_rule("Dock.position") == "left":
+						self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,(self.dock_width + 10)))
+					elif c.get_rule("Dock.position") == "right":
+						self.set_property("margin", (-(c.get_rule("Panel.height")),(self.dock_width + 10),0,0))
+				else:
+					self.set_property("margin", (0,0,self.dock_height + 5,0) if c.get_rule("Dock.mode") == "full" else (0,0,self.dock_height + 10,0))
+			else:
+				self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,0))
+
+	def set_height(self, _, height):
+		self.dock_height = height
+		self.set_property("height-request", height)
+
+	def set_width(self, _, width):
+		self.dock_width = width
+		self.set_property("width-request", width)
+
+	def get_pos(self):
+		pos = c.get_rule("Dock.position")
+		full = c.get_rule("Dock.mode") == "full"
+		if full:
+			if pos == "bottom": pos = "bottom left right center"
+			elif pos == "left": pos = "left top bottom center"
+			elif pos == "right": pos = "right top bottom center"
+		else:
+			if pos == "bottom": pos = "bottom center"
+			elif pos == "left": pos = "left top bottom center"
+			elif pos == "right": pos = "right top bottom center"
+		return pos
+
+	def get_orientation(self):
+		pos = c.get_rule("Dock.position")
+		orientation = "horizontal"
+		if pos == "bottom": orientation = "horizontal"
+		elif pos == "left": orientation = "vertical"
+		elif pos == "right": orientation = "vertical"
+		return orientation

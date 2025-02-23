@@ -42,6 +42,9 @@ class EnvShellService(Service):
 	@Signal
 	def dock_height_changed(self, value: int) -> None:
 		...
+	@Signal
+	def dock_hidden_changed(self, value: bool) -> None:
+		...
 
 	@Property(str, flags="read-write")
 	def current_active_app_name(self) -> str:
@@ -79,6 +82,9 @@ class EnvShellService(Service):
 	@Property(int, flags="read-write")
 	def dock_height(self) -> int:
 		return self._dock_height
+	@Property(bool, flags="read-write", default_value=False)
+	def dock_hidden(self) -> bool:
+		return self._dock_hidden
 
 	@current_active_app_name.setter
 	def current_active_app_name(self, value: str):
@@ -136,6 +142,11 @@ class EnvShellService(Service):
 		if value != self._dock_height:
 			self._dock_height = value
 			self.dock_height_changed(value)
+	@dock_hidden.setter
+	def dock_hidden(self, value: bool):
+		if value != self._dock_hidden:
+			self._dock_hidden = value
+			self.dock_hidden_changed(value)
 
 	def sc(self, signal_name: str, callback: callable, def_value="..."):
 		self.connect(signal_name, callback)
@@ -154,6 +165,7 @@ class EnvShellService(Service):
 		self._music = ""
 		self._current_dropdown = 0
 		self._dropdowns_hide = False
+		self._dock_hidden = False
 
 		self._dock_width = 0
 		self._dock_height = 0
@@ -162,9 +174,9 @@ class EnvShellService(Service):
 
 	def remove_notification(self, id: int):
 		item = next((p for p in self._notifications if p["id"] == id), None)
+		if item is None:
+			return
 		index = self._notifications.index(item)
-
-		self.write_notifications(self._notifications)
 
 		self._notifications.pop(index)
 		self._notification_count -= 1
@@ -186,8 +198,6 @@ class EnvShellService(Service):
 		self._notifications = []
 		self._notification_count = 0
 
-		# Write the updated data back to the cache file
-		self.write_notifications(self._notifications)
 		self.clear_all_changed(True)
 		self.notification_count_changed(self._notification_count)
 
