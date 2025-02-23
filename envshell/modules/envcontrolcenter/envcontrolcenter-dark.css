@@ -120,3 +120,15 @@ highlight {
     background: alpha(#fff, 0.8);
     border-radius: 99px;
 }
+
+mark indicator {
+	background: none;
+	background-image: none;
+	color: alpha(#fff, 0.2);
+}
+
+mark label {
+	background: none;
+	background-image: none;
+	color: alpha(#fff, 0.2);
+}
