@@ -33,11 +33,15 @@
 
 [Dock]
 	title.limit = 25
-	exclusive = true
+	exclusive = false
+	# time it takes for the dock to start appearing or disappearing
+	lazy-time = 1000 # (ms)
+	# Only in bottom position
 	autohide = true
-	mode = "center" # center, full
-	size = 1 # 0.1 to 3
-	position = "bottom" # left, right, bottom
+	mode = "center" # [center, full]
+	size = 1 # 0.1->3
+	position = "bottom" # [left, right, bottom]
+	debug = false
 	[Dock.pinned]
 		"org.gnome.Nautilus" = "nautilus"
 		"org.gnome.Settings" = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
@@ -58,14 +62,6 @@
 		"com.github.rafostar.Clapper" = "clapper"
 		"blender" = "blender"
 		"obsidian" = "obsidian"
-[Corners]
-	[Corners.style]
-[Panel]
-	height = 24
-	full = true
-	mode = "normal" # floating, normal
-	date-format = "%a %b %d %H:%M"
-	icon = ""
 
 [Workspace]
 ignore.id.9 = true

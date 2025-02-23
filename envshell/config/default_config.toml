@@ -1,30 +1,25 @@
 [Window]
-	autohide.class."Hyprland" = true
 	autohide.class."main.py" = true
-	rename.class."code" = "vscode"
 	[Window.ignore]
 		class."main.py" = true
 	[Window.translate]
 		smart-title = true
 		class."None" = "Hyprland"
-		class."org.gnome.Nautilus" = "Finder"
-		class."org.gnome.NautilusPreviewer" = "Finder"
-
 [Widgets]
 	dock.enable = true
 	panel.enable = true
-[Notch]
 [Dock]
 	title.limit = 25
-	exclusive = true
+	exclusive = false
+	lazy-time = 1000
 	autohide = true
 	mode = "center"
 	size = 1
 	position = "bottom"
+	debug = false
 	[Dock.pinned]
 		"org.gnome.Nautilus" = "nautilus"
 		"kitty" = "kitty"
-[Corners]
 [Panel]
 	height = 24
 	full = true
