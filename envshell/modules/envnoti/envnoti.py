@@ -39,6 +39,7 @@ class NotificationWidget(Box):
 		if image_pixbuf := self._notification.image_pixbuf:
 			body_container.add(
 				CustomImage(
+					name="noti-image",
 					pixbuf=image_pixbuf.scale_simple(
 						NOTIFICATION_IMAGE_SIZE,
 						NOTIFICATION_IMAGE_SIZE,

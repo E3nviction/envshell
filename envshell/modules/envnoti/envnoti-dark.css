@@ -15,3 +15,7 @@
     color: #ddd;
     font-weight: normal;
 }
+
+#noti-image {
+    border-radius: 7px;
+}
