@@ -36,9 +36,7 @@ If you want to make it work on your machine, I would recommend changing the conf
 add this to your hyprland.conf
 
 ```conf
-layerrule = blur, nwg-dock
 layerrule = blur, fabric
-layerrule = ignorezero, nwg-dock
 layerrule = ignorezero, fabric
 windowrulev2 = size 250 355,    title:(About Menu)
 windowrulev2 = float,           title:(About Menu)
