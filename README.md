@@ -62,6 +62,17 @@ windowrulev2 = pin,             title:(About Menu)
 
 ![screenshot-6](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-6.png)
 
+## New
+
+| | |
+| --- | --- |
+| The newly Designed Control Center. Now being more similar to the macOS Control Center. Although there still isn't any music player, Now theres actually a new Window if clicking on the Bluetooth widget. You can see it below! | ![The New Design of the Control Center](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-new-cc.png) |
+| ![The Bluetooth Window](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-bluetooth.png) | This is the new Bluetooth window, accessed through the Control Center, give it a try! Here you can scan for new Devices or connect to already paired ones. On the right top you have a toggle for toggling the Bluetooth connection. Keep in mind that this is still in development |
+| Now we come to one of the most experimental features, the launcher. It's Design definitly needs refactoring, but for the moment it does everything you need, Launching Apps. | ![Volume OSD](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-launcher.png) |
+| ![](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-osd.png) | Are you tired of using an OSD server that's not integrated into your shell? Worry no more, because now you have your very own OSD server for volume control. |
+| Do you like Ubuntu? Do you want to have a side-ways Dock? If so then this is the perfect Dock for you, because it supports the left, right, and bottom position and even a floating and full setting! | ![Dock at the Left Side, Filling the Side](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-left-dock-full.png) |
+| ![Dock at the Left Side, Floating](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-left-dock-center.png) | This is the floating (or as it's called in the settings "center") mode for the Dock, as the name implies, it makes your dock float in the center, instead of taking up the whole space. |
+
 ## License
 
-MIT
+This Project is Licensed under the MIT License. See more at [LICENSE](license).
