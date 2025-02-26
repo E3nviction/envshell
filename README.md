@@ -19,6 +19,7 @@ Please note that EnvShell is still in an experimental stage and is known to only
 
 1. `cd envshell`
 2. `python main.py`
+3. Create a `config.toml` file in ~/.config/envshell and copy the envshell-config.toml into it.
 
 ### Hyprland
 
