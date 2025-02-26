@@ -40,7 +40,7 @@
 	autohide = true
 	mode = "center" # [center, full]
 	size = 1 # 0.1->3
-	position = "bottom" # [left, right, bottom]
+	position = "left" # [left, right, bottom]
 	debug = false
 	[Dock.pinned]
 		"org.gnome.Nautilus" = "nautilus"
@@ -63,6 +63,13 @@
 		"blender" = "blender"
 		"obsidian" = "obsidian"
 
+[Panel]
+	height = 24
+	full = true
+	mode = "normal"
+	date-format = "%a %b %d %H:%M"
+	icon = ""
+
 [Workspace]
 ignore.id.9 = true
 
@@ -72,7 +79,7 @@ ignore.id.9 = true
 		window.height = 355
 		window.resizable = false
 		computer-label = "Env Shell"
-		computer-caption = "ESH 0.1.0, 2024"
+		computer-caption = "ESH 0.2.0, 2025"
 		more-info = "https://github.com/E3nviction/envshell"
 	[Shell.env-menu]
 		options.settings.on-click = "code ~/.config/"

@@ -66,6 +66,15 @@ def load_config(config):
             c.shell_rule(rule=f"panel-env-menu-option-{i+1}-keybind", value=v[1])
         i += 1
 
+def write_config(config, config_to_write):
+    for k, v in config.items():
+        if isinstance(v, dict):
+            node = config_to_write.setdefault(k, {})
+            write_config(v, node)
+        else:
+            config_to_write[k] = v
+    return config_to_write
+
 with open("./config/default_config.toml", "rb") as f:
     default_config = tomllib.load(f)
     load_config(default_config)
@@ -75,6 +84,7 @@ try:
     with open("./config/config.toml", "rb") as f:
         config = tomllib.load(f)
     load_config(config)
+    config = write_config(config, default_config)
     c._private_config = config
 except:
     pass
