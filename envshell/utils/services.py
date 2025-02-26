@@ -31,7 +31,7 @@ class EnvShellService(Service):
 	def music_changed(self, value: str) -> None:
 		...
 	@Signal
-	def current_dropdown_changed(self, value: int) -> None:
+	def current_dropdown_changed(self, value: str) -> None:
 		...
 	@Signal
 	def dropdowns_hide_changed(self, value: bool) -> None:
@@ -70,8 +70,8 @@ class EnvShellService(Service):
 	@Property(str, flags="read-write")
 	def music(self) -> str:
 		return self._music
-	@Property(int, flags="read-write")
-	def current_dropdown(self) -> int:
+	@Property(str, flags="read-write")
+	def current_dropdown(self) -> str:
 		return self._current_dropdown
 	@Property(bool, flags="read-write", default_value=False)
 	def dropdowns_hide(self) -> bool:
@@ -122,7 +122,7 @@ class EnvShellService(Service):
 			self._music = value
 			self.music_changed(value)
 	@current_dropdown.setter
-	def current_dropdown(self, value: int):
+	def current_dropdown(self, value: str):
 		if value != self._current_dropdown:
 			self._current_dropdown = value
 			self.dropdowns_hide = not self.dropdowns_hide
@@ -163,7 +163,7 @@ class EnvShellService(Service):
 		self._dont_disturb = False
 		self._current_active_app_name = ""
 		self._music = ""
-		self._current_dropdown = 0
+		self._current_dropdown = "0"
 		self._dropdowns_hide = False
 		self._dock_hidden = False
 
