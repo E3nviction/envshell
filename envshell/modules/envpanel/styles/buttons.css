@@ -6,12 +6,8 @@
 	transition: all 100ms ease-in-out;
 }
 
-.button:hover {
+.button.active {
 	background: radial-gradient(alpha(#aaa, 0.2) 100%, transparent, transparent);
-}
-
-.button:active {
-	background-color: alpha(#aaa, 0.2);
 }
 
 /* EnvSH Button */
