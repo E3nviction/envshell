@@ -62,6 +62,7 @@ class Dropdown(EnvDropdown):
 	"""EnvMenu for envshell"""
 	def __init__(self, parent, **kwargs):
 		super().__init__(
+			dropdown_id="os-menu",
 			parent=parent,
 			dropdown_children=[
 				dropdown_option(self, "About this PC", on_clicked=lambda b: About().toggle(b)),
@@ -129,6 +130,7 @@ class EnvPanel(Window):
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
 		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
 		self.global_menu_title = EnvDropdown(
+			dropdown_id="global-menu-title",
 			parent=self,
 			dropdown_children=[
 				self.global_title_menu_about
@@ -195,6 +197,7 @@ class EnvPanel(Window):
 		self.global_menu_file   = None
 		self.global_menu_edit   = None
 		self.global_menu_view   = EnvDropdown(
+			dropdown_id="global-menu-view",
 			parent=self,
 			dropdown_children=[
 				dropdown_option(self, "Enter Full Screen", on_click="hyprctl dispatch fullscreen"),
@@ -202,6 +205,7 @@ class EnvPanel(Window):
 		)
 		self.global_menu_go     = None
 		self.global_menu_window = EnvDropdown(
+			dropdown_id="global-menu-window",
 			parent=self,
 			dropdown_children=[
 				dropdown_option(self, "Zoom", on_clicked=lambda b: subprocess.run("bash ~/.config/scripts/zoomer.sh", shell=True)),
@@ -216,6 +220,7 @@ class EnvPanel(Window):
 			]
 		)
 		self.global_menu_help   = EnvDropdown(
+			dropdown_id="global-menu-help",
 			parent=self,
 			dropdown_children=[
 				dropdown_option(self, "EnvShell", on_clicked=lambda b: subprocess.run("xdg-open https://github.com/E3nviction/envshell", shell=True)),
@@ -251,6 +256,9 @@ class EnvPanel(Window):
 			on_clicked=self.toggle_systray,
 		)
 
+		envshell_service.connect("current-dropdown-changed", self.changed_dropdown)
+		envshell_service.connect("dropdowns-hide-changed", self.hide_dropdowns)
+
 		self.children = CenterBox(
 			h_expand=True,
 			h_align="fill",
@@ -258,6 +266,35 @@ class EnvPanel(Window):
 			center_children=[self.notch_spot],
 			end_children=[self.systray, self.systray_button, self.power_button, self.wifi_button, self.search_button, self.control_center_button, self.date_time],
 		)
+
+	def hide_dropdowns(self, _, value):
+		self.envsh_button.remove_style_class("active")
+		self.global_menu_button_edit.remove_style_class("active")
+		self.global_menu_button_file.remove_style_class("active")
+		self.global_menu_button_go.remove_style_class("active")
+		self.global_menu_button_help.remove_style_class("active")
+		self.global_menu_button_title.remove_style_class("active")
+		self.global_menu_button_view.remove_style_class("active")
+		self.global_menu_button_window.remove_style_class("active")
+
+	def changed_dropdown(self, _, dropdown_id):
+		self.hide_dropdowns(_, True)
+		if dropdown_id == "os-menu":
+			self.envsh_button.add_style_class("active")
+		if dropdown_id == "global-menu-edit":
+			self.global_menu_button_edit.add_style_class("active")
+		if dropdown_id == "global-menu-file":
+			self.global_menu_button_file.add_style_class("active")
+		if dropdown_id == "global-menu-go":
+			self.global_menu_button_go.add_style_class("active")
+		if dropdown_id == "global-menu-help":
+			self.global_menu_button_help.add_style_class("active")
+		if dropdown_id == "global-menu-title":
+			self.global_menu_button_title.add_style_class("active")
+		if dropdown_id == "global-menu-view":
+			self.global_menu_button_view.add_style_class("active")
+		if dropdown_id == "global-menu-window":
+			self.global_menu_button_window.add_style_class("active")
 
 	def toggle_systray(self, b):
 		if "hidden" in self.systray.style_classes:
