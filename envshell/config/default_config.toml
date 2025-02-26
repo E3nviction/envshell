@@ -1,3 +1,6 @@
+[Display]
+res = "1920x1080"
+
 [Window]
 	autohide.class."main.py" = true
 	[Window.ignore]

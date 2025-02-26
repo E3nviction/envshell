@@ -93,7 +93,7 @@ class EnvPanel(Window):
 			style=f"""
 				border-radius: {10 if c.get_rule("Panel.mode") == "floating" else 0}px;
 			""",
-			size=(1920, 24),
+			size=(int(c.get_rule("Display.res").split("x")[0]), int(c.get_rule("Panel.height"))),
 			**kwargs,
 		)
 

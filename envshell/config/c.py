@@ -2,6 +2,7 @@ from .conf import Config
 from fabric.utils import get_relative_path
 import tomllib
 import json
+import os
 
 
 app_list = {
@@ -75,13 +76,16 @@ def write_config(config, config_to_write):
             config_to_write[k] = v
     return config_to_write
 
+config_location = os.path.join(os.path.expanduser("~"), ".config")
+print(config_location)
+
 with open("./config/default_config.toml", "rb") as f:
     default_config = tomllib.load(f)
     load_config(default_config)
     config = default_config
     c._private_config = config
 try:
-    with open("./config/config.toml", "rb") as f:
+    with open(os.path.join(config_location, "envshell", "config.toml"), "rb") as f:
         config = tomllib.load(f)
     load_config(config)
     config = write_config(config, default_config)
