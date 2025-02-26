@@ -13,7 +13,7 @@ def dropdown_divider(comment): return Box(children=[Box(name="dropdown-divider",
 
 class EnvDropdown(PopupWindow):
 	"""A Dropdown for envshell"""
-	def __init__(self, dropdown_children=None, **kwargs):
+	def __init__(self, dropdown_children=None, dropdown_id=None, **kwargs):
 		super().__init__(
 			layer="top",
 			exclusivity="auto",
@@ -23,7 +23,7 @@ class EnvDropdown(PopupWindow):
 			**kwargs,
 		)
 
-		self.id = len(dropdowns)
+		self.id = dropdown_id or str(len(dropdowns))
 		dropdowns.append(self)
 
 		envshell_service.connect("dropdowns-hide-changed", self.hide_dropdown)
@@ -64,3 +64,4 @@ class EnvDropdown(PopupWindow):
 		if self.is_hovered():
 			return
 		self.set_visible(False)
+		envshell_service.dropdowns_hide = not envshell_service.dropdowns_hide
