@@ -5,6 +5,8 @@
 A shell for Hyprland, designed with simplicity and aesthetics in mind, by mimicing the look of MacOS as closely as possible.
 All powered by [Fabric](https://github.com/Fabric-Development/fabric)
 
+See [Features](#features) below
+
 ![screenshot-1](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-1.png)
 
 ![screenshot-2](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-2.png)
@@ -12,19 +14,6 @@ All powered by [Fabric](https://github.com/Fabric-Development/fabric)
 ## Experimental
 
 Please note that EnvShell is still in an experimental stage and is known to only work on the author's machine. It is not guaranteed to work on other systems. Proceed with caution and be prepared to encounter issues.
-
-If you want to make it work on your machine, I would recommend changing the config file first, as it has paths for Nix Machines.
-
-## Structure
-
-- A TopPanel       (EnvPanel)
-- A Dock           (EnvDock)
-- An About Window  (EnvAbout)
-- A OSMenu         (EnvMenu)
-- A Notch          (EnvNotch)
-- A SpotLight      (EnvLight)
-- A ControlCenter  (EnvControlCenter)
-- A Noti-Daemon    (EnvNoti)
 
 ## Usage
 
@@ -44,12 +33,6 @@ windowrulev2 = noborder,        title:(About Menu)
 windowrulev2 = pin,             title:(About Menu)
 ```
 
-## Credits
-
-- [Hyprland](https://github.com/hyprwm/Hyprland)
-- [Fabric](https://github.com/Fabric-Development/fabric)
-- [Axenide's Dotfiles for Inspiration](https://github.com/Axenide/Dotfiles)
-
 ## Screenshots
 
 ![screenshot-3](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-3.png)
@@ -60,7 +43,7 @@ windowrulev2 = pin,             title:(About Menu)
 
 ![screenshot-6](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-6.png)
 
-## New
+## Features
 
 | | |
 | --- | --- |
@@ -70,6 +53,15 @@ windowrulev2 = pin,             title:(About Menu)
 | ![](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-osd.png) | Are you tired of using an OSD server that's not integrated into your shell? Worry no more, because now you have your very own OSD server for volume control. |
 | Do you like Ubuntu? Do you want to have a side-ways Dock? If so then this is the perfect Dock for you, because it supports the left, right, and bottom position and even a floating and full setting! | ![Dock at the Left Side, Filling the Side](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-left-dock-full.png) |
 | ![Dock at the Left Side, Floating](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-left-dock-center.png) | This is the floating (or as it's called in the settings "center") mode for the Dock, as the name implies, it makes your dock float in the center, instead of taking up the whole space. |
+| At last but not least, we have the System Tray, this simple expandable tray shows you all running tray apps. | ![SystemTray in action](https://raw.githubusercontent.com/E3nviction/envshell/refs/heads/master/assets/screenshot-systray.png) |
+
+## Credits
+
+Special thanks to all of these projects for making this possible
+
+- [Hyprland](https://github.com/hyprwm/Hyprland)
+- [Fabric](https://github.com/Fabric-Development/fabric)
+- [Axenide's Dotfiles for Inspiration](https://github.com/Axenide/Dotfiles)
 
 ## License
 
