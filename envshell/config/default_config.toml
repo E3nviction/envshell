@@ -16,6 +16,7 @@ res = "1920x1080"
 	exclusive = false
 	lazy-time = 1000
 	autohide = true
+	desktop-show = true
 	mode = "center"
 	size = 1
 	position = "bottom"

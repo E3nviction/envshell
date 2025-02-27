@@ -3,7 +3,9 @@ import time
 import sys
 import os
 
-from fabric import Application
+from datetime import datetime
+
+from fabric import Application, Fabricator
 from fabric.widgets.button import Button
 from fabric.widgets.svg import Svg
 from fabric.widgets.image import Image
@@ -41,10 +43,11 @@ class EnvDock(Window):
 		)
 
 		if c.get_rule("Dock.autohide"):
-			self.hotspot = EnvDockHotspot(self)
 			envshell_service.dock_hidden = True
 
 		self.icon_resolver = IconResolver()
+
+		self.last_hovered = datetime.now()
 
 		self.connection = get_hyprland_connection()
 
@@ -58,6 +61,7 @@ class EnvDock(Window):
 			"openwindow",
 			"closewindow",
 			"changefloatingmode",
+			# add workspace events
 		):
 			self.connection.connect(f"event::{event}", lambda *_: self.refresh_apps())
 
@@ -93,8 +97,8 @@ class EnvDock(Window):
 
 		self.children = self.dock_box
 
-		self.connect("enter-notify-event", self.do_check_hide)
-		self.connect("leave-notify-event", self.do_check_hide)
+		self.connect("enter-notify-event", self.do_check_hover)
+		self.connect("leave-notify-event", self.do_check_hover)
 
 		if c.get_rule("Dock.autohide"):
 			envshell_service.connect(
@@ -102,23 +106,32 @@ class EnvDock(Window):
 				self.do_check_hide,
 			)
 
+
+		self.hoverer = Fabricator(
+			interval=50,
+			default_value=False,
+			poll_from=self.is_not_hovered,
+			on_changed=self.hide_dock,
+		)
+
+	def is_not_hovered(self, *_):
+		return (datetime.now() - self.last_hovered).total_seconds() > (int(c.get_rule("Dock.lazy-time")) / 1000)
+
 	def show_dock(self, *_):
-		envshell_service.dock_hidden = True
+		envshell_service.dock_hidden = False
+
+	def hide_dock(self, f, v):
+		if v and self.fetch_clients_current_workspace():
+			envshell_service.dock_hidden = True
+			self.do_check_hide()
 
 	def do_check_hover(self, *_):
-		x, y = self.get_pointer()
-		allocation = self.get_allocation()
-		if y == 0:
-			envshell_service.dock_hidden = False
-			return
-		if not (0 < x < allocation.width and 0 < y < allocation.height + 5):
-			envshell_service.dock_hidden = True
-		else:
-			envshell_service.dock_hidden = False
+		self.last_hovered = datetime.now()
+		envshell_service.dock_hidden = False
 
 	def do_check_hide(self, *_):
 		if envshell_service.dock_hidden:
-			self.set_property("margin", (0,0,-(self.get_allocation().height),0))
+			self.set_property("margin", (0,0,-(self.get_allocation().height - 1),0))
 			if self.get_orientation() == "vertical":
 				if c.get_rule("Dock.position") == "left":
 					self.set_property("margin", (0,0,0,-(self.get_allocation().width)))
@@ -253,12 +266,15 @@ class EnvDock(Window):
 
 	def refresh_apps(self):
 		windows = self.fetch_clients()
+		dock_specific_apps = self.fetch_clients_current_workspace()
+		if dock_specific_apps == []:
+			envshell_service.dock_hidden = False
 		open_apps = []
 		for window in windows:
 			pid = window["pid"]
 			title = window["title"]
 			address = window["address"]
-			app_name = window["class"]
+			app_name = window["initialClass"]
 			if app_name == "":
 				app_name = window["title"]
 			if not (c.is_window_ignored(wmclass=str(app_name).lower()) or c.is_window_ignored(wmclass=str(app_name)) or c.is_workspace_ignored(id_=window["workspace"]["id"])):
@@ -275,6 +291,15 @@ class EnvDock(Window):
 		"""Retrieve open windows from Hyprland."""
 		try:
 			return json.loads(self.connection.send_command("j/clients").reply.decode())
+		except json.JSONDecodeError:
+			return []
+
+	def fetch_clients_current_workspace(self):
+		"""Retrieve open windows from Hyprland."""
+		try:
+			clients   = json.loads(self.connection.send_command("j/clients").reply.decode())
+			workspace = json.loads(self.connection.send_command("j/activeworkspace").reply.decode())
+			return [client for client in clients if client["workspace"]["id"] == workspace["id"]]
 		except json.JSONDecodeError:
 			return []
 
