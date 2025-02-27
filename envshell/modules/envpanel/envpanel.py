@@ -19,9 +19,8 @@ from fabric.utils import FormattedString, truncate
 from fabric.utils.helpers import exec_shell_command_async
 from gi.repository import GLib, Gtk, GdkPixbuf
 
-global instance
 global envshell_service
-from utils.roam import instance, envshell_service, audio_service
+from utils.roam import envshell_service, audio_service
 from utils.functions import app_name_class
 from widgets.envdropdown import EnvDropdown, dropdown_divider
 from widgets.osd_widget import OsdWindow

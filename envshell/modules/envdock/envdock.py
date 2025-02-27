@@ -10,8 +10,11 @@ from fabric.widgets.image import Image
 from fabric.widgets.label import Label
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
+from fabric.utils.helpers import exec_shell_command_async
+from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import GLib
+import json
 
 
 from config.c import c, app_list
@@ -19,10 +22,8 @@ from config.c import c, app_list
 from utils.functions import app_name_class
 from utils.icon_resolver import IconResolver
 
-global instance
 global envshell_service
-from utils.roam import create_instance, envshell_service
-instance = create_instance()
+from utils.roam import envshell_service
 
 class EnvDock(Window):
 	"""Hackable dock for envshell."""
@@ -44,6 +45,21 @@ class EnvDock(Window):
 			envshell_service.dock_hidden = True
 
 		self.icon_resolver = IconResolver()
+
+		self.connection = get_hyprland_connection()
+
+		if self.connection.ready:
+			self.refresh_apps()
+		else:
+			self.connection.connect("event::ready", lambda *_: self.refresh_apps())
+
+		for event in (
+			"activewindow",
+			"openwindow",
+			"closewindow",
+			"changefloatingmode",
+		):
+			self.connection.connect(f"event::{event}", lambda *_: self.refresh_apps())
 
 		if self.get_orientation() == "horizontal":
 			self.set_property("height-request", round(c.get_rule("Dock.size") * 64))
@@ -86,15 +102,12 @@ class EnvDock(Window):
 				self.do_check_hide,
 			)
 
-		self.start_update_thread()
-
 	def show_dock(self, *_):
 		envshell_service.dock_hidden = True
 
 	def do_check_hover(self, *_):
 		x, y = self.get_pointer()
 		allocation = self.get_allocation()
-		print(x,y)
 		if y == 0:
 			envshell_service.dock_hidden = False
 			return
@@ -140,11 +153,14 @@ class EnvDock(Window):
 		elif pos == "right": orientation = "vertical"
 		return orientation
 
+	def focus_app(self, b):
+		os.system("hyprctl dispatch focuswindow address:" + b.get_name())
+
+	def launch_app(self, b):
+		exec_shell_command_async(f"nohup {c.dock_pinned[b.get_name()]}")
 
 	def dock_apps_changed(self, _apps):
 		"""Update UI safely in the main thread."""
-		def focus(b): os.system("hyprctl dispatch focuswindow address:" + b.get_name())
-		def launch(b): os.system("hyprctl dispatch exec " + c.dock_pinned[b.get_name()])
 		def dock_apps_changed_update():
 			self.dock_box.children = []
 			apps = _apps
@@ -178,7 +194,7 @@ class EnvDock(Window):
 						style_classes=("active" if active else "", "dock-app-button", "running"),
 						h_align="center",
 						v_align="center",
-						on_clicked=focus,
+						on_clicked=self.focus_app,
 						tooltip_text=f"{app}",
 					)
 					app_button = Box(
@@ -198,7 +214,7 @@ class EnvDock(Window):
 								style_classes=("active" if active else "", "dock-app-button"),
 								h_align="center",
 								v_align="center",
-								on_clicked=launch,
+								on_clicked=self.launch_app,
 								tooltip_text=f"{app}",
 							),
 						],
@@ -235,31 +251,41 @@ class EnvDock(Window):
 		name = app_name_class.format_app_name(title, wmclass, False)
 		return name
 
-	def start_update_thread(self):
-		"""Start a background thread to monitor open applications."""
-		def run():
-			while True:
-				windows = instance.get_windows()
-				open_apps = []
-				for window in windows:
-					pid = window.pid
-					title = window.title
-					address = window.address
-					app_name = window.wm_class
-					if app_name == "":
-						app_name = window.title
-					if not (c.is_window_ignored(wmclass=str(app_name).lower()) or c.is_window_ignored(wmclass=str(app_name)) or c.is_workspace_ignored(id_=window.workspace_id)):
-						try:
-							iaddress = instance.get_active_window().address
-						except:
-							iaddress = None
-						open_apps.append([app_name, pid, str(title), address, iaddress == address])
-				# sort alphabetically
-				open_apps = sorted(open_apps, key=lambda x: x[0])
-				envshell_service.dock_apps = str(open_apps)
-				time.sleep(0.25)
+	def refresh_apps(self):
+		windows = self.fetch_clients()
+		open_apps = []
+		for window in windows:
+			pid = window["pid"]
+			title = window["title"]
+			address = window["address"]
+			app_name = window["class"]
+			if app_name == "":
+				app_name = window["title"]
+			if not (c.is_window_ignored(wmclass=str(app_name).lower()) or c.is_window_ignored(wmclass=str(app_name)) or c.is_workspace_ignored(id_=window["workspace"]["id"])):
+				try:
+					iaddress = self.get_focused_window()["address"]
+				except:
+					iaddress = None
+				open_apps.append([app_name, pid, str(title), address, iaddress == address])
+		# sort alphabetically
+		open_apps = sorted(open_apps, key=lambda x: x[0])
+		envshell_service.dock_apps = str(open_apps)
 
-		threading.Thread(target=run, daemon=True).start()
+	def fetch_clients(self):
+		"""Retrieve open windows from Hyprland."""
+		try:
+			return json.loads(self.connection.send_command("j/clients").reply.decode())
+		except json.JSONDecodeError:
+			return []
+
+	def get_focused_window(self):
+		"""Get the currently focused window's address."""
+		try:
+			return json.loads(
+				self.connection.send_command("j/activewindow").reply.decode()
+			).get("address", "")
+		except json.JSONDecodeError:
+			return ""
 
 class EnvDockHotspot(Window):
 	def __init__(self, dock, **kwargs):

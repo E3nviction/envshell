@@ -5,12 +5,6 @@ from fabric.audio import Audio
 from fabric.notifications import Notifications
 from utils.services import EnvShellService
 
-global instance
-try:
-    instance = Hyprland()
-except Exception as e:
-    print("Failed to connect to Hyprland:", e)
-    sys.exit(1)
 
 global envshell_service
 try:
@@ -32,15 +26,3 @@ try:
 except Exception as e:
     print("Failed to create AudioService:", e)
     sys.exit(1)
-
-def main():
-    return instance, envshell_service
-
-def create_instance():
-    try:
-        _instance = Hyprland()
-    except Exception as e:
-        print("Failed to connect to Hyprland:", e)
-        sys.exit(1)
-
-    return _instance
