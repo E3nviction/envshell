@@ -1,5 +1,5 @@
 from .conf import Config
-from fabric.utils import get_relative_path
+from fabric.utils import get_relative_path, monitor_file
 import tomllib
 import json
 import os
@@ -78,19 +78,35 @@ def write_config(config, config_to_write):
     return config_to_write
 
 config_location = os.path.join(os.path.expanduser("~"), ".config")
+global default_config
+global config
+default_config = {}
+config = {}
+def load_default_config():
+    global default_config
+    global config
+    with open("./config/default_config.toml", "rb") as f:
+        default_config = tomllib.load(f)
+        load_config(default_config)
+        config = default_config
+        c._private_config = config
 
-with open("./config/default_config.toml", "rb") as f:
-    default_config = tomllib.load(f)
-    load_config(default_config)
-    config = default_config
-    c._private_config = config
+def load_config_file():
+    global default_config
+    global config
+    logger.warning("[Main] Applying Config")
+    try:
+        with open(os.path.join(config_location, "envshell", "config.toml"), "rb") as f:
+            config = tomllib.load(f)
+        config = write_config(config, default_config)
+        load_config(config)
+        c._private_config = config
+    except:
+        logger.warning("Could not find a config file, using default")
+    json.dump(config, open("./config/latest_compiled_config.json", "w"), indent=4)
 
-try:
-    with open(os.path.join(config_location, "envshell", "config.toml"), "rb") as f:
-        config = tomllib.load(f)
-    config = write_config(config, default_config)
-    load_config(config)
-    c._private_config = config
-except:
-    logger.warning("Could not find a config file, using default")
-json.dump(config, open("./config/latest_compiled_config.json", "w"), indent=4)
+load_default_config()
+load_config_file()
+
+config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "config.toml"))
+config_file_monitor.connect("changed", lambda *_: load_config_file())

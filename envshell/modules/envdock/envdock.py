@@ -252,7 +252,7 @@ class EnvDock(Window):
 							style_classes=("active" if active else "", "dock-app-button", address),
 							h_align="center",
 							v_align="center",
-							on_clicked=focus,
+							on_clicked=self.focus_app,
 							tooltip_text=f"{app} ({f"{title[:c.get_rule('Dock.title.limit')]}..."})",
 						),
 						Svg(svg_file="./assets/svgs/indicator.svg", size=(6), name="dock-app-indicator", h_align="center", v_align="center"),

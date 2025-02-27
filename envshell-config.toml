@@ -1,3 +1,6 @@
+# Note: Most of these settings require a restart of envShell,
+# 		there are some exceptions, but dock position for example requires a restart
+
 [Display]
 res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 
@@ -66,6 +69,26 @@ res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 		"org.gnome.Loupe" = "loupe"
 		"org.gnome.clocks" = "gnome-clocks"
 		"spotify" = "spotify"
+[Panel]
+	height = 24
+	# Whether the panel is full width or not
+	full = true
+	# If you want a dock that expands to the screen edges, or a floating one in the center
+	mode = "normal" # [normal, floating]
+	# The date format for the panel
+	# %Y Year         = 2025
+	# %m Month        = [01,12]
+	# %d Day          = [01,31]
+	# %H Hour (24)    = [00,23] | %I Hour (12)
+	# %M Minute       = [00,59]
+	# %S Second       = [00,61]
+	# %a abbr weekday = Mon | %A full weekday
+	# %b abbr month   = Jan | %B full month
+	# %c date & time  = Thu 27 Feb 05:16:23 PM CET 2025
+	# %p AM or PM     = PM
+	# %z Timezone     = CET
+	date-format = "%a %b %d %H:%M"
+	icon = ""
 
 [Workspace]
 # Makes the dock ignore apps on workspace id 9

@@ -1,11 +1,11 @@
-@import "./modules/envpanel/envpanel-dark.css";
+@import "./styles/envpanel-dark.css";
 
-@import "./modules/envdock/envdock-dark.css";
+@import "./styles/envdock-dark.css";
 
-@import "./modules/envnotch/envnotch-dark.css";
+@import "./styles/envnotch-dark.css";
 
-@import "./modules/envlight/envlight-dark.css";
+@import "./styles/envlight-dark.css";
 
-@import "./modules/envnoti/envnoti-dark.css";
+@import "./styles/envnoti-dark.css";
 
-@import "./modules/envcontrolcenter/envcontrolcenter-dark.css";
+@import "./styles/envcontrolcenter-dark.css";

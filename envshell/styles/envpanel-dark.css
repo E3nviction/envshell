@@ -1,10 +1,10 @@
-@import "modules/envpanel/styles/def.css";
-@import "modules/envpanel/styles/buttons.css";
-@import "modules/envpanel/styles/dropdown-dark.css";
-@import "modules/envpanel/styles/panel.css";
-@import "modules/envpanel/styles/power.css";
-@import "modules/envpanel/styles/time.css";
-@import "modules/envpanel/about.css";
+@import "styles/_def.css";
+@import "styles/_buttons.css";
+@import "styles/_dropdown-dark.css";
+@import "styles/_panel.css";
+@import "styles/_power.css";
+@import "styles/_time.css";
+@import "styles/envpanel-dark-about.css";
 
 #global-title-button label {
 	font-weight: 600;
