@@ -41,6 +41,8 @@ res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 	lazy-time = 1000 # (ms)
 	# if you want to make the dock hide
 	autohide = true
+	# if you want to show the dock on an empty workspace
+	show-on-workspace = true
 	# If you want a dock that expands to the screen edges, or a floating one in the center
 	mode = "center" # [center, full]
 	# The Height and Icon size of the dock

@@ -12,11 +12,12 @@ res = "1920x1080"
 	dock.enable = true
 	panel.enable = true
 [Dock]
+	legacy = false
 	title.limit = 25
 	exclusive = false
 	lazy-time = 1000
 	autohide = true
-	desktop-show = true
+	show-on-workspace = true
 	mode = "center"
 	size = 1
 	position = "bottom"

@@ -2,6 +2,7 @@ from modules.envnotch.envnotch import EnvNotch
 from modules.envpanel.envpanel import EnvPanel
 from modules.envnoti.envnoti import EnvNoti
 from modules.envdock.envdock import EnvDock
+from modules.envdock.envdock_old import EnvDock as EnvDockLegacy
 from modules.envcorners.envcorners import EnvCorners
 from modules.envlight.envlight import EnvLight
 from fabric import Application
@@ -24,7 +25,10 @@ if __name__ == "__main__":
 	if c.get_rule("Widgets.panel.enable"):
 		envpanel = EnvPanel()
 	if c.get_rule("Widgets.dock.enable"):
-		envdock = EnvDock()
+		if c.get_rule("Dock.legacy"):
+			envdock = EnvDockLegacy()
+		else:
+			envdock = EnvDock()
 	apps = [
 		envnoti,
 		envnotch,
