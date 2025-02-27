@@ -61,6 +61,7 @@ class EnvDock(Window):
 			"openwindow",
 			"closewindow",
 			"changefloatingmode",
+			"changeworkspace",
 			# add workspace events
 		):
 			self.connection.connect(f"event::{event}", lambda *_: self.refresh_apps())
@@ -121,7 +122,7 @@ class EnvDock(Window):
 		envshell_service.dock_hidden = False
 
 	def hide_dock(self, f, v):
-		if v and self.fetch_clients_current_workspace():
+		if v and (self.fetch_clients_current_workspace() if c.get_rule("Dock.show-on-workspace") else True):
 			envshell_service.dock_hidden = True
 			self.do_check_hide()
 
@@ -130,13 +131,15 @@ class EnvDock(Window):
 		envshell_service.dock_hidden = False
 
 	def do_check_hide(self, *_):
+		if not c.get_rule("Dock.autohide"):
+			return
 		if envshell_service.dock_hidden:
 			self.set_property("margin", (0,0,-(self.get_allocation().height - 1),0))
 			if self.get_orientation() == "vertical":
 				if c.get_rule("Dock.position") == "left":
-					self.set_property("margin", (0,0,0,-(self.get_allocation().width)))
+					self.set_property("margin", (0,0,0,-(self.get_allocation().width - 1)))
 				elif c.get_rule("Dock.position") == "right":
-					self.set_property("margin", (0,-(self.get_allocation().width),0,0))
+					self.set_property("margin", (0,-(self.get_allocation().width - 1),0,0))
 		else:
 			self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5))
 
