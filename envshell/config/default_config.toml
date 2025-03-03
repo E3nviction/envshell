@@ -32,6 +32,20 @@ res = "1920x1080"
 	mode = "normal"
 	date-format = "%a %b %d %H:%M"
 	icon = ""
+	[Panel.Widgets]
+		left.enable = true
+		info-menu.enable = true
+		global-title.enable = true
+		global-menu.enable = true
+
+		right.enable = true
+		system-tray.enable = true
+		system-tray.expandable = true
+		battery.enable = true
+		wifi.enable = true
+		search.enable = true
+		control-center.enable = true
+		date.enable = true
 
 [Workspace]
 ignore.id.9 = true

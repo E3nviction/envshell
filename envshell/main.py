@@ -13,10 +13,14 @@ import setproctitle
 from utils.functions import AppName
 from config.c import c
 
-loguru.logger.disable("fabric.hyprland.widgets")
-loguru.logger.disable("fabric.widgets.wayland")
-loguru.logger.disable("fabric.audio.service")
-loguru.logger.disable("fabric.bluetooth.service")
+for disable in [
+	"fabric.hyprland.widgets",
+	"fabric.widgets.wayland",
+	"fabric.audio.service",
+	"fabric.bluetooth.service",
+	"fabric.core.application",
+]:
+	loguru.logger.disable(disable)
 
 def apply_style(app):
 	loguru.logger.info("[Main] Applying CSS")

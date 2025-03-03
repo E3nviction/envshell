@@ -93,7 +93,25 @@ res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 	# %z Timezone     = CET
 	date-format = "%a %b %d %H:%M"
 	# A Nerd Font icon for the panel's left button (commonly referred to as the darwin menu)
+	# (here it's called the info-menu)
 	icon = ""
+	[Panel.Widgets]
+		# left Widgets
+		left.enable = true
+		info-menu.enable = true
+		global-title.enable = true
+		global-menu.enable = true
+
+		# right Widgets
+		right.enable = true
+		system-tray.enable = true
+		# set this to false, to always have the system tray visible
+		system-tray.expandable = true
+		battery.enable = true
+		wifi.enable = true
+		search.enable = true
+		control-center.enable = true
+		date.enable = true
 
 [Workspace]
 # Makes the dock ignore apps on workspace id 9

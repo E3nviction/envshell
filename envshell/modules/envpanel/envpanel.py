@@ -246,10 +246,10 @@ class EnvPanel(Window):
 		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_dropdown(b, self.global_menu_button_help))
 		self.global_menu_help.set_pointing_to(self.global_menu_button_help)
 
-		self.systray = SystemTray(name="system-tray", icon_size=16, spacing=4, style_classes="hidden")
+		self.systray = SystemTray(name="system-tray", icon_size=16, spacing=4)
 
 		self.systray_button = Button(
-			label="",
+			label="",
 			name="systray-button",
 			style_classes="button",
 			on_clicked=self.toggle_systray,
@@ -258,12 +258,36 @@ class EnvPanel(Window):
 		envshell_service.connect("current-dropdown-changed", self.changed_dropdown)
 		envshell_service.connect("dropdowns-hide-changed", self.hide_dropdowns)
 
+		left_widgets = []
+
+		if c.get_rule("Panel.Widgets.info-menu.enable"): left_widgets.append(self.envsh_button)
+		if c.get_rule("Panel.Widgets.global-title.enable"): left_widgets.append(self.global_menu_title)
+		if c.get_rule("Panel.Widgets.global-menu.enable"):
+			left_widgets.extend([
+				self.global_menu_button_file,
+				self.global_menu_button_edit,
+				self.global_menu_button_view,
+				self.global_menu_button_go,
+				self.global_menu_button_window,
+				self.global_menu_button_help,
+			])
+
+		right_widgets = []
+
+		if c.get_rule("Panel.Widgets.system-tray.enable"): right_widgets.append(self.systray)
+		if c.get_rule("Panel.Widgets.system-tray.expandable"): right_widgets.append(self.systray_button)
+		if c.get_rule("Panel.Widgets.battery.enable"): right_widgets.append(self.power_button)
+		if c.get_rule("Panel.Widgets.wifi.enable"): right_widgets.append(self.wifi_button)
+		if c.get_rule("Panel.Widgets.search.enable"): right_widgets.append(self.search_button)
+		if c.get_rule("Panel.Widgets.control-center.enable"): right_widgets.append(self.control_center_button)
+		if c.get_rule("Panel.Widgets.date.enable"): right_widgets.append(self.date_time)
+
 		self.children = CenterBox(
 			h_expand=True,
 			h_align="fill",
-			start_children=[self.envsh_button, self.global_menu_button_title, self.global_menu_button_file, self.global_menu_button_edit, self.global_menu_button_view, self.global_menu_button_go, self.global_menu_button_window, self.global_menu_button_help],
+			start_children=left_widgets if c.get_rule("Panel.Widgets.left.enable") else [],
 			center_children=[self.notch_spot],
-			end_children=[self.systray, self.systray_button, self.power_button, self.wifi_button, self.search_button, self.control_center_button, self.date_time],
+			end_children=right_widgets if c.get_rule("Panel.Widgets.right.enable") else [],
 		)
 
 	def hide_dropdowns(self, _, value):
