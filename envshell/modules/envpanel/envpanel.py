@@ -12,7 +12,7 @@ from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
 from fabric.widgets.scale import ScaleMark
 from fabric.widgets.svg import Svg
-from fabric.system_tray.widgets import SystemTray
+from widgets.systrayv2 import SystemTray
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
@@ -218,6 +218,7 @@ class EnvPanel(Window):
 				dropdown_option(self, "Pin", on_clicked=lambda b: subprocess.run("bash ~/.config/scripts/winpin.sh", shell=True)),
 			]
 		)
+
 		self.global_menu_help   = EnvDropdown(
 			dropdown_id="global-menu-help",
 			parent=self,
@@ -261,7 +262,7 @@ class EnvPanel(Window):
 		left_widgets = []
 
 		if c.get_rule("Panel.Widgets.info-menu.enable"): left_widgets.append(self.envsh_button)
-		if c.get_rule("Panel.Widgets.global-title.enable"): left_widgets.append(self.global_menu_title)
+		if c.get_rule("Panel.Widgets.global-title.enable"): left_widgets.append(self.global_menu_button_title)
 		if c.get_rule("Panel.Widgets.global-menu.enable"):
 			left_widgets.extend([
 				self.global_menu_button_file,
