@@ -8,7 +8,6 @@ def parse(xml):
 		root = tree.getroot()
 	return root
 
-# print
 def dxml(root, depth=0):
 	val = []
 	for child in root:

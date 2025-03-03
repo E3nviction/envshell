@@ -94,7 +94,7 @@ def load_default_config():
 def load_config_file():
     global default_config
     global config
-    logger.warning("[Main] Applying Config")
+    logger.info("[Main] Applying Config")
     try:
         with open(os.path.join(config_location, "envshell", "config.toml"), "rb") as f:
             config = tomllib.load(f)

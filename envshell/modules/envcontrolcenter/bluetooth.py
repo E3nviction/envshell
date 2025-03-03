@@ -58,8 +58,6 @@ class BluetoothDeviceSlot(CenterBox):
             Label(label=device.name),
         ]
 
-        print(self.start_children[0].get_property("name"))
-
         self.device.emit("changed")  # to update display status
 
     def toggle_connecting(self):

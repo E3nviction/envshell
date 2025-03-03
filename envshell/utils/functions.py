@@ -27,7 +27,7 @@ def set_socket(value):
 			# write value
 			f.write(value)
 	except Exception as e:
-		print("Failed to create socket:", e)
+		logger.error("[Main] Failed to create socket:", e)
 		sys.exit(1)
 
 def get_from_socket():
@@ -46,7 +46,7 @@ def get_from_socket():
 				lines.append(line)
 			return lines
 	except Exception as e:
-		print("Failed to read from socket:", e)
+		logger.error("[Main] Failed to read from socket:", e)
 		sys.exit(1)
 
 class AppName:

@@ -278,7 +278,6 @@ class EnvPanel(Window):
 
 	def changed_dropdown(self, _, dropdown_id):
 		self.hide_dropdowns(_, True)
-		print(dropdown_id)
 		if dropdown_id == "os-menu":
 			self.envsh_button.add_style_class("active")
 		if dropdown_id == "global-menu-edit":
