@@ -108,5 +108,13 @@ def load_config_file():
 load_default_config()
 load_config_file()
 
+# check if config exists
+if not os.path.exists(os.path.join(config_location, "envshell")):
+    os.makedirs(os.path.join(config_location, "envshell"))
+
+# check if config file exists
+if not os.path.exists(os.path.join(config_location, "envshell", "config.toml")):
+    shutil.copyfile("./config/example_config.toml", os.path.join(config_location, "envshell", "config.toml"))
+
 config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "config.toml"))
 config_file_monitor.connect("changed", lambda *_: load_config_file())
