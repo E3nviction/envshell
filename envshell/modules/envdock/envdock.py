@@ -116,13 +116,15 @@ class EnvDock(Window):
 		)
 
 	def is_not_hovered(self, *_):
-		return (datetime.now() - self.last_hovered).total_seconds() > (int(c.get_rule("Dock.lazy-time")) / 1000)
+		return (datetime.now() - self.last_hovered).total_seconds() > (int(c.get_rule("Dock.lazy-time")) / 1000) and not self.is_hovered()
 
 	def show_dock(self, *_):
+		self.steal_input()
 		envshell_service.dock_hidden = False
 
 	def hide_dock(self, f, v):
 		if v and (self.fetch_clients_current_workspace() if c.get_rule("Dock.show-on-workspace") else True):
+			self.return_input()
 			envshell_service.dock_hidden = True
 			self.do_check_hide()
 
