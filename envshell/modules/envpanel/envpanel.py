@@ -222,7 +222,7 @@ class EnvPanel(Window):
 			dropdown_id="global-menu-help",
 			parent=self,
 			dropdown_children=[
-				dropdown_option(self, "EnvShell", on_clicked=lambda b: subprocess.run("xdg-open https://github.com/E3nviction/envshell", shell=True)),
+				dropdown_option(self, "envShell", on_clicked=lambda b: subprocess.run("xdg-open https://github.com/E3nviction/envshell", shell=True)),
 				dropdown_divider("---------------------"),
 				dropdown_option(self, "nixOS Help", on_clicked=lambda b: subprocess.run("xdg-open https://wiki.nixos.org/wiki/NixOS_Wiki", shell=True)),
 			]
@@ -278,6 +278,7 @@ class EnvPanel(Window):
 
 	def changed_dropdown(self, _, dropdown_id):
 		self.hide_dropdowns(_, True)
+		print(dropdown_id)
 		if dropdown_id == "os-menu":
 			self.envsh_button.add_style_class("active")
 		if dropdown_id == "global-menu-edit":

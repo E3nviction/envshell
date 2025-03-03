@@ -1,4 +1,4 @@
-# EnvShell
+# envShell
 
 ---
 
@@ -13,7 +13,7 @@ See [Features](#features) below
 
 ## Experimental
 
-Please note that EnvShell is still in an experimental stage and is known to only work on the author's machine. It is not guaranteed to work on other systems. Proceed with caution and be prepared to encounter issues.
+Please note that envShell is still in an experimental stage and is known to only work on the author's machine. It is not guaranteed to work on other systems. Proceed with caution and be prepared to encounter issues.
 
 ## Usage
 
