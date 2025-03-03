@@ -169,7 +169,7 @@ class EnvControlCenter(Window):
 					self.smode = get_from_socket()[0]
 
 					wlan = subprocess.run("iwgetid -r", shell=True, capture_output=True, text=True)
-					if self.smode == True:
+					if self.smode != True:
 						envshell_service.wlan = "PhotonWeb5"
 					else:
 						envshell_service.wlan = "No Connection" if wlan.stdout.strip() == "" else wlan.stdout.strip()
