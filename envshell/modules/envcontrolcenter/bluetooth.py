@@ -84,10 +84,6 @@ class BluetoohConnections(Box):
 
         self.client = BluetoothClient(on_device_added=self.on_device_added)
         self.title = Label("Bluetooth")
-        self.scan_button = Button(
-            name="scan-button",
-            on_clicked=lambda *_: self.client.toggle_scan()
-        )
         self.toggle_button = CheckButton(
             name="toggle-button",
             on_clicked=lambda *_: self.client.toggle_power()
@@ -99,12 +95,6 @@ class BluetoohConnections(Box):
                 "Bluetooth " + ("On" if self.client.enabled else "Off")
             ),
         )
-        self.client.connect(
-            "notify::scanning",
-            lambda *_: self.scan_button.set_label(
-                "Stop" if self.client.scanning else "Scan"
-            ),
-        )
 
         self.not_paired = Box(spacing=2, orientation="vertical")
         self.paired = Box(spacing=2, orientation="vertical")
@@ -112,7 +102,7 @@ class BluetoohConnections(Box):
         self.device_box = Box(spacing=2, orientation="vertical", children=[self.paired, self.not_paired])
 
         self.children = [
-            CenterBox(start_children=self.title, center_children=self.scan_button, end_children=self.toggle_button, name="bluetooth-widget-top"),
+            CenterBox(start_children=self.title, end_children=self.toggle_button, name="bluetooth-widget-top"),
             Label("Devices", h_align="start", name="devices-title"),
             ScrolledWindow(min_content_size=(300, 400), max_content_size=(300, 800), child=self.device_box, overlay_scroll=True),
         ]
