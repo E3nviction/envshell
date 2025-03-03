@@ -2,16 +2,16 @@
 res = "1920x1080"
 
 [Window]
+	autohide.class."Hyprland" = true
 	autohide.class."main.py" = true
 	[Window.ignore]
 		class."main.py" = true
 	[Window.translate]
 		smart-title = true
 		class."None" = "Hyprland"
-[Widgets]
-	dock.enable = true
-	panel.enable = true
+[Notch]
 [Dock]
+	enable = true
 	legacy = false
 	title.limit = 25
 	exclusive = false
@@ -26,6 +26,7 @@ res = "1920x1080"
 		"org.gnome.Nautilus" = "nautilus"
 		"kitty" = "kitty"
 [Panel]
+	enable = true
 	height = 24
 	full = true
 	mode = "normal"

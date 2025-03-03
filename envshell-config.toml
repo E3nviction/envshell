@@ -17,6 +17,7 @@ res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 	[Window.translate]
 		# Enable this, if you want to manually give each Application a Title
 		#force-manual = true
+
 		# Smart title enables following features:
 		#	- org.gnome.Nautilus -> Nautilus           : Remove Reverse URL from App class
 		#	- visual studio code -> Visual Studio Code : Change to PascalCase
@@ -28,14 +29,14 @@ res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 		class."org.gnome.Software" = "App Store"
 		class."discord" = "Discord"
 		class."vesktop" = "Vesktop"
-
-[Widgets]
-	dock.enable = true
-	panel.enable = true
-
 [Notch]
-	[Notch.style]
+	# Coming soon...
 [Dock]
+	enable = true
+
+	# If you want to use the legacy dock system for hovering (Does not support Lazy Time)
+	# This might get deprecated in the future
+	legacy = false
 	# how long the title of a non-pinned app can be in the dock
 	title.limit = 25
 	# make the dock push away windows
@@ -70,6 +71,9 @@ res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 		"org.gnome.clocks" = "gnome-clocks"
 		"spotify" = "spotify"
 [Panel]
+	enable = true
+
+	# The height of the panel
 	height = 24
 	# Whether the panel is full width or not
 	full = true
@@ -88,6 +92,7 @@ res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 	# %p AM or PM     = PM
 	# %z Timezone     = CET
 	date-format = "%a %b %d %H:%M"
+	# A Nerd Font icon for the panel's left button (commonly referred to as the darwin menu)
 	icon = ""
 
 [Workspace]
@@ -101,3 +106,25 @@ directory = "envshell"
 [Bluetooth]
 # If you want to show Devices without names
 show-hidden-devices = false
+
+
+# This is rarely changed by the user, you can delete it if you want
+
+[Shell]
+	[Shell.about]
+		window.width = 250
+		window.height = 355
+		window.resizable = false
+		computer-label = "Env Shell"
+		computer-caption = "ESH 0.2.0, 2025"
+		more-info = "https://github.com/E3nviction/envshell"
+	[Shell.env-menu]
+		options.settings.on-click = "code ~/.config/"
+		# If you want to use Gnome Control Center, you can uncomment this
+		#options.settings.on-click = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
+
+		options.store.label = "Nix Store..."
+		options.store.on-click = "xdg-open https://search.nixos.org/packages"
+		# If you want to use a different Store, such as the Gnome Software store, you can uncomment this
+		#options.store.label = "App Store..."
+		#options.store.on-click = "gnome-software"

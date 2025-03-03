@@ -28,9 +28,9 @@ if __name__ == "__main__":
 	envnotch = EnvNotch()
 	envdock = None
 	envpanel = None
-	if c.get_rule("Widgets.panel.enable"):
+	if c.get_rule("Panel.enable"):
 		envpanel = EnvPanel()
-	if c.get_rule("Widgets.dock.enable"):
+	if c.get_rule("Dock.enable"):
 		if c.get_rule("Dock.legacy"):
 			envdock = EnvDockLegacy()
 		else:
