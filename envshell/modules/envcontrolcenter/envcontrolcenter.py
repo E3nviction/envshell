@@ -19,6 +19,7 @@ from fabric.utils.helpers import exec_shell_command_async
 from fabric.audio import Audio
 from fabric.bluetooth import BluetoothClient, BluetoothDevice
 from gi.repository import GLib
+from fabric import Fabricator
 
 global envshell_service
 global audio_service
@@ -45,11 +46,13 @@ class BluetoothWindow(PopupWindow):
 			**kwargs,
 		)
 
+		self.blue = BluetoohConnections()
+
 		self.box = Box(
 			orientation="vertical",
 			name="control-center-widgets",
 			children=[
-				BluetoohConnections()
+				self.blue
 			]
 		)
 
@@ -58,6 +61,23 @@ class BluetoothWindow(PopupWindow):
 		self.children = [self.event_box]
 
 		self.add_keybinding("Escape", self.toggle_bluetooth)
+
+		self.fabricator = Fabricator(
+			interval=5000,
+			default_value=False,
+			poll_from=self.can_scan,
+			on_changed=self.change_scan
+		)
+		self.fabricator.start()
+
+	def change_scan(self, f, v):
+		if v == False:
+			self.blue.client.scanning = False
+		else:
+			self.blue.client.scanning = True
+
+	def can_scan(self, *_):
+		return self.is_visible()
 
 	def toggle_bluetooth(self, *_):
 		self.set_visible(False)

@@ -2,7 +2,7 @@ import subprocess
 import threading
 import time
 
-
+from fabric import Fabricator
 from fabric.widgets.datetime import DateTime
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.label import Label
