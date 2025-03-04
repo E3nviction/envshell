@@ -175,7 +175,7 @@ class EnvDock(Window):
 		os.system("hyprctl dispatch focuswindow address:" + b.get_name())
 
 	def launch_app(self, b):
-		exec_shell_command_async(f"nohup {c.dock_pinned[b.get_name()]}")
+		exec_shell_command_async(f"hyprctl dispatch exec {c.dock_pinned[b.get_name()]}")
 
 	def dock_apps_changed(self, _apps):
 		"""Update UI safely in the main thread."""
