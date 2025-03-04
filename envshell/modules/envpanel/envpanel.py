@@ -1,5 +1,6 @@
 import threading
 import time
+import math
 import subprocess
 import gi
 
@@ -176,16 +177,19 @@ class EnvPanel(Window):
 		)
 
 		def update_osd_window(*_):
-			if not audio_service.speaker:
-				return
+			def set_image(self, num):
+				self.osd_window_image.set_from_file(f"./assets/svgs/volume/audio-volume-{num}.svg")
+			if not audio_service.speaker: return
+			audio_level = min(math.ceil(int(audio_service.speaker.volume) / 33), 3)
 			if audio_service.speaker.muted:
+				set_image(self, 0)
 				self.osd_window.show()
-				GLib.idle_add(lambda: self.osd_window_scale.set_value(0))
 				return
-			if round(audio_service.speaker.volume) == round(self.osd_window_scale.get_value()):
-				return
-			self.osd_window.show()
+			else:
+				set_image(self, audio_level)
+			if round(audio_service.speaker.volume) == round(self.osd_window_scale.get_value()): return
 			GLib.idle_add(lambda: self.osd_window_scale.set_value(int(audio_service.speaker.volume)))
+			self.osd_window.show()
 
 		audio_service.connect("changed", update_osd_window)
 
