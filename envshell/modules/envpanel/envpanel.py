@@ -158,7 +158,7 @@ class EnvPanel(Window):
 			size=(230, 16),
 		)
 
-		self.osd_window_muted = False
+		self.osd_window_muted = audio_service.speaker.muted if audio_service.speaker else False
 
 		self.osd_window_image = Svg("./assets/svgs/audio-volume.svg", size=(64, 250), name="osd-image", h_align="center", v_align="center", h_expand=True, v_expand=True)
 
@@ -178,19 +178,28 @@ class EnvPanel(Window):
 			v_align="center",
 		)
 
-		def update_osd_window(*_):
+		def update_osd_window(aservice):
 			def set_image(self, num):
 				self.osd_window_image.set_from_file(f"./assets/svgs/volume/audio-volume-{num}.svg")
 
-			if not audio_service.speaker: return
-			if round(audio_service.speaker.volume) == round(self.osd_window_scale.get_value()) and not self.osd_window_muted:
-				return print("NOT SHOWING")
+			def set_osd_mute(self, muted):
+				self.osd_window_muted = muted
 
-			audio_level = 0 if audio_service.speaker.muted else min(math.ceil(int(audio_service.speaker.volume) / 33), 3)
-			GLib.idle_add(lambda: self.osd_window_scale.set_value(int(audio_service.speaker.volume)))
-			self.osd_window_muted = True
+			if not aservice.speaker: return
+
+			audio_level = 0 if aservice.speaker.muted else min(math.ceil(int(aservice.speaker.volume) / 33), 3)
+			GLib.idle_add(lambda: self.osd_window_scale.set_value(int(aservice.speaker.volume)))
 			set_image(self, audio_level)
 			self.osd_window.show()
+			if round(aservice.speaker.volume) == round(self.osd_window_scale.get_value()) and not self.osd_window_muted and not aservice.speaker.muted:
+				set_osd_mute(self, aservice.speaker.muted)
+				self.osd_window.force_hide()
+			else:
+				GLib.idle_add(lambda: self.osd_window_scale.set_value(int(aservice.speaker.volume)))
+				set_osd_mute(self, aservice.speaker.muted)
+				set_image(self, audio_level)
+				self.osd_window.show()
+			set_osd_mute(self, aservice.speaker.muted)
 
 		audio_service.connect("changed", update_osd_window)
 

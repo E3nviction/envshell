@@ -69,6 +69,13 @@ class OsdWindow(Window):
     def hide(self, _, should_hide: bool):
         if should_hide and self.is_visible() and self.revealer.child_revealed:
             self.revealer.unreveal()
+            if self.fabricator._poll:
+                self.fabricator.stop()
+
+    def force_hide(self):
+        if self.revealer.child_revealed:
+            self.revealer.unreveal()
+        if self.fabricator._poll:
             self.fabricator.stop()
 
     def show(self):
