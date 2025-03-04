@@ -31,7 +31,7 @@ class OsdWindow(Window):
         ) = "crossfade",
         transition_duration: int = 400,
         revealer_name: str | None = None,
-        hide_timeout: int = 3000,
+        hide_timeout: int = 2000,
         fabricator_interval: int = 1000,
         **kwargs,
     ):
