@@ -52,9 +52,11 @@ class EnvDropdown(PopupWindow):
 	def toggle_dropdown(self, button, parent=None):
 		self.set_visible(not self.is_visible())
 		if self.is_visible():
+			self.keyboard_mode = "exclusive"
 			self.steal_input()
 			envshell_service.current_dropdown = self.id
 		else:
+			self.keyboard_mode = "none"
 			self.return_input()
 			envshell_service.current_dropdown = None
 	def hide_dropdown(self, widget, event):
