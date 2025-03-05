@@ -8,6 +8,7 @@ from modules.envlight.envlight import EnvLight
 from fabric import Application
 from fabric.utils import get_relative_path, monitor_file
 import loguru
+import sys
 import setproctitle
 
 from utils.functions import AppName
@@ -49,6 +50,7 @@ if __name__ == "__main__":
 	app = Application(
 		"envshell",
 		*apps,
+		open_inspector=len(sys.argv) > 1,
 	)
 	setproctitle.setproctitle("envShell")
 
