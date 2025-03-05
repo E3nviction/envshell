@@ -3,7 +3,9 @@ import time
 import sys
 import os
 
-from fabric import Application
+from datetime import datetime
+
+from fabric import Application, Fabricator
 from fabric.widgets.button import Button
 from fabric.widgets.svg import Svg
 from fabric.widgets.image import Image
@@ -58,6 +60,8 @@ class EnvDock(Window):
 			"openwindow",
 			"closewindow",
 			"changefloatingmode",
+			"changeworkspace",
+			# add workspace events
 		):
 			self.connection.connect(f"event::{event}", lambda *_: self.refresh_apps())
 
@@ -103,7 +107,8 @@ class EnvDock(Window):
 			)
 
 	def show_dock(self, *_):
-		envshell_service.dock_hidden = True
+		self.steal_input()
+		envshell_service.dock_hidden = False
 
 	def do_check_hover(self, *_):
 		x, y = self.get_pointer()
@@ -157,7 +162,7 @@ class EnvDock(Window):
 		os.system("hyprctl dispatch focuswindow address:" + b.get_name())
 
 	def launch_app(self, b):
-		exec_shell_command_async(f"nohup {c.dock_pinned[b.get_name()]}")
+		exec_shell_command_async(f"hyprctl dispatch exec {c.dock_pinned[b.get_name()]}")
 
 	def dock_apps_changed(self, _apps):
 		"""Update UI safely in the main thread."""
@@ -236,7 +241,7 @@ class EnvDock(Window):
 							style_classes=("active" if active else "", "dock-app-button", address),
 							h_align="center",
 							v_align="center",
-							on_clicked=focus,
+							on_clicked=self.focus_app,
 							tooltip_text=f"{app} ({f"{title[:c.get_rule('Dock.title.limit')]}..."})",
 						),
 						Svg(svg_file="./assets/svgs/indicator.svg", size=(6), name="dock-app-indicator", h_align="center", v_align="center"),
@@ -258,7 +263,7 @@ class EnvDock(Window):
 			pid = window["pid"]
 			title = window["title"]
 			address = window["address"]
-			app_name = window["class"]
+			app_name = window["initialClass"]
 			if app_name == "":
 				app_name = window["title"]
 			if not (c.is_window_ignored(wmclass=str(app_name).lower()) or c.is_window_ignored(wmclass=str(app_name)) or c.is_workspace_ignored(id_=window["workspace"]["id"])):
