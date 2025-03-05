@@ -18,7 +18,7 @@ from fabric.widgets.scrolledwindow import ScrolledWindow
 from fabric.utils.helpers import exec_shell_command_async
 from fabric.audio import Audio
 from fabric.bluetooth import BluetoothClient, BluetoothDevice
-from gi.repository import GLib
+from gi.repository import GLib, Gtk
 from fabric import Fabricator
 
 global envshell_service
@@ -134,6 +134,8 @@ class EnvControlCenter(Window):
 		)
 		self.bluetooth_window.set_pointing_to(self.bluetooth_widget)
 
+		self.wlan_widget = Svg(svg_file="./assets/svgs/wifi.svg", style_classes="icon") if wlan != "No Connection" else Svg(svg_file="./assets/svgs/wifi-off.svg", style_classes="icon")
+
 		self.widgets = exml(
 			file="./modules/envcontrolcenter/envcontrolcenter.xml",
 			root=Box,
@@ -150,7 +152,8 @@ class EnvControlCenter(Window):
 				"self.volume_scale": self.volume_scale,
 				"self.music_label": self.music_label,
 				"self.volume_icon": self.volume_icon,
-				"self.bluetooth_widget": self.bluetooth_widget
+				"self.bluetooth_widget": self.bluetooth_widget,
+				"self.wlan_widget": self.wlan_widget
 			}
 		)
 

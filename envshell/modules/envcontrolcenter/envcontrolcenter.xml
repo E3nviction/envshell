@@ -4,7 +4,7 @@
             <BoxV name="wb-widget" style_classes="menu" spacing="5">
                 <Button name="wifi-widget">
                     <BoxH>
-                        <Svg path="./assets/svgs/wifi.svg" style_classes="icon"/>
+                        <Ref>self.wlan_widget</Ref>
                         <BoxV name="wifi-widget-info">
                             <Label label="Wi-Fi" style_classes="title ct" h_align="start"/>
                             <Ref>self.wlan_label</Ref>
