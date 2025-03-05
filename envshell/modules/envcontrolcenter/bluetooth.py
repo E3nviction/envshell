@@ -84,16 +84,20 @@ class BluetoohConnections(Box):
 
         self.client = BluetoothClient(on_device_added=self.on_device_added)
         self.title = Label("Bluetooth")
-        self.toggle_button = CheckButton(
-            name="toggle-button",
-            on_clicked=lambda *_: self.client.toggle_power()
+        self.toggle_button = Gtk.Switch(
+            visible=True,
+            name="toggle-button"
+        )
+
+        self.toggle_button.set_active(self.client.enabled)
+        self.toggle_button.connect(
+            "notify::active",
+            lambda *_: self.client.set_enabled(self.toggle_button.get_active()),
         )
 
         self.client.connect(
             "notify::enabled",
-            lambda *_: self.toggle_button.set_label(
-                "Bluetooth " + ("On" if self.client.enabled else "Off")
-            ),
+            lambda *_: self.toggle_button.set_active(self.client.enabled),
         )
 
         self.not_paired = Box(spacing=2, orientation="vertical")
