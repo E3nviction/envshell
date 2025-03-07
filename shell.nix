@@ -23,10 +23,12 @@ pkgs.mkShell rec {
   shell = pkgs.fish;
 
   shellHook = ''
-    fish -C 'export PYTHONPATH="${pkgs.python312Packages.pygobject3}/lib/python3.12/site-packages"
-    source venv/bin/activate.fish
+  	echo "Setting up linkers for python."
+    export PYTHONPATH="${pkgs.python312Packages.pygobject3}/lib/python3.12/site-packages"
+    echo "Activating python virtual env..."
+    source venv/bin/activate
     cd envshell
-    c
-    echo "envShell:dev is Ready..."'
+    clear
+    echo "envShell:dev is Ready..."
   '';
 }
