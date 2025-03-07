@@ -11,6 +11,7 @@ from fabric.widgets.svg import Svg
 from fabric.widgets.image import Image
 from fabric.widgets.label import Label
 from fabric.widgets.box import Box
+from fabric.widgets.eventbox import EventBox
 from fabric.widgets.centerbox import CenterBox
 from fabric.utils.helpers import exec_shell_command_async
 from fabric.hyprland.widgets import get_hyprland_connection
@@ -91,15 +92,24 @@ class EnvDock(Window):
 			v_align="fill" if c.get_rule("Dock.mode") == "full" else "center",
 		)
 
+		self.event_box = EventBox(
+			events=[
+				"enter-notify",
+				"leave-notify",
+			],
+			child=self.dock_box,
+			all_visible=True,
+		)
+
 		self.connect("size-allocate", self.update_size)
 		envshell_service.dock_width = self.get_allocation().width
 		envshell_service.dock_height = self.get_allocation().height
 
 
-		self.children = self.dock_box
+		self.children = self.event_box
 
-		self.connect("enter-notify-event", self.do_check_hover)
-		self.connect("leave-notify-event", self.do_check_hover)
+		self.event_box.connect("enter-notify-event", self.do_check_hover)
+		self.event_box.connect("leave-notify-event", self.do_check_hover)
 
 		if c.get_rule("Dock.autohide"):
 			envshell_service.connect(
@@ -120,7 +130,7 @@ class EnvDock(Window):
 		delta_seconds = (datetime.now() - self.last_hovered).total_seconds()
 
 		is_timeout = delta_seconds > dock_lazy_time_seconds
-		return  is_timeout and not self.is_hovered()
+		return  is_timeout and not self.event_box.is_hovered()
 
 	def show_dock(self, *_):
 		self.steal_input()
