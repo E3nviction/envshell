@@ -75,8 +75,8 @@ class AppName:
 		if name == "": name = title
 		manual = c.get_rule("Window.translate.force-manual")
 		smart = c.get_rule("Window.translate.smart-title")
-		if c.has_title(wmclass=wmclass, title=title):
-			name = c.get_title(wmclass=wmclass, title=title)
+		if c.has_title(wmclass=wmclass):
+			name = c.get_title(wmclass=wmclass)
 		else:
 			name = self.get_app_name(wmclass=wmclass)
 		if smart:
