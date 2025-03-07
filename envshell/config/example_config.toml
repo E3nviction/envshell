@@ -1,6 +1,10 @@
 # Note: Most of these settings require a restart of envShell,
 # 		there are some exceptions, but dock position for example requires a restart
 
+auto-generated = true
+
+[General]
+
 [Display]
 res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 
