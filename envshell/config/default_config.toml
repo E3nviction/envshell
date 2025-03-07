@@ -10,6 +10,7 @@ res = "1920x1080"
 		smart-title = true
 		class."None" = "Hyprland"
 [Notch]
+	enable = true
 [Dock]
 	enable = true
 	legacy = false

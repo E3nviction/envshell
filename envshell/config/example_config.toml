@@ -28,7 +28,7 @@ res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 		class."org.gnome.NautilusPreviewer" = "Finder"
 		class."org.gnome.Software" = "App Store"
 [Notch]
-	# Coming soon...
+	enable = true
 [Dock]
 	enable = true
 

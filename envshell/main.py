@@ -30,9 +30,11 @@ def apply_style(app):
 if __name__ == "__main__":
 	envnoti = EnvNoti()
 	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
-	envnotch = EnvNotch()
+	envnotch = None
 	envdock = None
 	envpanel = None
+	if c.get_rule("Notch.enable"):
+		envnotch = EnvNotch()
 	if c.get_rule("Panel.enable"):
 		envpanel = EnvPanel()
 	if c.get_rule("Dock.enable"):
