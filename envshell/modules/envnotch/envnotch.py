@@ -13,6 +13,10 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import GLib
 
+from styledwidgets.styled import styler, style_dict
+from styledwidgets.agents import colors, borderradius, transitions, margins, paddings
+from styledwidgets.types import rem, px
+
 from config.c import c
 from utils.functions import get_from_socket
 
@@ -22,6 +26,15 @@ class NotchCorner(Box):
 			name="corner-container",
 			children=Corner(
 				name="notch-corner",
+				style=styler({
+					"default": style_dict(
+						background_color=colors.black,
+						transition=transitions.normal
+					),
+					"#env-notch.hide #notch-corner": style_dict(
+						background_color=colors.transparent,
+					)
+				}),
 				orientation=corner,
 				size=size,
 			),
@@ -83,10 +96,34 @@ class EnvNotch(Window):
 			Label("●", name="notch-indicator", style_classes="off"),                                                   # NotImplemented
 		])
 
+		self.label = Label(
+			name="notch-label",
+			label="Auto Generated" if c.get_rule("auto-generated") else "",
+			style=styler(
+				color=colors.orange.five,
+				font_weight="bold"
+			),
+			h_align="center",
+			v_align="center",
+			h_expand=True,
+			v_expand=True,
+			tooltip_text="This is an auto generated config, please remove the \"auto-generated = true\" line in ~/.config/envshell/config.toml",
+		)
+
 		self.notch = Box(
 			name="notch-content",
 			h_expand=True,
 			v_expand=True,
+			style=styler({
+				"default": style_dict(
+					background_color=colors.black,
+					transition=transitions.normal,
+					border_radius=rem("0") + rem("0") + rem(".75") + rem(".75")
+				),
+				"#env-notch.hide #notch-content": style_dict(
+					background_color=colors.transparent,
+				),
+			}),
 			children=[
 				self.button,
 				self.notch_indicators,
@@ -99,6 +136,10 @@ class EnvNotch(Window):
 				orientation="h",
 				h_align="center",
 				v_align="center",
+				style=styler(
+					background_color=colors.transparent,
+					border_radius=0
+				),
 				h_expand=True,
 				v_expand=True,
 				start_children=Box(

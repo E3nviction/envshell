@@ -13,6 +13,9 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import GLib
 
+from styledwidgets.styled import styler, style_dict, class_
+from styledwidgets.agents import colors
+
 from config.c import c
 from utils.functions import get_from_socket
 
@@ -22,6 +25,9 @@ class ScreenCorner(Box):
 			name="corner-container",
 			children=Corner(
 				name="corner",
+				style=styler(
+					background_color=colors.black,
+				),
 				orientation=corner,
 				size=size,
 			),
