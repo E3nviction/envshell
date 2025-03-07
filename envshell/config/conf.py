@@ -1,4 +1,5 @@
 import json
+import re
 
 """
 Rules:
@@ -70,48 +71,38 @@ class Config:
 		self._config["dock_pinned"][wmclass] = command
 
 
-	def get_title(self, wmclass=None, title=None):
-		if wmclass is None and title is None:
-			return None
+	def get_title(self, wmclass=""):
+		if wmclass in ["", None]:
+			wmclass = ""
 		for t in self.window_rules:
-			# from wmclass to wmclass
-			if t["from_wmclass"] == wmclass and t["to_wmclass"] not in ["", None] and wmclass != None and t["rule"] == "global-title":
-				return t["to_wmclass"]
-			# from title to title
-			if t["from_title"] == title and t["to_title"] not in ["", None] and title != None and t["rule"] == "global-title":
+			is_correct_rule = t["rule"] == "global-title"
+			is_wmclass = wmclass not in  ["", None]
+			is_title_rule = t["to_title"] not in ["", None]
+			wmclass_rule = "" if t["from_wmclass"] is None else t["from_wmclass"]
+			if wmclass_rule == "": continue
+			if re.match(wmclass_rule, wmclass) and is_wmclass and is_correct_rule:
 				return t["to_title"]
-			# from wmclass to title
-			if t["from_wmclass"] == wmclass and t["to_title"] not in ["", None] and wmclass != None and t["rule"] == "global-title":
-				return t["to_title"]
-			# from title to wmclass
-			if t["from_title"] == title and t["to_wmclass"] not in ["", None] and title != None and t["rule"] == "global-title":
-				return t["to_wmclass"]
-		if wmclass is not None:
-			return wmclass
-		return title
+		return wmclass
 
-	def has_title(self, wmclass=None, title=None):
-		if wmclass is None and title is None:
+	def has_title(self, wmclass=None):
+		if wmclass in ["", None]:
 			return False
 		for t in self.window_rules:
-			# from wmclass to wmclass
-			if t["from_wmclass"] == wmclass and t["to_wmclass"] not in ["", None] and wmclass != None and t["rule"] == "global-title":
-				return True
-			# from title to title
-			if t["from_title"] == title and t["to_title"] not in ["", None] and title != None and t["rule"] == "global-title":
-				return True
-			# from wmclass to title
-			if t["from_wmclass"] == wmclass and t["to_title"] not in ["", None] and wmclass != None and t["rule"] == "global-title":
-				return True
-			# from title to wmclass
-			if t["from_title"] == title and t["to_wmclass"] not in ["", None] and title != None and t["rule"] == "global-title":
+			is_correct_rule = t["rule"] == "global-title"
+			is_title_rule = t["to_title"] not in ["", None]
+			is_wmclass = wmclass not in  ["", None]
+			wmclass_rule = "" if t["from_wmclass"] is None else t["from_wmclass"]
+			if re.match(wmclass_rule, wmclass) and is_title_rule and is_wmclass and is_correct_rule:
 				return True
 		return False
 
 	def get_translation(self, wmclass=None) -> (str):
+		if wmclass in ["", None]:
+			return wmclass
 		for t in self.translations:
+			wmclass_rule = "" if t["from_wmclass"] is None else t["from_wmclass"]
 			# from wmclass to wmclass
-			if t["from_wmclass"] == wmclass:
+			if re.match(wmclass_rule, wmclass):
 				return t["to_wmclass"]
 		return wmclass
 
