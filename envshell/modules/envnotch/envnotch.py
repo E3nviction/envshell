@@ -31,7 +31,7 @@ class NotchCorner(Box):
 						background_color=colors.black,
 						transition=transitions.normal
 					),
-					"#env-notch.hide #notch-corner": style_dict(
+					".hide ->": style_dict(
 						background_color=colors.transparent,
 					)
 				}),
@@ -91,10 +91,43 @@ class EnvNotch(Window):
 
 		self.smode = get_from_socket()[0]
 
-		self.notch_indicators = Box(name="notch-indicators", orientation="horizontal", h_align="end", v_align="center", h_expand=True, children=[
-			Label("●", name="notch-indicator", tooltip_text="Sentry Mode", style_classes="off" if self.smode else ""), # Sentry Mode Indicator
-			Label("●", name="notch-indicator", style_classes="off"),                                                   # NotImplemented
-		])
+		notch_indicator_style = styler({
+			"default": style_dict(
+				color=colors.orange.six,
+				transition=transitions.medium,
+				margin_top=px(-2),
+				margin_left=px(2)
+			),
+			".off": style_dict(
+				color=colors.transparent,
+			),
+			".hide ->": style_dict(
+				color=colors.transparent,
+			),
+		})
+
+		self.notch_indicators = Box(
+			name="notch-indicators",
+			orientation="horizontal",
+			h_align="end",
+			v_align="center",
+			h_expand=True,
+			children=[
+				Label(
+					"●",
+					name="notch-indicator",
+					tooltip_text="Sentry Mode",
+					style=notch_indicator_style,
+					style_classes="off" if self.smode else ""
+					), # Sentry Mode Indicator
+				Label(
+					"●",
+					name="notch-indicator",
+					style=notch_indicator_style,
+					style_classes="off"
+					),
+			]
+		)
 
 		self.label = Label(
 			name="notch-label",
@@ -120,7 +153,7 @@ class EnvNotch(Window):
 					transition=transitions.normal,
 					border_radius=rem("0") + rem("0") + rem(".75") + rem(".75")
 				),
-				"#env-notch.hide #notch-content": style_dict(
+				".hide ->": style_dict(
 					background_color=colors.transparent,
 				),
 			}),
