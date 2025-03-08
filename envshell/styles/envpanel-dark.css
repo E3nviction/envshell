@@ -58,7 +58,3 @@ menu>menuitem:hover {
 	padding: 1rem;
 	transition: opactiy 250ms ease-in-out;
 }
-
-#osd-window-scale {
-	margin-left: 20px;
-}
