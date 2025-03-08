@@ -29,6 +29,9 @@ from widgets.osd_widget import OsdWindow
 from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
 
+from styledwidgets.styled import styler, style_dict
+from styledwidgets.agents import margins
+
 from modules.envlight.envlight import EnvLight
 
 from config.c import c
@@ -153,6 +156,11 @@ class EnvPanel(Window):
 			v_expand=True,
 			min_value=0,
 			max_value=100,
+			style=styler({
+				"#osd-window-scale": style_dict(
+					margin_left="20px",
+				)
+			}),
 			increments=(1, 1),
 			marks=[ScaleMark(x, position="bottom", markup=str(x) if x % 20 == 0 else "") for x in range(10, 96, 10)],
 			size=(230, 16),
