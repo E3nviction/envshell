@@ -20,6 +20,8 @@ from fabric.utils import FormattedString, truncate
 from fabric.utils.helpers import exec_shell_command_async
 from gi.repository import GLib, Gtk, GdkPixbuf
 
+from gi.repository.GLib import idle_add
+
 global envshell_service
 from utils.roam import envshell_service, audio_service
 from utils.functions import app_name_class
@@ -109,10 +111,7 @@ class EnvPanel(Window):
 		elif c.get_rule("Panel.mode") == "normal":
 			self.set_property("margin", (0, 0, 0, 0))
 
-		if self.get_orientation() == "horizontal":
-			self.set_property("height-request", c.get_rule("Panel.height"))
-		else:
-			self.set_property("width-request", c.get_rule("Panel.height"))
+		self.set_property("height-request", c.get_rule("Panel.height"))
 
 
 		self.envlight = EnvLight()
@@ -351,19 +350,15 @@ class EnvPanel(Window):
 
 	def toggle_systray(self, b):
 		if "hidden" in self.systray.style_classes:
-			self.systray_button.set_property("label", "")
+			idle_add(lambda: self.systray_button.set_property("label", ""))
 			self.systray.remove_style_class("hidden")
 		else:
-			self.systray_button.set_property("label", "")
+			idle_add(lambda: self.systray_button.set_property("label", ""))
 			self.systray.add_style_class("hidden")
 
 	def get_pos(self):
 		full = c.get_rule("Panel.full")
 		return "top left right center" if full else "top center"
-
-	def get_orientation(self):
-		orientation = "horizontal"
-		return orientation
 
 	def format_window(self, title, wmclass):
 		name = app_name_class.format_app_name(title, wmclass, True)
