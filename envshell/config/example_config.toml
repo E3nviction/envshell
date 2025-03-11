@@ -2,7 +2,7 @@
 # 		there are some exceptions, but dock position for example requires a restart
 
 [Display]
-res = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
+resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 
 [Window]
 	autohide.class."Hyprland" = true
