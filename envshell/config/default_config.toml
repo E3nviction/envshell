@@ -3,7 +3,7 @@ auto-generated = false
 [General]
 
 [Display]
-res = "1920x1080"
+resolution = "1920x1080"
 
 [Window]
 	autohide.class."Hyprland" = true
