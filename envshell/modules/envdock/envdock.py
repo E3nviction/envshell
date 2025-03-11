@@ -19,6 +19,8 @@ from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import GLib
 import json
 
+from gi.repository.GLib import idle_add
+
 
 from config.c import c, app_list
 
@@ -151,14 +153,14 @@ class EnvDock(Window):
 		if not c.get_rule("Dock.autohide"):
 			return
 		if envshell_service.dock_hidden:
-			self.set_property("margin", (0,0,-(self.get_allocation().height - 1),0))
+			idle_add(lambda: self.set_property("margin", (0,0,-(self.get_allocation().height - 1),0)))
 			if self.get_orientation() == "vertical":
 				if c.get_rule("Dock.position") == "left":
-					self.set_property("margin", (0,0,0,-(self.get_allocation().width - 1)))
+					idle_add(lambda: self.set_property("margin", (0,0,0,-(self.get_allocation().width - 1))))
 				elif c.get_rule("Dock.position") == "right":
-					self.set_property("margin", (0,-(self.get_allocation().width - 1),0,0))
+					idle_add(lambda: self.set_property("margin", (0,-(self.get_allocation().width - 1),0,0)))
 		else:
-			self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5))
+			idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5)))
 
 
 	def update_size(self, *_):
@@ -187,7 +189,7 @@ class EnvDock(Window):
 		return orientation
 
 	def focus_app(self, b):
-		os.system("hyprctl dispatch focuswindow address:" + b.get_name())
+		exec_shell_command_async("hyprctl dispatch focuswindow address:" + b.get_name())
 
 	def launch_app(self, b):
 		exec_shell_command_async(f"hyprctl dispatch exec {c.dock_pinned[b.get_name()]}")
@@ -214,11 +216,11 @@ class EnvDock(Window):
 			pinned_apps = dict(sorted(pinned_apps.items(), key=lambda item: list(c.dock_pinned.keys()).index(item[0])))
 			for app_ in pinned_apps:
 				app, pid, title, address, active, running = pinned_apps[app_]
-				svg     = Svg(svg_file=app_list["NotFOUND"], size=(round(c.get_rule("Dock.size") * 32)), name="dock-app-icon")
+				svg = Svg(svg_file=app_list["NotFOUND"], size=(round(c.get_rule("Dock.size") * 32)), name="dock-app-icon")
 				app_i = app
 				app_i = c.get_translation(wmclass=app)
 				icon_svg = self.icon_resolver.get_icon_pixbuf(app_i, round(c.get_rule("Dock.size") * 32))
-				svg     = Image(pixbuf=icon_svg, size=(round(c.get_rule("Dock.size") * 32)), name="dock-app-icon")
+				svg = Image(pixbuf=icon_svg, size=(round(c.get_rule("Dock.size") * 32)), name="dock-app-icon")
 				app = self.format_window(wmclass=app, title=title)
 				if running:
 					self.button = Button(
@@ -385,39 +387,39 @@ class EnvDockHotspot(Window):
 					self.set_property("anchor", "right center")
 				else:
 					self.set_property("anchor", "bottom center")
-			self.set_property("width-request", self.dock_width)
-			self.set_property("height-request", self.dock_height)
+			idle_add(lambda: self.set_property("width-request", self.dock_width))
+			idle_add(lambda: self.set_property("height-request", self.dock_height))
 			if self.get_orientation() == "vertical":
 				if c.get_rule("Dock.position") == "left":
-					self.set_property("margin", (0,0,0,-(self.dock_width - 1)))
+					idle_add(lambda: self.set_property("margin", (0,0,0,-(self.dock_width - 1))))
 				elif c.get_rule("Dock.position") == "right":
-					self.set_property("margin", (0,-(self.dock_width - 1),0,0))
+					idle_add(lambda: self.set_property("margin", (0,-(self.dock_width - 1),0,0)))
 			else:
-				self.set_property("margin", (0,0,-(self.dock_height),0))
+				idle_add(lambda: self.set_property("margin", (0,0,-(self.dock_height),0)))
 		else:
-			self.set_property("anchor", self.get_pos())
+			idle_add(lambda: self.set_property("anchor", self.get_pos()))
 			if self.get_orientation() == "horizontal":
-				self.set_property("width-request", int(c.get_rule("Display.resolution").split("x")[0]))
+				idle_add(lambda: self.set_property("width-request", int(c.get_rule("Display.resolution").split("x")[0])))
 			else:
-				self.set_property("height-request", int(c.get_rule("Display.resolution").split("x")[1]))
+				idle_add(lambda: self.set_property("height-request", int(c.get_rule("Display.resolution").split("x")[1])))
 			if not c.get_rule("Dock.exclusive"):
 				if self.get_orientation() == "vertical":
 					if c.get_rule("Dock.position") == "left":
-						self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,(self.dock_width + 10)))
+						idle_add(lambda: self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,(self.dock_width + 10))))
 					elif c.get_rule("Dock.position") == "right":
-						self.set_property("margin", (-(c.get_rule("Panel.height")),(self.dock_width + 10),0,0))
+						idle_add(lambda: self.set_property("margin", (-(c.get_rule("Panel.height")),(self.dock_width + 10),0,0)))
 				else:
-					self.set_property("margin", (0,0,self.dock_height + 5,0) if c.get_rule("Dock.mode") == "full" else (0,0,self.dock_height + 10,0))
+					idle_add(lambda: self.set_property("margin", (0,0,self.dock_height + 5,0) if c.get_rule("Dock.mode") == "full" else (0,0,self.dock_height + 10,0)))
 			else:
-				self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,0))
+				idle_add(lambda: self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,0)))
 
 	def set_height(self, _, height):
 		self.dock_height = height
-		self.set_property("height-request", height)
+		idle_add(lambda: self.set_property("height-request", height))
 
 	def set_width(self, _, width):
 		self.dock_width = width
-		self.set_property("width-request", width)
+		idle_add(lambda: self.set_property("width-request", width))
 
 	def get_pos(self):
 		pos = c.get_rule("Dock.position")
