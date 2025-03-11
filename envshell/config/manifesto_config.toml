@@ -1,0 +1,137 @@
+# Note: Most of these settings require a restart of envShell,
+# 		there are some exceptions, but dock position for example requires a restart
+
+title = "envShell Example Config"
+auto-generated = true
+
+[Display]
+resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
+
+[Window]
+	autohide.class."Hyprland" = true
+	autohide.class."main.py" = true
+
+	rename.class."code" = "vscode"
+	[Window.ignore]
+		# This is for pyprland scratchpads
+		class."kitty-dropterm" = true
+		# This is for the About Menu
+		class."main.py" = true
+	[Window.translate]
+		# Enable this, if you want to manually give each Application a Title
+		#force-manual = true
+
+		# Smart title enables following features:
+		#	- org.gnome.Nautilus -> Nautilus           : Remove Reverse URL from App class
+		#	- visual studio code -> Visual Studio Code : Change to PascalCase
+		smart-title = true
+		class."None" = "Hyprland"
+		class."brave-browser" = "Brave"
+		class."org.gnome.Nautilus" = "Finder"
+		class."org.gnome.NautilusPreviewer" = "Finder"
+		class."org.gnome.Software" = "App Store"
+[Notch]
+	enable = true
+[Dock]
+	enable = true
+
+	# If you want to use the legacy dock system for hovering (Does not support Lazy Time)
+	# This might get deprecated in the future
+	legacy = false
+	# how long the title of a non-pinned app can be in the dock
+	title.limit = 25
+	# make the dock push away windows
+	exclusive = false
+	# time it takes for the dock to start appearing or disappearing
+	lazy-time = 1000 # (ms)
+	[Dock.pinned]
+		#"app.icon.name" = "command-to-launch-app"
+		"org.gnome.Nautilus" = "nautilus"
+		"org.gnome.Settings" = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
+		"org.gnome.Software" = "gnome-software"
+		"gnome-disks" = "gnome-disks"
+		"org.gnome.baobab" = "baobab"
+		"kitty" = "kitty"
+		"brave-browser" = "brave"
+		"code" = "code"
+		"org.gnome.Calculator" = "gnome-calculator"
+		"org.gnome.TextEditor" = "gnome-text-editor"
+		"org.gnome.Loupe" = "loupe"
+		"org.gnome.clocks" = "gnome-clocks"
+		"spotify" = "spotify"
+[Panel]
+	enable = true
+
+	# The height of the panel
+	height = 24
+	# Whether the panel is full width or not
+	full = true
+	# If you want a dock that expands to the screen edges, or a floating one in the center
+	mode = "normal" # [normal, floating]
+	# The date format for the panel
+	# %Y Year         = 2025
+	# %m Month        = [01,12]
+	# %d Day          = [01,31]
+	# %H Hour (24)    = [00,23] | %I Hour (12)
+	# %M Minute       = [00,59]
+	# %S Second       = [00,61]
+	# %a abbr weekday = Mon | %A full weekday
+	# %b abbr month   = Jan | %B full month
+	# %c date & time  = Thu 27 Feb 05:16:23 PM CET 2025
+	# %p AM or PM     = PM
+	# %z Timezone     = CET
+	date-format = "%a %b %d %H:%M"
+	# A Nerd Font icon for the panel's left button (commonly referred to as the darwin menu)
+	# (here it's called the info-menu)
+	icon = ""
+	[Panel.Widgets]
+		# left Widgets
+		left.enable = true
+		info-menu.enable = true
+		global-title.enable = true
+		global-menu.enable = true
+
+		# right Widgets
+		right.enable = true
+		system-tray.enable = true
+		# set this to false, to always have the system tray visible
+		system-tray.expandable = true
+		battery.enable = true
+		wifi.enable = true
+		search.enable = true
+		control-center.enable = true
+		date.enable = true
+
+[Workspace]
+# Makes the dock ignore apps on workspace id 9
+ignore.id.9 = true
+
+[Cache]
+# The Directory for cache such as icons
+directory = "envshell"
+
+[Bluetooth]
+# If you want to show Devices without names
+show-hidden-devices = false
+
+[Appearance]
+
+[Shell]
+# This is rarely changed by the user, you can delete it if you want
+	[Shell.about]
+		window.width = 250
+		window.height = 355
+		window.resizable = false
+		computer-label = "Env Shell"
+		computer-caption = "ESH 0.2.0, 2025"
+		more-info = "https://github.com/E3nviction/envshell"
+	[Shell.env-menu]
+		options.settings.on-click = "code ~/.config/"
+		# If you want to use Gnome Control Center, you can uncomment this
+		#options.settings.on-click = "XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
+
+		options.store.label = "Nix Store..."
+		options.store.on-click = "xdg-open https://search.nixos.org/packages"
+		# If you want to use a different Store, such as the Gnome Software store, you can uncomment this
+		#options.store.label = "App Store..."
+		#options.store.on-click = "gnome-software"
