@@ -30,7 +30,10 @@ from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
 
 from styledwidgets.styled import styler, style_dict
-from styledwidgets.agents import margins
+from styledwidgets.agents import margins, paddings, transitions, colors, shadows, borderradius, textsize
+from styledwidgets.types import px, rem
+from styledwidgets.color import alpha, hex
+
 
 from modules.envlight.envlight import EnvLight
 
@@ -97,7 +100,7 @@ class EnvPanel(Window):
 			style=f"""
 				border-radius: {10 if c.get_rule("Panel.mode") == "floating" else 0}px;
 			""",
-			size=(int(c.get_rule("Display.res").split("x")[0]), int(c.get_rule("Panel.height"))),
+			size=(int(c.get_rule("Display.resolution").split("x")[0]), int(c.get_rule("Panel.height"))),
 			**kwargs,
 		)
 
@@ -269,7 +272,11 @@ class EnvPanel(Window):
 		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_dropdown(b, self.global_menu_button_help))
 		self.global_menu_help.set_pointing_to(self.global_menu_button_help)
 
-		self.systray = SystemTray(name="system-tray", icon_size=16, spacing=4)
+		self.systray = SystemTray(
+			name="system-tray",
+			icon_size=16,
+			spacing=4,
+		)
 
 		self.systray_button = Button(
 			label="",
