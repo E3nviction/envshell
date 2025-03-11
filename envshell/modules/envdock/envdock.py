@@ -397,9 +397,9 @@ class EnvDockHotspot(Window):
 		else:
 			self.set_property("anchor", self.get_pos())
 			if self.get_orientation() == "horizontal":
-				self.set_property("width-request", int(c.get_rule("Display.res").split("x")[0]))
+				self.set_property("width-request", int(c.get_rule("Display.resolution").split("x")[0]))
 			else:
-				self.set_property("height-request", int(c.get_rule("Display.res").split("x")[1]))
+				self.set_property("height-request", int(c.get_rule("Display.resolution").split("x")[1]))
 			if not c.get_rule("Dock.exclusive"):
 				if self.get_orientation() == "vertical":
 					if c.get_rule("Dock.position") == "left":
