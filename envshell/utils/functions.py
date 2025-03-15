@@ -81,9 +81,10 @@ class AppName:
 			name = self.get_app_name(wmclass=wmclass)
 		if smart:
 			name = str(name).split(" ")
-			name = " ".join([n[0].upper() + n[1:] for n in name])
-			if "." in name:
-				name = name.split(".")[-1]
+			if len(name) != 0:
+				name = " ".join([n[0].upper() + n[1:] for n in name])
+				if "." in name:
+					name = name.split(".")[-1]
 		if update: envshell_service.current_active_app_name = name
 		return name
 
