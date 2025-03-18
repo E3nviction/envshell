@@ -19,16 +19,12 @@ pkgs.mkShell rec {
     pkgs.gnome-bluetooth
   ];
 
-  # make shell use fish
-  shell = pkgs.fish;
-
   shellHook = ''
   	echo "Setting up linkers for python."
     export PYTHONPATH="${pkgs.python312Packages.pygobject3}/lib/python3.12/site-packages"
     echo "Activating python virtual env..."
     source venv/bin/activate
     cd envshell
-    clear
     echo "envShell:dev is Ready..."
   '';
 }
