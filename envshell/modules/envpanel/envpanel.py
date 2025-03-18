@@ -17,7 +17,7 @@ from widgets.systrayv2 import SystemTray
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
-from fabric.utils.helpers import exec_shell_command_async
+from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from gi.repository import GLib, Gtk, GdkPixbuf
 
 from gi.repository.GLib import idle_add
@@ -78,7 +78,7 @@ class Dropdown(EnvDropdown):
 				dropdown_option(self, "System Settings...", on_click=c.get_shell_rule(rule="panel-env-menu-option-settings-on-click")),
 				dropdown_option(self, c.get_shell_rule(rule="panel-env-menu-option-store-label"), on_click=c.get_shell_rule(rule="panel-env-menu-option-store-on-click")),
 				dropdown_divider("---------------------"),
-				dropdown_option(self, "Force Quit App", "", "hyprctl dispatch killactive"),
+				dropdown_option(self, "Force Quit", "", "hyprctl kill"),
 				dropdown_divider("---------------------"),
 				dropdown_option(self, "Sleep", "", "systemctl suspend"),
 				dropdown_option(self, "Restart...", "", "systemctl restart"),
@@ -119,19 +119,19 @@ class EnvPanel(Window):
 		self.envsh_button_dropdown = Dropdown(parent=self)
 
 		self.control_center = EnvControlCenter()
-		self.control_center_image = Svg("./assets/svgs/control-center.svg", name="control-center-image")
+		self.control_center_image = Svg(get_relative_path("../../assets/svgs/control-center.svg"), name="control-center-image")
 		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
 
 		self.envsh_button = Button(label=c.get_rule("Panel.icon"), name="envsh-button", style_classes="button", on_clicked=lambda b: self.envsh_button_dropdown.toggle_dropdown(b, self.envsh_button))
 		self.envsh_button_dropdown.set_pointing_to(self.envsh_button)
-		self.power_button_image = Svg("./assets/svgs/battery.svg", name="control-center-image")
+		self.power_button_image = Svg(get_relative_path("../../assets/svgs/battery.svg"), name="control-center-image")
 		self.power_button = Button(image=self.power_button_image, name="power-button", style_classes="button")
 
-		self.search_button_image = Svg("./assets/svgs/search.svg", name="search-button-image")
+		self.search_button_image = Svg(get_relative_path("../../assets/svgs/search.svg"), name="search-button-image")
 		self.search_button = Button(image=self.search_button_image, name="search-button", style_classes="button")
 		self.search_button.connect("clicked", self.envlight.toggle)
 
-		self.wifi_button_image = Svg("./assets/svgs/wifi-clear.svg", name="wifi-button-image")
+		self.wifi_button_image = Svg(get_relative_path("../../assets/svgs/wifi-clear.svg"), name="wifi-button-image")
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
 		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
 		self.global_menu_title = EnvDropdown(
@@ -170,7 +170,7 @@ class EnvPanel(Window):
 
 		self.osd_window_muted = audio_service.speaker.muted if audio_service.speaker else False
 
-		self.osd_window_image = Svg("./assets/svgs/audio-volume.svg", size=(64, 250), name="osd-image", h_align="center", v_align="center", h_expand=True, v_expand=True)
+		self.osd_window_image = Svg(get_relative_path("../../assets/svgs/audio-volume.svg"), size=(64, 250), name="osd-image", h_align="center", v_align="center", h_expand=True, v_expand=True)
 
 		self.osd_window = OsdWindow(
 			_children=[
@@ -190,7 +190,7 @@ class EnvPanel(Window):
 
 		def update_osd_window(aservice):
 			def set_image(self, num):
-				self.osd_window_image.set_from_file(f"./assets/svgs/volume/audio-volume-{num}.svg")
+				self.osd_window_image.set_from_file(get_relative_path(f"../../assets/svgs/volume/audio-volume-{num}.svg"))
 
 			def set_osd_mute(self, muted):
 				self.osd_window_muted = muted
@@ -236,6 +236,7 @@ class EnvPanel(Window):
 				dropdown_option(self, "Move Window to Right", on_click="hyprctl dispatch movewindow r"),
 				dropdown_option(self, "Cycle Through Windows", on_click="hyprctl dispatch cyclenext"),
 				dropdown_divider("---------------------"),
+				dropdown_option(self, "Float", on_click="hyprctl dispatch togglefloating"),
 				dropdown_option(self, "Float", on_click="hyprctl dispatch togglefloating"),
 				dropdown_option(self, "Center", on_click="hyprctl dispatch centerwindow"),
 				dropdown_option(self, "Group", on_click="hyprctl dispatch togglegroup"),

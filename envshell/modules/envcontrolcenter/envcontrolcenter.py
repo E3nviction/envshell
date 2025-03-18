@@ -15,7 +15,7 @@ from fabric.widgets.svg import Svg
 from fabric.widgets.revealer import Revealer
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.widgets.scrolledwindow import ScrolledWindow
-from fabric.utils.helpers import exec_shell_command_async
+from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from fabric.audio import Audio
 from fabric.bluetooth import BluetoothClient, BluetoothDevice
 from gi.repository import GLib, Gtk
@@ -119,7 +119,7 @@ class EnvControlCenter(Window):
 			child=Box(
 				orientation="h",
 				children=[
-					Svg(svg_file="./assets/svgs/bluetooth.svg", style_classes="icon"),
+					Svg(svg_file=get_relative_path("../../assets/svgs/bluetooth.svg"), style_classes="icon"),
 					Box(
 						name="bluetooth-widget-info",
 						orientation="vertical",
@@ -134,10 +134,10 @@ class EnvControlCenter(Window):
 		)
 		self.bluetooth_window.set_pointing_to(self.bluetooth_widget)
 
-		self.wlan_widget = Svg(svg_file="./assets/svgs/wifi.svg", style_classes="icon") if wlan != "No Connection" else Svg(svg_file="./assets/svgs/wifi-off.svg", style_classes="icon")
+		self.wlan_widget = Svg(svg_file=get_relative_path("../../assets/svgs/wifi.svg"), style_classes="icon") if wlan != "No Connection" else Svg(svg_file=get_relative_path("../../assets/svgs/wifi-off.svg"), style_classes="icon")
 
 		self.widgets = exml(
-			file="./modules/envcontrolcenter/envcontrolcenter.xml",
+			file=get_relative_path("envcontrolcenter.xml"),
 			root=Box,
 			tags={
 				"Box": Box,

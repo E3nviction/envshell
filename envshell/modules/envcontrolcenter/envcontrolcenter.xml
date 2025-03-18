@@ -14,7 +14,7 @@
                 <Ref>self.bluetooth_widget</Ref>
             </BoxV>
             <BoxH name="dnd-widget" style_classes="menu" h_expand="true">
-                <Svg path="./assets/svgs/dnd.svg" name="dnd-menu-icon"/>
+                <Svg path="assets/svgs/dnd.svg" name="dnd-menu-icon"/>
                 <Label label="Focus" style_classes="title"/>
             </BoxH>
         </BoxH>

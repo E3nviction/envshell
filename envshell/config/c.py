@@ -85,7 +85,7 @@ config = {}
 def load_default_config():
     global default_config
     global config
-    with open("./config/default_config.toml", "rb") as f:
+    with open(get_relative_path("default_config.toml"), "rb") as f:
         default_config = tomllib.load(f)
         load_config(default_config)
         config = default_config
@@ -103,7 +103,7 @@ def load_config_file():
         c._private_config = config
     except:
         logger.warning("Could not find a config file, using default")
-    json.dump(config, open("./config/latest_compiled_config.json", "w"), indent=4)
+    json.dump(config, open(get_relative_path("latest_compiled_config.json"), "w"), indent=4)
 
 load_default_config()
 load_config_file()
@@ -114,7 +114,7 @@ if not os.path.exists(os.path.join(config_location, "envshell")):
 
 # check if config file exists
 if not os.path.exists(os.path.join(config_location, "envshell", "config.toml")):
-    shutil.copyfile("./config/example_config.toml", os.path.join(config_location, "envshell", "config.toml"))
+    shutil.copyfile(get_relative_path("example_config.toml"), os.path.join(config_location, "envshell", "config.toml"))
 
 config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "config.toml"))
 config_file_monitor.connect("changed", lambda *_: load_config_file())

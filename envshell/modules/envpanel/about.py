@@ -6,7 +6,7 @@ from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.wayland import WaylandWindow as Window
-from fabric.utils.helpers import exec_shell_command_async
+from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from gi.repository import Gtk, GdkPixbuf
 
 from config.c import c
@@ -32,7 +32,7 @@ class About(Gtk.Window):
 		# About logo
 		logo_box = Gtk.Box(halign=Gtk.Align.CENTER, valign=Gtk.Align.CENTER)
 		pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-			"./assets/svgs/imac.svg", 158, 108, preserve_aspect_ratio=True
+			get_relative_path("../../assets/svgs/imac.svg"), 158, 108, preserve_aspect_ratio=True
 		)
 		logo = Gtk.Image.new_from_pixbuf(pixbuf)
 		logo_box.pack_start(logo, False, False, 0)

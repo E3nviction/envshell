@@ -1,5 +1,6 @@
 from xml import etree
 from xml.etree import ElementTree
+from fabric.utils import get_relative_path
 import json
 
 def parse(xml):
@@ -22,6 +23,7 @@ def dxml(root, depth=0):
 			if child.tag == "BoxV": additional["orientation"] = 'vertical'
 			elif child.tag == "BoxH": additional["orientation"] = 'horizontal'
 			if k == "path":
+				v = get_relative_path("../" + v)
 				k = "svg_file"
 			if v == "true" or v == "false": v = v == "true"
 			attrstring[k] = v

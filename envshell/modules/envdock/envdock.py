@@ -13,7 +13,7 @@ from fabric.widgets.label import Label
 from fabric.widgets.box import Box
 from fabric.widgets.eventbox import EventBox
 from fabric.widgets.centerbox import CenterBox
-from fabric.utils.helpers import exec_shell_command_async
+from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.widgets.wayland import WaylandWindow as Window
 from gi.repository import GLib
@@ -195,7 +195,7 @@ class EnvDock(Window):
 			if running:
 				app_button = Box(orientation="vertical", children=[
 					button,
-					Svg(svg_file="./assets/svgs/indicator.svg", size=(6), name="dock-app-indicator", h_align="center", v_align="center"),
+					Svg(svg_file=get_relative_path("../../assets/svgs/indicator.svg"), size=(6), name="dock-app-indicator", h_align="center", v_align="center"),
 				])
 			else:
 				app_button = Box(orientation="vertical", children=[button])
