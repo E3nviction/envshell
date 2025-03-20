@@ -1,6 +1,8 @@
 from fabric.widgets.box import Box
 from fabric.widgets.wayland import WaylandWindow
 
+from config.c import c
+
 import gi
 gi.require_version("GtkLayerShell", "0.1")
 
@@ -103,16 +105,21 @@ class PopupWindow(WaylandWindow):
 
         if self._pointing_widget:
             coords = self.get_coords_for_widget(self._pointing_widget)
-            coords_centered = (
-                round(coords[0]),
-                round(coords[1] + self._pointing_widget.get_allocated_height() / 2),
-            )
+            if coords[0] + width > int(c.get_rule("Display.resolution").split("x")[0]):
+                coords_centered = (
+                    round(coords[0] - (width - self._pointing_widget.get_allocated_width())),
+                    round(coords[1] + self._pointing_widget.get_allocated_height() / 2),
+                )
+            else:
+                coords_centered = (
+                    round(coords[0]),
+                    round(coords[1] + self._pointing_widget.get_allocated_height() / 2),
+                )
         else:
             coords_centered = (
                 round(self._parent.get_allocated_width() / 2),
                 round(self._parent.get_allocated_height() / 2),
             )
-
         self.margin = tuple(
             a + b
             for a, b in zip(
