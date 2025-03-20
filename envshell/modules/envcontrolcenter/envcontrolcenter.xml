@@ -29,7 +29,7 @@
             <Ref>self.volume_icon</Ref>
         </BoxV>
         <BoxV name="music-widget" style_classes="menu">
-            <Ref>self.music_label</Ref>
+            <Ref>self.music_widget</Ref>
         </BoxV>
     </BoxV>
 </esh>

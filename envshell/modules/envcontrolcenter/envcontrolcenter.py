@@ -83,6 +83,117 @@ class BluetoothWindow(PopupWindow):
 		self.set_visible(False)
 
 
+"""
+Thanks to @slumberdemon for the following code.
+reference: https://github.com/SlumberDemon/dotfiles/blob/main/.config/fabric/widgets/sideleft/_player.py
+"""
+class player(Box):
+    def __init__(self) -> None:
+        super().__init__(
+            name="left-player",
+            h_expand=True,
+            orientation="h",
+        )
+
+        self.art = Button(name="left-player-art")
+        self.title = Label(
+            label="Nothing playing",
+            name="left-player-title",
+            justification="center",
+            ellipsization="end",
+            character_max_width=24,
+        )
+        self.artist = Label(
+            name="left-player-artist",
+            justification="center",
+            ellipsization="end",
+            character_max_width=20,
+        )
+
+        self.backward = Button(
+            child=Label(markup="<", name="left-player-icon")
+        )
+        self.forward = Button(
+            child=Label(markup=">", name="left-player-icon")
+        )
+        self.status = Label(
+            markup="󰐌", name="left-player-icon", style="font-size: 36px;"
+        )
+        self.play = Button(child=self.status)
+
+        self.controls = CenterBox(
+            name="left-player-controls",
+            start_children=[self.backward],
+            center_children=[self.play],
+            end_children=[self.forward],
+            orientation="h",
+            h_expand=True,
+        )
+        self.info = Box(
+            name="left-player-info",
+            children=[self.title, self.artist, self.controls],
+            orientation="v",
+            v_align="center",
+            h_expand=True,
+        )
+
+        self.details = Box(children=[self.info], h_expand=True, v_expand=True)
+
+        self.playerInfo = Fabricator(
+            poll_from='playerctl --follow metadata --format \'{"status": "{{status}}", "artUrl": "{{mpris:artUrl}}", "title": "{{ markup_escape(title) }}", "artist": "{{ markup_escape(artist) }}"}\'',
+            stream=True,
+            interval=1000,
+        )
+
+        def extract_metadata(_, value):
+            if value:
+                data = json.loads(value)
+
+                self.art.set_style(f"background-image: url('{data['artUrl']}');")
+                self.title.set_label(data["title"])
+                self.artist.set_label(data["artist"])
+                self.status.set_markup(
+                    (
+                        "󰐌"
+                        if data["status"] == "Stopped"
+                        else (
+                            "H" if data["status"] == "Playing" else ">"
+                        )
+                    )
+                )
+
+            else:
+                self.title.set_label("Nothing playing")
+                self.artist.set_label("")
+                self.status.set_markup("󰐌")
+
+        self.playerInfo.connect("changed", extract_metadata)
+
+        for connector in [self.backward, self.play, self.forward, self.art]:
+            bulk_connect(
+                connector,
+                {
+                    "enter-notify-event": lambda *args: self.set_cursor("pointer"),
+                    "leave-notify-event": lambda *args: self.set_cursor("default"),
+                    "button-press-event": self.on_button_press,
+                },
+            )
+
+        self.add(self.art)
+        self.add(self.details)
+
+    def on_button_press(self, button: Button, event):
+        if event.button == 1 and event.type == 4:
+            if button == self.backward:
+                exec_shell_command("playerctl previous")
+            elif button == self.play:
+                exec_shell_command("playerctl play-pause")
+            elif button == self.forward:
+                exec_shell_command("playerctl next")
+        elif event.button == 1 and event.type == 5:
+            if button == self.art:
+                floating().toggle()  # fix not toggling # always shows, might even multiple?
+
 class EnvControlCenter(Window):
 	"""Control Center for envshell"""
 	def __init__(self, **kwargs):
@@ -110,7 +221,8 @@ class EnvControlCenter(Window):
 		self.volume_icon = Label(" ", name="volume-widget-icon", h_align="start")
 		self.volume_scale = Scale(value=volume, min_value=0, max_value=100, increments=(5, 5), name="volume-widget-slider", size=30, h_expand=True)
 		self.volume_scale.connect("change-value", self.set_volume)
-		self.music_label = Label(music, name="music-widget-label", h_align="start")
+
+		self.music_widget = player()
 
 		self.bluetooth_window = BluetoothWindow(parent=self)
 
@@ -150,7 +262,7 @@ class EnvControlCenter(Window):
 				"self.wlan_label": self.wlan_label,
 				"self.bluetooth_label": self.bluetooth_label,
 				"self.volume_scale": self.volume_scale,
-				"self.music_label": self.music_label,
+				"self.music_widget": self.music_widget,
 				"self.volume_icon": self.volume_icon,
 				"self.bluetooth_widget": self.bluetooth_widget,
 				"self.wlan_widget": self.wlan_widget
