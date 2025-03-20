@@ -10,6 +10,7 @@
 	border: 1px solid alpha(#111, 0.4);
 	border-radius: .75rem;
 	padding: .5rem;
+	min-width: 200px;
 }
 
 #dropdown-option {
@@ -31,10 +32,6 @@
 	margin: 0px;
 	color: #fff;
 	font-weight: 400;
-}
-
-#dropdown-option-label:first-child {
-	padding-right: 5rem;
 }
 
 #dropdown-option:hover #dropdown-option-keybind {
