@@ -210,7 +210,6 @@ class player(Box):
 				exec_shell_command("playerctl play-pause")
 			elif button == self.forward:
 				exec_shell_command("playerctl next")
-
 class EnvControlCenter(Window):
 	"""Control Center for envshell"""
 	def __init__(self, **kwargs):
@@ -247,12 +246,14 @@ class EnvControlCenter(Window):
 
 		self.bluetooth_window = BluetoothWindow(parent=self)
 
+		self.bluetooth_svg = Svg(svg_file=get_relative_path("../../assets/svgs/bluetooth.svg" if bluetooth == "On" else "../../assets/svgs/bluetooth-off.svg"), style_classes="icon")
+
 		self.bluetooth_widget = Button(
 			name="bluetooth-widget",
 			child=Box(
 				orientation="h",
 				children=[
-					Svg(svg_file=get_relative_path("../../assets/svgs/bluetooth.svg"), style_classes="icon"),
+					self.bluetooth_svg,
 					Box(
 						name="bluetooth-widget-info",
 						orientation="vertical",
@@ -297,6 +298,8 @@ class EnvControlCenter(Window):
 		self.children = self.center_box
 
 		self.add_keybinding("Escape", self.toggle_cc)
+		self.grab_focus()
+		self.keyboard_mode = "exclusive"
 
 		self.start_update_thread()
 
@@ -314,8 +317,12 @@ class EnvControlCenter(Window):
 			self.set_visible(not self.is_visible())
 	def volume_changed(self, _, ):
 		GLib.idle_add(lambda: self.volume_scale.set_value(int(audio_service.speaker.volume)))
-	def wlan_changed(self, _, wlan): GLib.idle_add(lambda: self.wlan_label.set_property("label", wlan))
-	def bluetooth_changed(self, _, bluetooth): GLib.idle_add(lambda: self.bluetooth_label.set_property("label", bluetooth))
+	def wlan_changed(self, _, wlan):
+		self.wlan_widget.set_from_file(get_relative_path("../../assets/svgs/wifi.svg" if wlan != "No Connection" else "../../assets/svgs/wifi-off.svg"))
+		GLib.idle_add(lambda: self.wlan_label.set_property("label", wlan))
+	def bluetooth_changed(self, _, bluetooth):
+		self.bluetooth_svg.set_from_file(get_relative_path("../../assets/svgs/bluetooth.svg" if bluetooth == "On" else "../../assets/svgs/bluetooth-off.svg"))
+		GLib.idle_add(lambda: self.bluetooth_label.set_property("label", bluetooth))
 	def audio_changed(self, *_):
 		pass
 	def start_update_thread(self):
