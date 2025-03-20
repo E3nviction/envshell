@@ -131,6 +131,7 @@ class EnvPanel(Window):
 		self.search_button = Button(image=self.search_button_image, name="search-button", style_classes="button")
 		self.search_button.connect("clicked", self.envlight.toggle)
 
+		wlan = envshell_service.sc("wlan-changed", self.wlan_changed)
 		self.wifi_button_image = Svg(get_relative_path("../../assets/svgs/wifi-clear.svg"), name="wifi-button-image")
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
 		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
@@ -321,6 +322,9 @@ class EnvPanel(Window):
 			center_children=[self.notch_spot],
 			end_children=right_widgets if c.get_rule("Panel.Widgets.right.enable") else [],
 		)
+
+	def wlan_changed(self, _, wlan):
+		self.wifi_button_image.set_from_file(get_relative_path("../../assets/svgs/wifi-clear.svg" if wlan != "No Connection" else "../../assets/svgs/wifi-off-clear.svg"))
 
 	def hide_dropdowns(self, _, value):
 		self.envsh_button.remove_style_class("active")
