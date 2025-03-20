@@ -97,7 +97,7 @@ class ItemWidget:
 		options = []
 		for i in dropdown:
 			if not (i.get("divider") and len(i) == 1):
-				options.append(dropdown_option(self, i["label"], i.get("keybind", ""), on_click="hyprctl dispatch exec " + i.get("on-clicked", "")))
+				options.append(dropdown_option(self, i["label"], i.get("keybind", ""), on_click="hyprctl dispatch exec \"" + i.get("on-clicked", "").replace('"', '\\"') + "\""))
 			if i.get("divider") is not None:
 				options.append(dropdown_divider(""))
 		self.menu = EnvDropdown(
