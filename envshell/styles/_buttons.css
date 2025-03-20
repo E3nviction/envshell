@@ -6,7 +6,8 @@
 	transition: all 100ms ease-in-out;
 }
 
-.button.active {
+.button.active,
+.button:hover {
 	background: radial-gradient(alpha(#aaa, 0.2) 100%, transparent, transparent);
 }
 

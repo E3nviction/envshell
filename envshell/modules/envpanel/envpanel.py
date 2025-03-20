@@ -134,6 +134,10 @@ class EnvPanel(Window):
 		wlan = envshell_service.sc("wlan-changed", self.wlan_changed)
 		self.wifi_button_image = Svg(get_relative_path("../../assets/svgs/wifi-clear.svg"), name="wifi-button-image")
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
+
+		bluetooth = envshell_service.sc("bluetooth-changed", self.bluetooth_changed)
+		self.bluetooth_button_image = Svg(get_relative_path("../../assets/svgs/bluetooth-clear.svg"), size=24, name="bluetooth-button-image")
+
 		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
 		self.global_menu_title = EnvDropdown(
 			dropdown_id="global-menu-title",
@@ -256,6 +260,14 @@ class EnvPanel(Window):
 				dropdown_option(self, "nixOS Help", on_clicked=lambda b: subprocess.run("xdg-open https://wiki.nixos.org/wiki/NixOS_Wiki", shell=True)),
 			]
 		)
+		self.bluetooth_menu = EnvDropdown(
+			dropdown_id="bluetooth-menu",
+			parent=self,
+			dropdown_children=[
+				dropdown_option(self, "Toggle Bluetooth", on_clicked=lambda b: exec_shell_command_async(f"bluetoothctl {'off' if envshell_service.bluetooth == 'On' else 'on'}")),
+			]
+		)
+
 		envshell_service.connect("current-active-app-name-changed", lambda _, value: self.global_title_menu_about.set_property("label", f"About {value}"))
 		self.global_menu_button_title = Button(
 			child=ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window)),
@@ -274,6 +286,13 @@ class EnvPanel(Window):
 		self.global_menu_window.set_pointing_to(self.global_menu_button_window)
 		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_dropdown(b, self.global_menu_button_help))
 		self.global_menu_help.set_pointing_to(self.global_menu_button_help)
+		self.bluetooth_button = Button(
+			image=self.bluetooth_button_image,
+			name="bluetooth-button",
+			style_classes="button",
+			on_clicked=lambda b: self.bluetooth_menu.toggle_dropdown(b, self.bluetooth_button)
+		)
+		self.bluetooth_menu.set_pointing_to(self.bluetooth_button)
 
 		self.systray = SystemTray(
 			name="system-tray",
@@ -311,6 +330,7 @@ class EnvPanel(Window):
 		if c.get_rule("Panel.Widgets.system-tray.expandable"): right_widgets.append(self.systray_button)
 		if c.get_rule("Panel.Widgets.battery.enable"): right_widgets.append(self.power_button)
 		if c.get_rule("Panel.Widgets.wifi.enable"): right_widgets.append(self.wifi_button)
+		if c.get_rule("Panel.Widgets.bluetooth.enable"): right_widgets.append(self.bluetooth_button)
 		if c.get_rule("Panel.Widgets.search.enable"): right_widgets.append(self.search_button)
 		if c.get_rule("Panel.Widgets.control-center.enable"): right_widgets.append(self.control_center_button)
 		if c.get_rule("Panel.Widgets.date.enable"): right_widgets.append(self.date_time)
@@ -325,6 +345,8 @@ class EnvPanel(Window):
 
 	def wlan_changed(self, _, wlan):
 		self.wifi_button_image.set_from_file(get_relative_path("../../assets/svgs/wifi-clear.svg" if wlan != "No Connection" else "../../assets/svgs/wifi-off-clear.svg"))
+	def bluetooth_changed(self, _, bluetooth):
+		self.bluetooth_button_image.set_from_file(get_relative_path("../../assets/svgs/bluetooth-clear.svg" if bluetooth != "No Connection" else "../../assets/svgs/bluetooth-off-clear.svg"))
 
 	def hide_dropdowns(self, _, value):
 		self.envsh_button.remove_style_class("active")
