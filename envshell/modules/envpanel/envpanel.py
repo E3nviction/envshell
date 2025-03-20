@@ -45,7 +45,8 @@ def dropdown_option(self, label: str = "", keybind: str = "", on_click="echo \"E
 	def on_click_subthread(button):
 		envshell_service.current_dropdown = -1
 		if on_clicked: on_clicked(button)
-		else: exec_shell_command_async(on_click)
+		else:
+			subprocess.Popen(f"nohup {on_click} &", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	return Button(
 		child=CenterBox(
 			start_children=[
@@ -97,7 +98,7 @@ class ItemWidget:
 		options = []
 		for i in dropdown:
 			if not (i.get("divider") and len(i) == 1):
-				options.append(dropdown_option(self, i["label"], i.get("keybind", ""), on_click="hyprctl dispatch exec \"" + i.get("on-clicked", "").replace('"', '\\"') + "\""))
+				options.append(dropdown_option(self, i["label"], i.get("keybind", ""), on_click=i.get("on-clicked", "")))
 			if i.get("divider") is not None:
 				options.append(dropdown_divider(""))
 		self.menu = EnvDropdown(
