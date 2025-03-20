@@ -1,0 +1,7 @@
+[Mods.weather]
+icon = "/run/current-system/sw/share/icons/WhiteSur-dark/status/symbolic/weather-few-clouds-symbolic.svg"
+icon-size = 18
+
+[[Mods.weather.options]]
+label = "Current Weather"
+on-clicked = "notify-send 'Weather' \"$(curl -s 'wttr.in/?format=3')\""

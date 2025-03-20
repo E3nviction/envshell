@@ -1,0 +1,46 @@
+[Mods.notifier]
+icon = "/run/current-system/sw/share/icons/WhiteSur-dark/apps/symbolic/notifications-applet-symbolic.svg"
+icon-size = 18
+
+[[Mods.notifier.options]]
+label = "Basic Notification"
+on-clicked = "notify-send 'Test' 'This is a basic notification'"
+
+[[Mods.notifier.options]]
+label = "Urgency Low"
+on-clicked = "notify-send -u low 'Low Urgency' 'This is a low urgency notification'"
+
+[[Mods.notifier.options]]
+label = "Urgency Normal"
+on-clicked = "notify-send -u normal 'Normal Urgency' 'This is a normal urgency notification'"
+
+[[Mods.notifier.options]]
+label = "Urgency Critical"
+on-clicked = "notify-send -u critical 'Critical Alert' 'This is a critical notification'"
+divider = true
+
+[[Mods.notifier.options]]
+label = "Notification with Icon"
+on-clicked = "notify-send 'Icon Test' 'This has an icon' -i dialog-information"
+
+[[Mods.notifier.options]]
+label = "Notification with Long Text"
+on-clicked = "notify-send 'Long Notification' 'This is a much longer text notification to test wrapping and display behavior in different notification daemons.'"
+divider = true
+
+[[Mods.notifier.options]]
+label = "Notification with Markdown"
+on-clicked = "notify-send 'Markdown **Bold**' 'This is a test for *italic* and **bold** text (if supported by your notifier)'"
+
+[[Mods.notifier.options]]
+label = "Multi-line Notification"
+on-clicked = "notify-send 'Multiline Test' 'Line 1\nLine 2\nLine 3'"
+divider = true
+
+[[Mods.notifier.options]]
+label = "Action Notification (May Not Work)"
+on-clicked = "notify-send 'Action Test' 'Click to test' --action=test"
+
+[[Mods.notifier.options]]
+label = "Spammed Notifications"
+on-clicked = "for i in {1..5}; do notify-send \"Spam $i\" \"This is notification $i\"; sleep 0.5; done"
