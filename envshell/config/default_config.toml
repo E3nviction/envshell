@@ -48,6 +48,7 @@ resolution = "1920x1080"
 		system-tray.expandable = true
 		battery.enable = true
 		wifi.enable = true
+		bluetooth.enable = true
 		search.enable = true
 		control-center.enable = true
 		date.enable = true
