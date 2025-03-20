@@ -43,6 +43,6 @@ Stay tuned for updates!
 
 Here is a small list of example mods.
 
-- [Terminals](https://github.com/E3nviction/envShell/blob/main/docs/mods/terminal.md)
-- [Notifier](https://github.com/E3nviction/envShell/blob/main/docs/mods/notifier.md)
-- [Weather](https://github.com/E3nviction/envShell/blob/main/docs/mods/weather.md)
+- [Terminals](https://github.com/E3nviction/envShell/blob/master/docs/mods/terminal.md)
+- [Notifier](https://github.com/E3nviction/envShell/blob/master/docs/mods/notifier.md)
+- [Weather](https://github.com/E3nviction/envShell/blob/master/docs/mods/weather.md)
