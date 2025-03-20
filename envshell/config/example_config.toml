@@ -1,6 +1,7 @@
 # Note: Most of these settings require a restart of envShell,
 # 		there are some exceptions, but dock position for example requires a restart
 
+title = "envShell Example Config"
 auto-generated = true
 
 [General]
@@ -128,9 +129,9 @@ directory = "envshell"
 show-hidden-devices = false
 
 
-# This is rarely changed by the user, you can delete it if you want
 
 [Shell]
+# This is rarely changed by the user, you can delete it if you want
 	[Shell.about]
 		window.width = 250
 		window.height = 355
