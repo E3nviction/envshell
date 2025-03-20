@@ -32,8 +32,6 @@ class NotificationWidget(Box):
 
 		self._notification = notification
 
-		envshell_service.cache_notification(self._notification)
-
 		body_container = Box(spacing=4, orientation="h")
 
 		if image_pixbuf := self._notification.image_pixbuf:
@@ -53,7 +51,6 @@ class NotificationWidget(Box):
 				spacing=4,
 				orientation="v",
 				children=[
-					# a box for holding both the "summary" label and the "close" button
 					Box(
 						orientation="h",
 						children=[
@@ -66,7 +63,6 @@ class NotificationWidget(Box):
 						h_expand=True,
 						v_expand=True,
 					)
-					# add the "close" button
                     .build(
                         lambda box, _: box.pack_end(
                             Button(
@@ -76,7 +72,7 @@ class NotificationWidget(Box):
                                 ),
                                 v_align="center",
                                 h_align="end",
-                                on_clicked=lambda *_: self._notification.close(),
+                                on_clicked=self.close_noti,
                             ),
                             False,
                             False,
@@ -115,21 +111,23 @@ class NotificationWidget(Box):
 				)
 			)
 
-		# destroy this widget once the notification is closed
 		self._notification.connect(
 			"closed",
 			self.destroy_noti,
 		)
 
-		# automatically close the notification after the timeout period
 		invoke_repeater(
 			NOTIFICATION_TIMEOUT,
 			lambda: self._notification.close("expired"),
 			initial_call=False,
 		)
 
-	def destroy_noti(self, *_):
+	def close_noti(self, *_):
 		envshell_service.remove_notification(self._notification["id"])
+		self._notification.close()
+		self.destroy()
+
+	def destroy_noti(self, *_):
 		parent.remove(self) if (parent := self.get_parent()) else None,  # type: ignore
 		self.destroy(),
 
@@ -146,15 +144,12 @@ class EnvNoti(Window):
 				orientation="v",
 			).build(
 				lambda viewport, _: Notifications(
-					on_notification_added=lambda notifs_service, nid: viewport.add(
-						NotificationWidget(
-							cast(
-								Notification,
-								notifs_service.get_notification_from_id(nid),
-							)
-						)
-					)
+					on_notification_added=self.on_notification_added
 				)
 			),
 			**kwargs,
 		)
+
+	def on_notification_added(self, notifs_service, nid):
+		envshell_service.cache_notification(notifs_service.get_notification_from_id(nid))
+		self.get_child().add(NotificationWidget(cast(Notification, notifs_service.get_notification_from_id(nid))))
