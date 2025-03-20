@@ -1,6 +1,7 @@
 from modules.envnotch.envnotch import EnvNotch
 from modules.envpanel.envpanel import EnvPanel
 from modules.envnoti.envnoti import EnvNoti
+from modules.envnoti.envnoticenter import EnvNotiCenter
 from modules.envdock.envdock import EnvDock
 from modules.envdock.envdock_old import EnvDock as EnvDockLegacy
 from modules.envcorners.envcorners import EnvCorners
@@ -29,6 +30,7 @@ def apply_style(app):
 
 if __name__ == "__main__":
 	envnoti = EnvNoti()
+	envnoticenter = None
 	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
 	envnotch = None
 	envdock = None
