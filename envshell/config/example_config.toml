@@ -150,3 +150,27 @@ show-hidden-devices = false
 		# If you want to use a different Store, such as the Gnome Software store, you can uncomment this
 		#options.store.label = "App Store..."
 		#options.store.on-click = "gnome-software"
+
+
+[Mods]
+# You can also create mods, which are dropdowns inside the top panel
+# You can create as many mods as you want
+	# To create a mod, you need to create a section with the name of the mod
+	# Then you can add an icon and the icon size (optional. Default: 24)
+	terminal.icon = "/run/current-system/sw/share/icons/WhiteSur-dark/apps/symbolic/terminal-app-symbolic.svg"
+	terminal.icon-size = 18
+	# Then you can add options to the mod
+	# An option is a label, keybind and an on-click command
+	# To create a divider, you can set divider to true, to add a divider below the option
+	# 	or just leave the option empty and only add the divider = true, which creates a standalone divider
+
+	# Currently this mod framework only supports list dropdowns, with static labels and on-click commands
+	# In the future we plan to add dynamic labels, more option types, and maybe even conditional on-click commands
+	[[Mods.terminal.options]]
+		label = "Terminal"
+		on-clicked = "kitty"
+	[[Mods.terminal.options]]
+		label = "Terminal but scary"
+		on-clicked = "ghostty"
+		# This will add a divider below the last option
+		divider = true

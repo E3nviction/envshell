@@ -89,6 +89,32 @@ class Dropdown(EnvDropdown):
 			**kwargs,
 		)
 
+class ItemWidget:
+	def __init__(self, parent, icon, icon_size=24, id_=None, dropdown=None):
+		self.icon = icon
+		self.id = id_
+		self.parent = parent
+		options = []
+		for i in dropdown:
+			if not (i.get("divider") and len(i) == 1):
+				options.append(dropdown_option(self, i["label"], i.get("keybind", ""), on_click="hyprctl dispatch exec " + i.get("on-clicked", "")))
+			if i.get("divider") is not None:
+				options.append(dropdown_divider(""))
+		self.menu = EnvDropdown(
+			dropdown_id=self.id,
+			parent=self.parent,
+			dropdown_children=options,
+		)
+		self.button = Button(
+			image=Svg(icon, size=icon_size),
+			style_classes="button",
+			on_clicked=lambda b: self.menu.toggle_dropdown(b, self.button),
+		)
+		self.menu.set_pointing_to(self.button)
+
+	def build(self):
+		return self.button
+
 class EnvPanel(Window):
 	"""Top Panel for envshell"""
 	def __init__(self, **kwargs):
@@ -264,7 +290,7 @@ class EnvPanel(Window):
 			dropdown_id="bluetooth-menu",
 			parent=self,
 			dropdown_children=[
-				dropdown_option(self, "Toggle Bluetooth", on_clicked=lambda b: exec_shell_command_async(f"bluetoothctl {'off' if envshell_service.bluetooth == 'On' else 'on'}")),
+				dropdown_option(self, "Toggle Bluetooth", on_clicked=lambda b: exec_shell_command_async(f"bluetoothctl power {'off' if envshell_service.bluetooth == 'On' else 'on'}")),
 			]
 		)
 
@@ -334,6 +360,11 @@ class EnvPanel(Window):
 		if c.get_rule("Panel.Widgets.search.enable"): right_widgets.append(self.search_button)
 		if c.get_rule("Panel.Widgets.control-center.enable"): right_widgets.append(self.control_center_button)
 		if c.get_rule("Panel.Widgets.date.enable"): right_widgets.append(self.date_time)
+		if c.get_rule("Mods") is not None:
+			mods = c.get_rule("Mods")
+
+			for mod in mods:
+				right_widgets.insert(0, ItemWidget(self, mods[mod]["icon"], mods[mod].get("icon-size", 24), mod, mods[mod]["options"]).build())
 
 		self.children = CenterBox(
 			h_expand=True,
@@ -346,7 +377,7 @@ class EnvPanel(Window):
 	def wlan_changed(self, _, wlan):
 		self.wifi_button_image.set_from_file(get_relative_path("../../assets/svgs/wifi-clear.svg" if wlan != "No Connection" else "../../assets/svgs/wifi-off-clear.svg"))
 	def bluetooth_changed(self, _, bluetooth):
-		self.bluetooth_button_image.set_from_file(get_relative_path("../../assets/svgs/bluetooth-clear.svg" if bluetooth != "No Connection" else "../../assets/svgs/bluetooth-off-clear.svg"))
+		self.bluetooth_button_image.set_from_file(get_relative_path("../../assets/svgs/bluetooth-clear.svg" if bluetooth != "Off" else "../../assets/svgs/bluetooth-off-clear.svg"))
 
 	def hide_dropdowns(self, _, value):
 		self.envsh_button.remove_style_class("active")
@@ -381,9 +412,11 @@ class EnvPanel(Window):
 		if "hidden" in self.systray.style_classes:
 			idle_add(lambda: self.systray_button.set_property("label", ""))
 			self.systray.remove_style_class("hidden")
+			self.systray.show()
 		else:
 			idle_add(lambda: self.systray_button.set_property("label", ""))
 			self.systray.add_style_class("hidden")
+			self.systray.hide()
 
 	def get_pos(self):
 		full = c.get_rule("Panel.full")
