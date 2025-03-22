@@ -1,6 +1,7 @@
 import subprocess
 import threading
 import time
+import re
 import json
 
 
@@ -27,6 +28,8 @@ global envshell_service
 global audio_service
 from utils.roam import envshell_service, audio_service
 from utils.exml import exml
+
+from config.c import c
 
 from utils.functions import get_from_socket
 
@@ -168,7 +171,9 @@ class player(Box):
 		def extract_metadata(_, value):
 			if value:
 				data = json.loads(value)
-
+				for i in c.get_rule("MusicPlayer.ignore"):
+					if re.match(i["title"]["regex"], data["title"]):
+						return
 				self.art.set_style(f"background-image: url('{data['artUrl']}');", append=True)
 				self.title.set_label(data["title"])
 				self.artist.set_label(data["artist"])
@@ -242,7 +247,6 @@ class EnvControlCenter(Window):
 			name="music-widget",
 			children=[player()]
 		)
-
 
 		self.bluetooth_window = BluetoothWindow(parent=self)
 
