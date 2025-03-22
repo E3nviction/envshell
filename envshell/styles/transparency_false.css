@@ -49,3 +49,29 @@ tooltip {
 	box-shadow: none;
     border-radius: 1.2rem;
 }
+
+#control-center-widgets {
+	background-color: #222;
+	box-shadow: none;
+	border: 1px solid #555;
+	border-radius: 1.25rem;
+	padding: .5rem;
+}
+
+.menu {
+	margin: 5px;
+	background-color: #222;
+	border: .5px solid #555;
+	box-shadow: none;
+	border-radius: 12px;
+	padding: 1rem;
+}
+
+#about-menu {
+	background-color: #222;
+	box-shadow: none;
+	border: 1px solid #333;
+	border-top: none;
+	border-radius: 1.25rem;
+	padding: 2rem;
+}
