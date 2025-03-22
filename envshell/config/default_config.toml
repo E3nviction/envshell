@@ -62,10 +62,6 @@ hide-empty = true
 [Workspace]
 ignore.id.9 = true
 
-[MusicPlayer]
-[[MusicPlayer.ignore]]
-title.regex = "^Episode.*"
-
 [Shell]
 	[Shell.about]
 		window.width = 250
