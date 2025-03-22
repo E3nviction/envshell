@@ -231,11 +231,11 @@ class EnvPanel(Window):
 
 			if not aservice.speaker: return
 
-			audio_level = 0 if aservice.speaker.muted else min(math.ceil(int(aservice.speaker.volume) / 33), 3)
+			audio_level = 0 if aservice.speaker.muted else min(int(math.ceil(aservice.speaker.volume / 33)), 3)
 			GLib.idle_add(lambda: self.osd_window_scale.set_value(int(aservice.speaker.volume)))
 			set_image(self, audio_level)
 			self.osd_window.show()
-			if round(aservice.speaker.volume) == round(self.osd_window_scale.get_value()) and not self.osd_window_muted and not aservice.speaker.muted:
+			if math.floor(aservice.speaker.volume) == math.floor(self.osd_window_scale.get_value()) and not self.osd_window_muted and not aservice.speaker.muted:
 				set_osd_mute(self, aservice.speaker.muted)
 				self.osd_window.force_hide()
 			else:
