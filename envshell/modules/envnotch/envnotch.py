@@ -50,14 +50,14 @@ class EnvNotch(Window):
 			name="env-notch",
 			all_visible=True,
 			visible=True,
-			margin=(-24, 10, 10, 10),
+			margin=(-(c.get_rule("Panel.height")), 10, 10, 10),
 			**kwargs,
 		)
 
 		if c.get_rule("Panel.mode") == "floating":
-			self.set_property("margin", (-34, 10, 10, 10))
+			self.set_property("margin", (-(c.get_rule("Panel.height") + 10), 10, 10, 10))
 		elif c.get_rule("Panel.mode") == "normal":
-			self.set_property("margin", (-24, 10, 10, 10))
+			self.set_property("margin", (-(c.get_rule("Panel.height")), 10, 10, 10))
 
 		self.hidden = False
 
