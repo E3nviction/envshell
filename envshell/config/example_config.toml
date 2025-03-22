@@ -128,6 +128,11 @@ hide-empty = true
 # Makes the dock ignore apps on workspace id 9
 ignore.id.9 = true
 
+[MusicPlayer]
+# This would ignore any sound control for players with the title being spotify
+#[[MusicPlayer.ignore]]
+#title.regex = "^spotify$"
+
 [Cache]
 # The Directory for cache such as icons
 directory = "envshell"

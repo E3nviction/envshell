@@ -108,10 +108,6 @@ def main():
 	get_parser = subparsers.add_parser("get", help="Get a settings value.")
 	get_parser.add_argument("settings_path", help="Path to the setting (e.g., example.path.test)")
 
-	set_parser = subparsers.add_parser("set", help="Make a change to the runtime Settings.")
-	set_parser.add_argument("settings_path", help="Path to the setting (e.g., example.path.test)")
-	set_parser.add_argument("value", help="Value for the setting")
-
 	args = parser.parse_args()
 
 	file_path = os.path.join(os.path.expanduser("~"), ".config", "envshell", "temp.toml")
