@@ -19,6 +19,10 @@ from utils.roam import envshell_service
 
 from config.c import c
 
+def apply_style(app):
+	logger.info("[Main] Applying CSS")
+	app.set_stylesheet_from_file(get_relative_path("../envshell.css"))
+
 def set_socket(value):
 	try:
 		with open(f"/tmp/envshell.socket", "w") as f:

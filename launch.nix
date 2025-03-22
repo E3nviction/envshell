@@ -22,6 +22,6 @@ pkgs.mkShell rec {
     export PYTHONPATH="${pkgs.python312Packages.pygobject3}/lib/python3.12/site-packages"
     echo "Activating python virtual env..."
     source ${toString ./.}/venv/bin/activate
-    python ${toString ./.}/envshell/main.py
+    python ${toString ./.}/envshell/watcher.py
   '';
 }

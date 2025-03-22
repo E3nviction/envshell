@@ -25,25 +25,18 @@ for disable in [
 	loguru.logger.disable(disable)
 
 if __name__ == "__main__":
+	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
 	envnoti = EnvNoti()
 	envnoticenter = None
-	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
 	envnotch = None
-	envdock = None
 	envpanel = None
 	if c.get_rule("Notch.enable"):
 		envnotch = EnvNotch()
 	if c.get_rule("Panel.enable"):
 		envpanel = EnvPanel()
-	if c.get_rule("Dock.enable"):
-		if c.get_rule("Dock.legacy"):
-			envdock = EnvDockLegacy()
-		else:
-			envdock = EnvDock()
 	apps = [
 		envnoti,
 		envnotch,
-		envdock,
 		envpanel,
 	]
 	apps = list(filter(lambda x: x is not None, apps))
@@ -52,7 +45,7 @@ if __name__ == "__main__":
 		*apps,
 		open_inspector=len(sys.argv) > 1,
 	)
-	setproctitle.setproctitle("envShell")
+	setproctitle.setproctitle("Shell")
 
 	css_file = monitor_file(get_relative_path("styles"))
 	css_file.connect("changed", lambda *_: apply_style(app))
