@@ -19,7 +19,8 @@ resolution = "1920x1080"
 	enable = true
 [Dock]
 	enable = true
-	legacy = false
+	legacy = true
+	magnification = true
 	title.limit = 25
 	exclusive = false
 	lazy-time = 1000
@@ -60,6 +61,10 @@ hide-empty = true
 
 [Workspace]
 ignore.id.9 = true
+
+[MusicPlayer]
+[[MusicPlayer.ignore]]
+title.regex = "^Episode.*"
 
 [Shell]
 	[Shell.about]

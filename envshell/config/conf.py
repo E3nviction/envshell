@@ -151,6 +151,18 @@ class Config:
 			return None
 		return self._get_recursive(rule_points[1:], pre[rule_points[0]])
 
+	def _set_recursive(self, rule_points: list, value, pre=None) -> dict:
+		if pre is None:
+			pre = self._private_config
+		if len(rule_points) == 1:
+			pre[rule_points[0]] = value
+			return pre
+		else:
+			if rule_points[0] not in pre:
+				pre[rule_points[0]] = {}
+			pre[rule_points[0]] = self._set_recursive(rule_points[1:], value, pre[rule_points[0]])
+			return pre
+
 	def get_rule(self, rule_path=None, default=None, _type=None):
 		rule_path = rule_path.split(".")
 		val = self._get_recursive(rule_path) or default
@@ -158,3 +170,7 @@ class Config:
 			fin_val = tuple(val)
 			return fin_val
 		return val
+
+	def set_rule(self, rule_path=None, value=None):
+		rule_path = rule_path.split(".")
+		self._private_config = self._set_recursive(rule_path, value)

@@ -39,6 +39,8 @@ resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 [Dock]
 	enable = true
 
+	# DOES NOT WORK. And will probably take some time to actually get implemented
+	magnification = true
 	# If you want to use the legacy dock system for hovering (Does not support Lazy Time)
 	# This might get deprecated in the future
 	legacy = false
