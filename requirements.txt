@@ -3,4 +3,5 @@ hyprpy==0.1.10
 loguru==0.7.3
 pulsectl==24.12.0
 setproctitle==1.3.4
+psutil
 StyledWidgets @ git+https://github.com/E3nviction/StyledWidgets.git@e9ffac49239e871c7a2fa8e1184ffe3d06d8649c
