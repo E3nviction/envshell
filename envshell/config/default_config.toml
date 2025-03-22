@@ -1,6 +1,7 @@
 auto-generated = false
 
 [General]
+transparency = true
 
 [Display]
 resolution = "1920x1080"
@@ -37,6 +38,7 @@ resolution = "1920x1080"
 	enable = true
 	height = 24
 	full = true
+	transparent = true
 	mode = "normal"
 	date-format = "%a %b %d %H:%M"
 	icon = ""

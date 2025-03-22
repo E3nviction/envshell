@@ -1,0 +1,51 @@
+menu {
+	background-color: #222;
+	box-shadow: none;
+	border: 1px solid #555;
+	border-radius: .75rem;
+	padding: .5rem;
+}
+
+#dropdown-options {
+	background-color: #222;
+	box-shadow: none;
+	border: 1px solid #555;
+	border-radius: .75rem;
+	padding: .5rem;
+	min-width: 200px;
+}
+
+tooltip {
+    background-color: #222;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 10px;
+    color: #fff;
+}
+
+#envshell-osd {
+	opacity: 1;
+	margin: 5px;
+	background-color: #222;
+	border: .5px solid #555;
+	box-shadow: none;
+	border-radius: 12px;
+	padding: 1rem;
+	transition: opactiy 250ms ease-in-out;
+}
+
+#dock-box {
+    padding: 10px;
+	background-color: #222;
+	box-shadow: none;
+	border: .5px solid #555;
+	border-radius: 19.2px;
+}
+
+#notification {
+    padding: 0.8rem;
+	background-color: #222;
+	border: 1px solid #555;
+	box-shadow: none;
+    border-radius: 1.2rem;
+}

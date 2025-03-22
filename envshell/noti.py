@@ -35,4 +35,6 @@ if __name__ == "__main__":
 	css_file.connect("changed", lambda *_: apply_style(app))
 
 	apply_style(app)
+	if not c.get_rule("General.transparency"):
+		app.set_stylesheet_from_file(get_relative_path("styles/transparency_false.css"), append=True)
 	app.run()
