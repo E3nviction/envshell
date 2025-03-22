@@ -7,6 +7,8 @@ from fabric.system_tray.service import (
 	SystemTrayItem as SystemTrayItemService,
 )
 
+from config.c import c
+
 class SystemTrayItem(Button):
 	def __init__(self, item: SystemTrayItemService, icon_size: int, **kwargs):
 		super().__init__(**kwargs)
@@ -64,7 +66,8 @@ class SystemTray(Box):
 		item = self._watcher.items.get(item_identifier)
 		if not item:
 			return
-
+		if (not item.get_preferred_icon_pixbuf(self._icon_size)) and c.get_rule("Systray.hide-empty"):
+			return
 		item_button = SystemTrayItem(item, self._icon_size)
 		self.add(item_button)
 		self._items[item.identifier] = item_button

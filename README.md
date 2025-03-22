@@ -18,8 +18,16 @@ Please note that envShell is still in an experimental stage and is known to only
 ## Usage
 
 1. `cd envshell`
-2. `python main.py`
-3. Create a `config.toml` file in ~/.config/envshell and copy the envshell-config.toml into it.
+2. `python watcher.py`
+
+## Process Control
+
+> The envShell is the process, that activates the panel, dock, notifications, etc.  
+> It will also restart them if they are closed.
+
+To exit the **envShell (see above)**, kill the process: `pkill -x envShell`.  
+To exit the Panel, Noti, OSD, etc, kill the process: `pkill -x Shell`.  
+To exit the Dock, kill the process: `pkill -x Dock`.  
 
 ### Hyprland
 

@@ -53,6 +53,9 @@ resolution = "1920x1080"
 		control-center.enable = true
 		date.enable = true
 
+[Systray]
+hide-empty = true
+
 [Workspace]
 ignore.id.9 = true
 
