@@ -22,12 +22,19 @@ def restart_if_needed(process_name, script_name):
 
 def monitor():
 	process_names = {
-		"Shell": "shell.py",
-		"Dock": "dock.py"
+		"Panel": "panel.py",
+		"Dock": "dock.py",
+		"Notifications": "noti.py",
 	}
 
 	if not c.get_rule("Dock.enable"):
 		process_names.pop("Dock")
+
+	if not c.get_rule("Notifications.enable"):
+		process_names.pop("Notifications")
+
+	if not c.get_rule("Panel.enable"):
+		process_names.pop("Panel")
 
 	existing_pids = {p.pid for p in psutil.process_iter(attrs=["pid"])}
 

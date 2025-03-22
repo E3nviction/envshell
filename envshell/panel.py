@@ -1,9 +1,5 @@
 from modules.envnotch.envnotch import EnvNotch
 from modules.envpanel.envpanel import EnvPanel
-from modules.envnoti.envnoti import EnvNoti
-from modules.envnoti.envnoticenter import EnvNotiCenter
-from modules.envdock.envdock import EnvDock
-from modules.envdock.envdock_old import EnvDock as EnvDockLegacy
 from modules.envcorners.envcorners import EnvCorners
 from modules.envlight.envlight import EnvLight
 from fabric import Application
@@ -26,26 +22,25 @@ for disable in [
 
 if __name__ == "__main__":
 	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
-	envnoti = EnvNoti()
-	envnoticenter = None
 	envnotch = None
 	envpanel = None
 	if c.get_rule("Notch.enable"):
 		envnotch = EnvNotch()
 	if c.get_rule("Panel.enable"):
 		envpanel = EnvPanel()
+	else:
+		exit()
 	apps = [
-		envnoti,
 		envnotch,
 		envpanel,
 	]
 	apps = list(filter(lambda x: x is not None, apps))
 	app = Application(
-		"envshell",
+		"envshellPanel",
 		*apps,
 		open_inspector=len(sys.argv) > 1,
 	)
-	setproctitle.setproctitle("Shell")
+	setproctitle.setproctitle("Panel")
 
 	css_file = monitor_file(get_relative_path("styles"))
 	css_file.connect("changed", lambda *_: apply_style(app))
