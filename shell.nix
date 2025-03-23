@@ -10,6 +10,7 @@ pkgs.mkShell rec {
     pkgs.gtk4
     pkgs.gtk3
     pkgs.librsvg
+    pkgs.libdbusmenu-gtk2
     pkgs.libdbusmenu-gtk3
     pkgs.gdk-pixbuf
     pkgs.cinnamon-desktop
@@ -21,7 +22,7 @@ pkgs.mkShell rec {
 
   shellHook = ''
   	echo "Setting up linkers for python."
-    export PYTHONPATH="${pkgs.python312Packages.pygobject3}/lib/python3.12/site-packages"
+    export PYTHONPATH="${pkgs.python312Packages.pygobject3}/lib/python3.12/site-packages":$PYTHONPATH
     echo "Activating python virtual env..."
     source venv/bin/activate
     cd envshell

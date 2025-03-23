@@ -3,6 +3,8 @@ import subprocess
 import setproctitle
 import time
 
+from fabric.utils.helpers import get_relative_path
+
 from config.c import c
 
 def is_running(name):
@@ -16,7 +18,7 @@ def wait_for_process(name):
 def restart_if_needed(process_name, script_name):
 	if not is_running(process_name):
 		print(f"{process_name} is not running. Starting {script_name}...")
-		subprocess.Popen(f"python {script_name} &", shell=True)
+		subprocess.Popen(f"python {get_relative_path(script_name)} &", shell=True)
 		wait_for_process(process_name)
 		print(f"{process_name} has started.")
 

@@ -8,6 +8,7 @@ pkgs.mkShell rec {
     pkgs.gtk4
     pkgs.gtk3
     pkgs.librsvg
+    pkgs.libdbusmenu-gtk2
     pkgs.libdbusmenu-gtk3
     pkgs.gdk-pixbuf
     pkgs.cinnamon-desktop
