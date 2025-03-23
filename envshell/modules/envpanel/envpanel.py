@@ -29,6 +29,7 @@ from widgets.envdropdown import EnvDropdown, dropdown_divider
 from widgets.osd_widget import OsdWindow
 
 from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
+from modules.envnoti.envnoticenter import EnvNotiCenter
 from .about import About
 
 from styledwidgets.styled import styler, style_dict
@@ -160,8 +161,8 @@ class EnvPanel(Window):
 		self.search_button = Button(image=self.search_button_image, name="search-button", style_classes="button")
 		self.search_button.connect("clicked", self.envlight.toggle)
 
-		wlan = envshell_service.sc("wlan-changed", self.wlan_changed)
 		self.wifi_button_image = Svg(get_relative_path("../../assets/svgs/wifi-clear.svg"), name="wifi-button-image")
+		wlan = envshell_service.sc("wlan-changed", self.wlan_changed)
 		self.wifi_button = Button(image=self.wifi_button_image, name="wifi-button", style_classes="button")
 
 		bluetooth = envshell_service.sc("bluetooth-changed", self.bluetooth_changed)
