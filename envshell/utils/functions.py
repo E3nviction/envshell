@@ -2,6 +2,7 @@ import datetime
 import os
 import json
 import re
+import sys
 import subprocess
 import tomllib
 import shutil
@@ -53,6 +54,31 @@ def get_from_socket():
 		logger.error("[Main] Failed to read from socket:", e)
 		sys.exit(1)
 
+def create_socket_signal(socket, name: str, signal: dict):
+	try:
+		file = "{}"
+		if not os.path.exists(os.path.join("/tmp/", socket)):
+			with open(os.path.join("/tmp/", socket), "w") as f:
+				f.write("{}")
+		with open(os.path.join("/tmp/", socket), "r") as f:
+			file = f.read()
+			f.close()
+		with open(os.path.join("/tmp/", socket), "w") as f:
+			if file == "": file = "{}"
+			data = json.loads(file)
+			data[name] = signal
+			f.write(json.dumps(data))
+	except Exception as e:
+		logger.error("[Main] Failed to write to socket:", e)
+		sys.exit(1)
+
+def get_socket_signal(socket):
+	if not os.path.exists(os.path.join("/tmp/", socket)):
+		with open(os.path.join("/tmp/", socket), "w") as f:
+			f.write("{}")
+	with open(os.path.join("/tmp/", socket), "r") as f:
+		return json.load(f)
+
 class AppName:
 	def __init__(self, path="/run/current-system/sw/share/applications"):
 		self.files = os.listdir(path)
@@ -84,11 +110,9 @@ class AppName:
 		else:
 			name = self.get_app_name(wmclass=wmclass)
 		if smart:
-			name = str(name).split(" ")
-			if len(name) != 0:
-				name = " ".join([n[0].upper() + n[1:] for n in name])
-				if "." in name:
-					name = name.split(".")[-1]
+			name = str(name).title()
+			if "." in name:
+				name = name.split(".")[-1]
 		if update: envshell_service.current_active_app_name = name
 		return name
 
