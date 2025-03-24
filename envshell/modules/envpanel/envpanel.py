@@ -24,7 +24,7 @@ from gi.repository.GLib import idle_add
 
 global envshell_service
 from utils.roam import envshell_service, audio_service
-from utils.functions import app_name_class
+from utils.functions import app_name_class, create_socket_signal, get_socket_signal
 from widgets.envdropdown import EnvDropdown, dropdown_divider
 from widgets.osd_widget import OsdWindow
 
@@ -143,9 +143,16 @@ class EnvPanel(Window):
 
 		self.set_property("height-request", c.get_rule("Panel.height"))
 
+		def toggle_notification_panel(*_):
+			previous = get_socket_signal("envshellcommands.socket").get("show", {"value": False}).get("value")
+			create_socket_signal("envshellcommands.socket", "show", {"value": not previous})
 
 		self.envlight = EnvLight()
-		self.date_time = DateTime(formatters=c.get_rule("Panel.date-format"), name="date-time")
+		self.date_time = Button(
+			child=DateTime(formatters=c.get_rule("Panel.date-format"), name="date-time"),
+			on_clicked=toggle_notification_panel,
+			style_classes="button"
+		)
 		self.envsh_button_dropdown = Dropdown(parent=self)
 
 		self.control_center = EnvControlCenter()
