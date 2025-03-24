@@ -19,3 +19,15 @@
 #noti-image {
     border-radius: 7px;
 }
+
+#env-noti-center {
+	border-radius: 1.25rem;
+}
+
+#notification-center {
+	background-color: alpha(#000, 0.3);
+	box-shadow: inset 0 0 0 1px alpha(#aaa, 0.4);
+	border: 1px solid alpha(#111, 0.4);
+	border-radius: 1.25rem;
+	padding: 1rem;
+}
