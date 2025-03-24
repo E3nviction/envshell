@@ -4,6 +4,7 @@ import math
 import subprocess
 import gi
 
+from fabric.utils import invoke_repeater
 from fabric.core.service import Service, Signal, Property
 from fabric.widgets.datetime import DateTime
 from fabric.widgets.centerbox import CenterBox
@@ -12,20 +13,23 @@ from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.scale import Scale
 from fabric.widgets.scale import ScaleMark
+from fabric.widgets.revealer import Revealer
 from fabric.widgets.svg import Svg
 from widgets.systrayv2 import SystemTray
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
-from fabric.utils.helpers import exec_shell_command_async, get_relative_path
+from fabric.utils.helpers import exec_shell_command_async, get_relative_path, monitor_file
 from gi.repository import GLib, Gtk, GdkPixbuf
 from widgets.customimage import CustomImage
+
+from fabric.notifications import Notification
 
 from gi.repository.GLib import idle_add
 
 global envshell_service
 from utils.roam import envshell_service, audio_service
-from utils.functions import app_name_class
+from utils.functions import app_name_class, get_socket_signal
 
 from styledwidgets.styled import styler, style_dict
 from styledwidgets.agents import margins, paddings, transitions, colors, shadows, borderradius, textsize
@@ -38,16 +42,25 @@ from .envnoti import NOTIFICATION_IMAGE_SIZE, NOTIFICATION_TIMEOUT, NOTIFICATION
 
 class EnvNotiCenter(Window):
 	"""Notification Center for envshell"""
-	def __init__(self, **kwargs):
+	def __init__(
+		self,
+		transition_type="",
+        transition_duration: int = 400,
+        revealer_name: str | None = None,
+		**kwargs
+	):
 		super().__init__(
 			layer="overlay",
-			anchor="bottom right",
-			exclusivity="auto",
+			anchor="top bottom right",
+			exclusivity="none",
 			margin=(0,0,0,0),
-			name="env-panel",
-			size=(250, -1),
+			name="env-noti-center",
+			pass_through=True,
+			size=(NOTIFICATION_WIDTH, -1),
 			**kwargs,
 		)
+
+		self.set_size_request(NOTIFICATION_WIDTH, -1)
 
 		self.main_box = Box(
 			orientation="v",
@@ -61,8 +74,6 @@ class EnvNotiCenter(Window):
 			**kwargs,
 		)
 
-		self.children = [self.main_box]
-
 		envshell_service.connect(
 			"notification-count-changed",
 			self.on_notification_changed,
@@ -73,23 +84,40 @@ class EnvNotiCenter(Window):
 			self.on_notification_changed,
 		)
 
+		def toggle_me():
+			if get_socket_signal("envshellcommands.socket").get("show", {"value": False}).get("value"):
+				self.show()
+				self.pass_through = False
+			else:
+				self.hide()
+				self.pass_through = True
+			repeater = invoke_repeater(
+				20,
+				toggle_me,
+				initial_call=False,
+			)
+
+		toggle_me()
+
+		self.add(self.main_box)
+
 	def on_notification_changed(self, *_):
-		self.main_box.children = []
+		self.main_box.children = [
+			Label("Notifications")
+		]
 		for i in (envshell_service._notifications):
-			notification = i["summary"]
-			print(i)
 			self.main_box.add(
 				self.create_notification(i),
 			)
 
 	def create_notification(self, notification_data):
-		main = Box(spacing=8, orientation="v")
+		main = Box(spacing=8, name="notification", orientation="v")
 		body = Box(spacing=4, orientation="h")
-		if image_pixbuf := notification_data.get("image_pixbuf"):
+		if notification_data.get("image-pixmap"):
 			body.add(
 				CustomImage(
 					name="noti-image",
-					pixbuf=image_pixbuf.scale_simple(
+					pixbuf=Notification.deserialize(notification_data).image_pixbuf.scale_simple(
 						NOTIFICATION_IMAGE_SIZE,
 						NOTIFICATION_IMAGE_SIZE,
 						GdkPixbuf.InterpType.BILINEAR,
@@ -121,7 +149,11 @@ class EnvNotiCenter(Window):
                                 ),
                                 v_align="center",
                                 h_align="end",
-                            ),
+							).build(
+								lambda button, _: button.connect(
+									"clicked",
+									lambda *_, notification_data=notification_data: envshell_service.remove_notification(notification_data["id"]),
+								)),
                             False,
                             False,
                             0,
@@ -142,7 +174,7 @@ class EnvNotiCenter(Window):
 
 		main.add(body)
 		if actions := notification_data["actions"]:
-			self.add(
+			main.add(
 				Box(
 					spacing=4,
 					orientation="h",

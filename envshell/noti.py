@@ -20,11 +20,12 @@ for disable in [
 
 if __name__ == "__main__":
 	envnoti = EnvNoti()
-	envnoticenter = None
+	envnoticenter = EnvNotiCenter()
 	if c.get_rule("Notifications.enable"):
 		app = Application(
 			"envshellNoti",
 			envnoti,
+			envnoticenter,
 			open_inspector=len(sys.argv) > 1,
 		)
 	else:
