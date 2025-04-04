@@ -6,7 +6,7 @@ from fabric.widgets.label import Label
 from fabric.widgets.image import Image
 from fabric.widgets.button import Button
 from fabric.widgets.wayland import WaylandWindow as Window
-from fabric.notifications import Notifications, Notification
+from fabric.notifications import NotificationAction, Notifications, Notification
 from fabric.utils import invoke_repeater, get_relative_path
 
 from utils.roam import envshell_service
@@ -19,9 +19,11 @@ NOTIFICATION_WIDTH = 360
 NOTIFICATION_IMAGE_SIZE = 64
 NOTIFICATION_TIMEOUT = 10 * 1000
 
-from styledwidgets.styled import styler, style_dict
+from styledwidgets.styled import styler, style_dict, on_hover
 from styledwidgets.agents import colors, borderradius, transitions, margins, paddings
 from styledwidgets.types import rem, px
+
+from styles.styles import button_style, button_style_hover
 
 
 class NotificationWidget(Box):
@@ -99,6 +101,7 @@ class NotificationWidget(Box):
 		self.add(body_container)
 
 		if actions := self._notification.actions:
+			actions = cast(list[NotificationAction], actions)  # type: ignore
 			self.add(
 				Box(
 					spacing=4,
@@ -108,6 +111,10 @@ class NotificationWidget(Box):
 							h_expand=True,
 							v_expand=True,
 							label=action.label,
+							style=styler({
+								"default": button_style,
+								on_hover: button_style_hover,
+							}),
 							on_clicked=lambda *_, action=action: action.invoke(),
 						)
 						for action in actions # type: ignore

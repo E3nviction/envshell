@@ -2,7 +2,7 @@ import threading
 import time
 import math
 import subprocess
-import gi
+import gi # type: ignore
 
 from fabric.utils import invoke_repeater
 from fabric.core.service import Service, Signal, Property
@@ -25,16 +25,18 @@ from widgets.customimage import CustomImage
 
 from fabric.notifications import Notification
 
-from gi.repository.GLib import idle_add
+from gi.repository.GLib import idle_add # type: ignore
 
 global envshell_service
 from utils.roam import envshell_service, audio_service
 from utils.functions import app_name_class, get_socket_signal
 
-from styledwidgets.styled import styler, style_dict
+from styledwidgets.styled import styler, style_dict, on_hover
 from styledwidgets.agents import margins, paddings, transitions, colors, shadows, borderradius, textsize
 from styledwidgets.types import px, rem
 from styledwidgets.color import alpha, hex
+
+from styles.styles import button_style, button_style_hover
 
 from config.c import c
 
@@ -110,14 +112,14 @@ class EnvNotiCenter(Window):
 				self.create_notification(i),
 			)
 
-	def create_notification(self, notification_data):
+	def create_notification(self, notification_data: Notification):
 		main = Box(spacing=8, name="notification", orientation="v")
 		body = Box(spacing=4, orientation="h")
 		if notification_data.get("image-pixmap"):
 			body.add(
 				CustomImage(
 					name="noti-image",
-					pixbuf=Notification.deserialize(notification_data).image_pixbuf.scale_simple(
+					pixbuf=Notification.deserialize(notification_data).image_pixbuf.scale_simple( # type: ignore
 						NOTIFICATION_IMAGE_SIZE,
 						NOTIFICATION_IMAGE_SIZE,
 						GdkPixbuf.InterpType.BILINEAR,
@@ -173,7 +175,7 @@ class EnvNotiCenter(Window):
 		)
 
 		main.add(body)
-		if actions := notification_data["actions"]:
+		if actions := Notification.deserialize(notification_data).actions:
 			main.add(
 				Box(
 					spacing=4,
@@ -183,9 +185,12 @@ class EnvNotiCenter(Window):
 							h_expand=True,
 							v_expand=True,
 							label=action.label,
+							style=styler({
+								"default": button_style,
+							}),
 							on_clicked=lambda *_, action=action: action.invoke(),
 						)
-						for action in actions
+						for action in actions # type: ignore
 					],
 				)
 			)
