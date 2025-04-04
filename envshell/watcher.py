@@ -27,6 +27,7 @@ def monitor():
 		"Panel": "panel.py",
 		"Dock": "dock.py",
 		"Notifications": "noti.py",
+		"ScreenFilter": "screenfilter.py",
 	}
 
 	if not c.get_rule("Dock.enable"):
@@ -37,6 +38,9 @@ def monitor():
 
 	if not c.get_rule("Panel.enable"):
 		process_names.pop("Panel")
+
+	if not c.get_rule("ScreenFilter.enable"):
+		process_names.pop("ScreenFilter")
 
 	existing_pids = {p.pid for p in psutil.process_iter(attrs=["pid"])}
 
