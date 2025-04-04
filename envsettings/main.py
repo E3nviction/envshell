@@ -1,7 +1,7 @@
-import gi
+import gi # type: ignore
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk # type: ignore
 
 class SettingsApp(Gtk.Window):
 	def __init__(self):

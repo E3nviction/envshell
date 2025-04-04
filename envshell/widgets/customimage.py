@@ -2,7 +2,7 @@ import math
 import cairo
 from typing import cast
 from fabric.widgets.image import Image
-from gi.repository import Gtk
+from gi.repository import Gtk # type: ignore
 
 class CustomImage(Image):
     def do_render_rectangle(

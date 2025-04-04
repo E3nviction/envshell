@@ -20,7 +20,7 @@ from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path, monitor_file
-from gi.repository import GLib, Gtk, GdkPixbuf
+from gi.repository import GLib, Gtk, GdkPixbuf # type: ignore
 from widgets.customimage import CustomImage
 
 from fabric.notifications import Notification

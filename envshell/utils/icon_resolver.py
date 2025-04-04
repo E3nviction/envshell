@@ -2,9 +2,9 @@ import json
 import os
 import re
 
-import gi
+import gi # type: ignore
 
-from gi.repository import GLib, Gtk
+from gi.repository import GLib, Gtk # type: ignore
 from loguru import logger
 
 from config.c import c

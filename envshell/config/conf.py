@@ -1,5 +1,6 @@
 import json
 import re
+from typing import Any
 
 """
 Rules:
@@ -16,7 +17,7 @@ class Config:
 		self._config["workspace_rules"] = []
 		self._config["shell_rules"] = []
 		self._config["dock_pinned"] = {}
-		self._private_config = None
+		self._private_config = {}
 
 	def window_rule(
 		self,
@@ -84,7 +85,7 @@ class Config:
 				return t["to_title"]
 		return wmclass
 
-	def has_title(self, wmclass=None):
+	def has_title(self, wmclass: str=""):
 		if wmclass in ["", None]:
 			return False
 		for t in self.window_rules:
@@ -96,7 +97,7 @@ class Config:
 				return True
 		return False
 
-	def get_translation(self, wmclass=None) -> (str):
+	def get_translation(self, wmclass: str="") -> (str):
 		if wmclass in ["", None]:
 			return wmclass
 		for t in self.translations:
@@ -136,25 +137,31 @@ class Config:
 				return True
 		return False
 
-	def get_shell_rule(self, rule=None):
+	def get_shell_rule(self, rule=None) -> Any:
 		for t in self.shell_rules:
 			if t["rule"] == rule:
 				return t["value"]
 		return None
 
-	def _get_recursive(self, rule_points: list, pre=None):
-		if pre is None:
+	def _get_recursive(self, rule_points: list, pre: dict={}) -> dict:
+		if pre == {}:
 			pre = self._private_config
 		if len(rule_points) == 0:
+			if pre is None:
+				return {}
 			return pre
 		if rule_points[0] not in pre:
-			return None
+			return {}
+		if pre is None or rule_points[0] not in pre:
+			return {}
 		return self._get_recursive(rule_points[1:], pre[rule_points[0]])
 
-	def _set_recursive(self, rule_points: list, value, pre=None) -> dict:
-		if pre is None:
+	def _set_recursive(self, rule_points: list, value, pre: dict={}) -> dict:
+		if pre == {}:
 			pre = self._private_config
 		if len(rule_points) == 1:
+			if rule_points[0] not in pre:
+				pre[rule_points[0]] = {}
 			pre[rule_points[0]] = value
 			return pre
 		else:
@@ -163,14 +170,14 @@ class Config:
 			pre[rule_points[0]] = self._set_recursive(rule_points[1:], value, pre[rule_points[0]])
 			return pre
 
-	def get_rule(self, rule_path=None, default=None, _type=None):
-		rule_path = rule_path.split(".")
+	def get_rule(self, rule_path_: str="", default: Any=None, _type: str="") -> Any:
+		rule_path: list = rule_path_.split(".")
 		val = self._get_recursive(rule_path) or default
 		if _type == "tuple":
 			fin_val = tuple(val)
 			return fin_val
 		return val
 
-	def set_rule(self, rule_path=None, value=None):
-		rule_path = rule_path.split(".")
+	def set_rule(self, rule_path_: str="", value=None):
+		rule_path = rule_path_.split(".")
 		self._private_config = self._set_recursive(rule_path, value)

@@ -3,10 +3,10 @@ from fabric.widgets.wayland import WaylandWindow
 
 from config.c import c
 
-import gi
+import gi # type: ignore
 gi.require_version("GtkLayerShell", "0.1")
 
-from gi.repository import Gtk, GtkLayerShell
+from gi.repository import Gtk, GtkLayerShell # type: ignore
 
 
 class PopupWindow(WaylandWindow):

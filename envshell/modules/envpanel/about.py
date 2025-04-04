@@ -7,7 +7,7 @@ from fabric.widgets.button import Button
 from fabric.widgets.box import Box
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf # type: ignore
 
 from config.c import c
 

@@ -18,7 +18,7 @@ from fabric.widgets.scrolledwindow import ScrolledWindow
 from fabric.utils.helpers import exec_shell_command_async
 from fabric.audio import Audio
 from fabric.bluetooth import BluetoothClient, BluetoothDevice
-from gi.repository import GLib, Gtk
+from gi.repository import GLib, Gtk # type: ignore
 
 global envshell_service
 global audio_service
@@ -44,7 +44,7 @@ class BluetoothDeviceSlot(CenterBox):
         ]
 
         self.dimage = Image(
-            icon_name=device.icon_name + "-symbolic",
+            icon_name=device.icon_name + "-symbolic", # type: ignore
             size=5,
             name="device-icon",
             style_classes=" ".join(self.styles),
@@ -55,7 +55,7 @@ class BluetoothDeviceSlot(CenterBox):
                 image=self.dimage,
                 on_clicked=lambda *_: self.toggle_connecting(),
             ),
-            Label(label=device.name),
+            Label(label=device.name), # type: ignore
         ]
 
         self.device.emit("changed")  # to update display status

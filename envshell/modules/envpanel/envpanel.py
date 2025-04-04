@@ -2,7 +2,7 @@ import threading
 import time
 import math
 import subprocess
-import gi
+import gi # type: ignore
 
 from fabric.core.service import Service, Signal, Property
 from fabric.widgets.datetime import DateTime
@@ -18,9 +18,9 @@ from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path
-from gi.repository import GLib, Gtk, GdkPixbuf
+from gi.repository import GLib, Gtk, GdkPixbuf # type: ignore
 
-from gi.repository.GLib import idle_add
+from gi.repository.GLib import idle_add # type: ignore
 
 global envshell_service
 from utils.roam import envshell_service, audio_service
@@ -92,7 +92,7 @@ class Dropdown(EnvDropdown):
 		)
 
 class ItemWidget:
-	def __init__(self, parent, icon, icon_size=24, id_=None, dropdown=None):
+	def __init__(self, parent, icon: str, icon_size: int=24, id_: str|None=None, dropdown: list=[]):
 		self.icon = icon
 		self.id = id_
 		self.parent = parent
@@ -210,7 +210,7 @@ class EnvPanel(Window):
 			size=(230, 16),
 		)
 
-		self.osd_window_muted = audio_service.speaker.muted if audio_service.speaker else False
+		self.osd_window_muted = audio_service.speaker.muted if audio_service.speaker else False # type: ignore
 
 		self.osd_window_image = Svg(get_relative_path("../../assets/svgs/audio-volume.svg"), size=(64, 250), name="osd-image", h_align="center", v_align="center", h_expand=True, v_expand=True)
 

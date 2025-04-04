@@ -21,7 +21,7 @@ from fabric.widgets.scrolledwindow import ScrolledWindow
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path, bulk_connect, exec_shell_command
 from fabric.audio import Audio
 from fabric.bluetooth import BluetoothClient, BluetoothDevice
-from gi.repository import GLib, Gtk
+from gi.repository import GLib, Gtk # type: ignore
 from fabric import Fabricator
 
 global envshell_service
@@ -333,7 +333,7 @@ class EnvControlCenter(Window):
 		self.start_update_thread()
 
 	def set_volume(self, _, __, volume):
-		audio_service.speaker.volume = round(volume)
+		audio_service.speaker.volume = round(volume) # type: ignore
 
 	def toggle_bluetooth(self, *_):
 		self.set_visible(False)
@@ -345,7 +345,7 @@ class EnvControlCenter(Window):
 		else:
 			self.set_visible(not self.is_visible())
 	def volume_changed(self, _, ):
-		GLib.idle_add(lambda: self.volume_scale.set_value(int(audio_service.speaker.volume)))
+		GLib.idle_add(lambda: self.volume_scale.set_value(int(audio_service.speaker.volume))) # type: ignore
 	def wlan_changed(self, _, wlan):
 		self.wlan_widget.set_from_file(get_relative_path("../../assets/svgs/wifi.svg" if wlan != "No Connection" else "../../assets/svgs/wifi-off.svg"))
 		GLib.idle_add(lambda: self.wlan_label.set_property("label", wlan))

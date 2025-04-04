@@ -11,7 +11,7 @@ from fabric.widgets.svg import Svg
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib
+from gi.repository import GLib # type: ignore
 
 from styledwidgets.styled import styler, style_dict
 from styledwidgets.agents import colors, borderradius, transitions, margins, paddings

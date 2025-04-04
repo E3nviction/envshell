@@ -13,11 +13,15 @@ from utils.roam import envshell_service
 
 from widgets.customimage import CustomImage
 
-from gi.repository import GdkPixbuf
+from gi.repository import GdkPixbuf # type: ignore
 
 NOTIFICATION_WIDTH = 360
 NOTIFICATION_IMAGE_SIZE = 64
 NOTIFICATION_TIMEOUT = 10 * 1000
+
+from styledwidgets.styled import styler, style_dict
+from styledwidgets.agents import colors, borderradius, transitions, margins, paddings
+from styledwidgets.types import rem, px
 
 
 class NotificationWidget(Box):
@@ -38,7 +42,7 @@ class NotificationWidget(Box):
 			body_container.add(
 				CustomImage(
 					name="noti-image",
-					pixbuf=image_pixbuf.scale_simple(
+					pixbuf=image_pixbuf.scale_simple( # type: ignore
 						NOTIFICATION_IMAGE_SIZE,
 						NOTIFICATION_IMAGE_SIZE,
 						GdkPixbuf.InterpType.BILINEAR,
@@ -55,7 +59,7 @@ class NotificationWidget(Box):
 						orientation="h",
 						children=[
 							Label(
-								markup=self._notification.summary,
+								markup=self._notification.summary, # type: ignore
 								ellipsization="middle",
 								style_classes="summary",
 							)
@@ -80,7 +84,7 @@ class NotificationWidget(Box):
                         )
                     ),
 					Label(
-						label=self._notification.body,
+						label=self._notification.body, # type: ignore
 						line_wrap="word-char",
 						v_align="start",
 						h_align="start",
@@ -106,7 +110,7 @@ class NotificationWidget(Box):
 							label=action.label,
 							on_clicked=lambda *_, action=action: action.invoke(),
 						)
-						for action in actions
+						for action in actions # type: ignore
 					],
 				)
 			)
@@ -129,7 +133,7 @@ class NotificationWidget(Box):
 
 	def destroy_noti(self, *_):
 		parent.remove(self) if (parent := self.get_parent()) else None,  # type: ignore
-		self.destroy(),
+		self.destroy()
 
 class EnvNoti(Window):
 	def __init__(self, **kwargs):

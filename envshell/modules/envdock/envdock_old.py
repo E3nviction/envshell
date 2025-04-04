@@ -16,7 +16,7 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib
+from gi.repository import GLib # type: ignore
 import json
 
 from loguru import logger

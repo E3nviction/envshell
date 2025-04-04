@@ -8,10 +8,10 @@ import tomllib
 import shutil
 from typing import Dict, List, Literal
 
-import gi
+import gi # type: ignore
 from fabric.utils import exec_shell_command, exec_shell_command_async, get_relative_path
 from fabric.widgets.image import Image
-from gi.repository import Gdk, GLib, Gtk
+from gi.repository import Gdk, GLib, Gtk # type: ignore
 from loguru import logger
 
 
