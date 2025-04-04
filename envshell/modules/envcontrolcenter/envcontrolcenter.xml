@@ -28,7 +28,7 @@
             <Ref>self.volume_scale</Ref>
             <Ref>self.volume_icon</Ref>
         </BoxV>
-        <BoxV name="music-widget" style_classes="menu">
+        <BoxV>
             <Ref>self.music_widget</Ref>
         </BoxV>
     </BoxV>

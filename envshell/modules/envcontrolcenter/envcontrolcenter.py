@@ -101,24 +101,13 @@ class player(Box):
 	def __init__(self, player=None) -> None:
 		super().__init__(
 			name="left-player",
+			style_classes="control-center-widgets",
 			h_expand=True,
 			orientation="h",
 		)
 
 		self.player = player
 
-		self.art = Button(
-			name="left-player-art",
-			style=styler({
-				"#left-player-art": style_dict(
-					padding=px(5) + px(20),
-					background_size="cover",
-					background_color=alpha(colors.black, 0.2),
-					border_radius=px(6),
-					margin=px(8),
-				)
-			})
-		)
 		self.title = Label(
 			label="Nothing playing",
 			name="left-player-title",
@@ -143,6 +132,26 @@ class player(Box):
 			markup="", name="left-player-icon", style=styler(font_size=px(36))
 		)
 		self.play = Button(child=self.status)
+		self.time_dur = Label("0:00", name="left-player-duration-label")
+		self.time_pos = Label("0:00", name="left-player-position-label")
+		self.time = CenterBox(
+			name="left-player-time",
+			start_children=[self.time_pos],
+			end_children=[self.time_dur],
+		)
+
+		self.scale = Scale(
+			value=0,
+			min_value=0,
+			max_value=100,
+			increments=(5, 5),
+			name="left-player-scale",
+			style_classes="small",
+			size=2,
+			h_expand=True,
+		)
+
+		self.scale.connect("value-changed", lambda *_: self.scale.set_value(int(self.data["position"]) * 100 / int(self.data["duration"])))
 
 		self.controls = CenterBox(
 			name="left-player-controls",
@@ -154,7 +163,7 @@ class player(Box):
 		)
 		self.info = Box(
 			name="left-player-info",
-			children=[self.title, self.artist, self.controls],
+			children=[self.title, self.artist, self.controls, self.time, self.scale],
 			orientation="v",
 			v_align="center",
 			h_expand=True,
@@ -163,20 +172,35 @@ class player(Box):
 		self.details = Box(children=[self.info], h_expand=True, v_expand=True)
 
 		self.playerInfo = Fabricator(
-			poll_from='playerctl '+("-p "+self.player if self.player else '')+' --follow metadata --format \'{"status": "{{status}}", "artUrl": "{{mpris:artUrl}}", "title": "{{ markup_escape(title) }}", "artist": "{{ markup_escape(artist) }}"}\'',
+			poll_from='playerctl '+("-p "+self.player if self.player else '')+' --follow metadata --format \'{"status": "{{status}}", "artUrl": "{{mpris:artUrl}}", "title": "{{ markup_escape(title) }}", "artist": "{{ markup_escape(artist) }}", "position": "{{position}}", "duration": "{{mpris:length}}", "sposition": "{{duration(position)}}", "sduration": "{{duration(mpris:length)}}"}\'',
 			stream=True,
 			interval=1000,
 		)
 
+		self.data = {}
+
 		def extract_metadata(_, value):
 			if value:
 				data = json.loads(value)
+				self.data = data
 				for i in c.get_rule("MusicPlayer.ignore"):
 					if re.match(i["title"]["regex"], data["title"]):
 						return
-				self.art.set_style(f"background-image: url('{data['artUrl']}');", append=True)
-				self.title.set_label(data["title"])
+				self.set_style(f"""
+					background-image: url('{data['artUrl']}');
+					background-size: cover;
+					background-color: rgba(0, 0, 0, 0.6); /* 50% black overlay */
+					background-blend-mode: darken;
+				""", append=True)
+				self.title.set_markup(data["title"])
 				self.artist.set_label(data["artist"])
+				self.time_dur.set_label(
+					data["sduration"] if data["sduration"] else "0:00"
+				)
+				self.time_pos.set_label(
+					data["sposition"] if data["sposition"] else "0:00"
+				)
+				self.scale.set_value(int(data["position"]) * 100 / int(data["duration"]))
 				self.status.set_markup(
 					(
 						""
@@ -187,14 +211,17 @@ class player(Box):
 					)
 				)
 			else:
-				self.art.set_style("background-image: none;", append=True)
+				self.set_style("background-image: none;background-size: cover;", append=True)
 				self.title.set_label("Nothing playing")
+				self.time_dur.set_label("0:00")
+				self.time_pos.set_label("0:00")
 				self.artist.set_label("")
 				self.status.set_markup("")
+				self.scale.set_value(0)
 
 		self.playerInfo.connect("changed", extract_metadata)
 
-		for connector in [self.backward, self.play, self.forward, self.art]:
+		for connector in [self.backward, self.play, self.forward]:
 			bulk_connect(
 				connector,
 				{
@@ -203,8 +230,6 @@ class player(Box):
 					"button-press-event": self.on_button_press,
 				},
 			)
-
-		self.add(self.art)
 		self.add(self.details)
 
 	def on_button_press(self, button: Button, event):
