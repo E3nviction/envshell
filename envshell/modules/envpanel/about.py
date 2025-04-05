@@ -1,6 +1,6 @@
 import subprocess
 import time
-import gi
+import gi # type: ignore
 
 from fabric.widgets.label import Label
 from fabric.widgets.button import Button
