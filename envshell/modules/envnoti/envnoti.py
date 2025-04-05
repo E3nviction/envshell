@@ -164,4 +164,6 @@ class EnvNoti(Window):
 
 	def on_notification_added(self, notifs_service, nid):
 		envshell_service.cache_notification(notifs_service.get_notification_from_id(nid))
+		if envshell_service.dont_disturb == "True":
+			return
 		self.get_child().add(NotificationWidget(cast(Notification, notifs_service.get_notification_from_id(nid))))
