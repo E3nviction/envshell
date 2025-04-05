@@ -36,6 +36,8 @@ resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 	enable = true
 [Notifications]
 	enable = true
+[ScreenFilter]
+	enable = false # This enables things like Night and Redshift
 [Dock]
 	enable = true
 

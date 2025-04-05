@@ -18,6 +18,8 @@ resolution = "1920x1080"
 	enable = true
 [Notifications]
 	enable = true
+[ScreenFilter]
+	enable = false
 [Dock]
 	enable = true
 	legacy = true
