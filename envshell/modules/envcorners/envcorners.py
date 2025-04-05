@@ -37,6 +37,7 @@ class EnvCorners(Window):
 	def __init__(self):
 		super().__init__(
 			name="corners",
+			title="envshell",
 			layer="overlay",
 			margin=(-c.get_rule("Panel.height"), 0, -(round(c.get_rule("Dock.size") * 64) + 0 if c.get_rule("Dock.mode") == "full" else 10), 0),
 			anchor="top bottom left right",

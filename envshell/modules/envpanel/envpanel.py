@@ -122,6 +122,7 @@ class EnvPanel(Window):
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="top",
+			title="envshell",
 			anchor=self.get_pos(),
 			exclusivity="auto",
 			margin=(0,0,0,0),

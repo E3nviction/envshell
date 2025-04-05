@@ -21,7 +21,7 @@ import json
 
 from loguru import logger
 
-from gi.repository.GLib import idle_add
+from gi.repository.GLib import idle_add # type: ignore
 
 
 from config.c import c, app_list
@@ -37,6 +37,7 @@ class EnvDock(Window):
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="top",
+			title="envshell",
 			anchor=self.get_pos(),
 			exclusivity="auto" if c.get_rule("Dock.exclusive") else "none",
 			name="env-dock",
@@ -52,7 +53,7 @@ class EnvDock(Window):
 
 		self.is_hidden = False
 		self._hide()
-		self.is_hovered = False
+		self.is_hovered = False # type: ignore
 		self.last_hovered = datetime.now()
 
 		self.icon_resolver = IconResolver()
@@ -200,7 +201,7 @@ class EnvDock(Window):
 			else:
 				app_button = Box(orientation="vertical", children=[button])
 			return app_button
-		def dock_apps_changed_update(apps):
+		def dock_apps_changed_update(apps): # type: ignore
 			self.dock_box.children = []
 			pinned_apps = {}
 			temporary_apps = []

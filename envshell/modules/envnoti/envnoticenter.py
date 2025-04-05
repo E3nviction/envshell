@@ -54,6 +54,7 @@ class EnvNotiCenter(Window):
 		super().__init__(
 			layer="overlay",
 			anchor="top bottom right",
+			title="envshell",
 			exclusivity="none",
 			margin=(0,0,0,0),
 			name="env-noti-center",

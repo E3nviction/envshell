@@ -245,6 +245,7 @@ class EnvControlCenter(Window):
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="top",
+			title="envshell",
 			anchor="right top",
 			margin="2px 10px 0px 0px",
 			exclusivity="auto",

@@ -16,6 +16,7 @@ class EnvLight(Window):
 		super().__init__(
 			layer="top",
 			anchor="center",
+			title="envshell",
 			exclusivity="none",
 			keyboard_mode="on-demand",
 			name="env-light",

@@ -147,6 +147,7 @@ class EnvNoti(Window):
 		super().__init__(
 			margin="8px 8px 8px 8px",
 			name="notification-window",
+			title="envshell",
 			layer="overlay",
 			anchor="top right",
 			child=Box(

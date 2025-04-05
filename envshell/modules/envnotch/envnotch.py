@@ -45,6 +45,7 @@ class EnvNotch(Window):
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="overlay",
+			title="envshell",
 			anchor="top center",
 			exclusivity="none",
 			name="env-notch",
