@@ -54,9 +54,11 @@ def get_from_socket():
 		logger.error("[Main] Failed to read from socket:", e)
 		sys.exit(1)
 
-def create_socket_signal(socket, name: str, signal: dict):
+def create_socket_signal(socket: str, name: str, signal: dict):
 	try:
 		file = "{}"
+		if not os.path.exists(os.path.join("/tmp/", os.path.dirname(socket))):
+			os.makedirs(os.path.join("/tmp/", os.path.dirname(socket)))
 		if not os.path.exists(os.path.join("/tmp/", socket)):
 			with open(os.path.join("/tmp/", socket), "w") as f:
 				f.write("{}")
