@@ -50,6 +50,7 @@ def monitor():
 			for process, script in process_names.items():
 				restart_if_needed(process, script)
 			existing_pids = current_pids
+		time.sleep(.5)
 
 if __name__ == "__main__":
 	setproctitle.setproctitle("envShell")
