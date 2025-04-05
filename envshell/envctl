@@ -32,9 +32,6 @@ def update_toml_value(file_path, toml_path, value):
 
 	print(f"Successfully updated '{toml_path}' to {value} in '{file_path}'")
 
-def get_toml_value(toml_path):
-	return c.get_rule(toml_path)
-
 def restart_module(module):
 	modules = {
 		"Dock": "Dock",
@@ -59,18 +56,21 @@ def main():
 	subparsers = parser.add_subparsers(dest="command", required=True)
 
 	keyword_parser = subparsers.add_parser("keyword", help="Update configs of envShell.")
+	send_parser = subparsers.add_parser("send", help="Send a command to envShell.")
+	reset_parser = subparsers.add_parser("reset", help="Delete the temporary configuration file.")
+	restart_parser = subparsers.add_parser("restart", help="Restart a Shell Module process.")
+
 	keyword_subparsers = keyword_parser.add_subparsers(dest="subcommand", required=True)
 
-	update_parser = keyword_subparsers.add_parser("update", help="Update a setting with a value.")
+	update_parser = keyword_subparsers.add_parser("set", help="Update a setting with a value.")
+	get_parser = keyword_subparsers.add_parser("get", help="Get a settings value.")
+
 	update_parser.add_argument("settings_path", help="Path to the settings (e.g., example.path.test)")
 	update_parser.add_argument("value", help="New value for the setting")
-
-	get_parser = keyword_subparsers.add_parser("get", help="Get a settings value.")
 	get_parser.add_argument("settings_path", help="Path to the setting (e.g., example.path.test)")
 
-	reset_parser = subparsers.add_parser("reset", help="Delete the temporary configuration file.")
+	send_parser.add_argument("sendcommand", help="Command to send to envShell.")
 
-	restart_parser = subparsers.add_parser("restart", help="Restart a Shell Module process.")
 	restart_parser.add_argument("module", choices=["Dock", "Panel", "Notifications", "Shell", "ScreenFilter", "all"], help="Module to restart.")
 
 	args = parser.parse_args()
@@ -78,7 +78,7 @@ def main():
 	file_path = os.path.join(os.path.expanduser("~"), ".config", "envshell", "temp.toml")
 
 	if args.command == "keyword":
-		if args.subcommand == "update":
+		if args.subcommand == "set":
 			value = args.value
 
 			if value.lower() in ["true", "false"]: value = value.lower() == "true"
@@ -89,7 +89,7 @@ def main():
 
 			update_toml_value(file_path, args.settings_path, value)
 		elif args.subcommand == "get":
-			value = get_toml_value(args.settings_path)
+			value = c.get_rule(args.settings_path)
 			print(f"Value of '{args.settings_path}': {value}")
 		else: parser.print_help()
 	elif args.command == "reset":
@@ -98,6 +98,10 @@ def main():
 			print("Configuration file deleted.")
 		else: print("No configuration file to delete.")
 	elif args.command == "restart": restart_module(args.module)
+	elif args.command == "send":
+		from utils.functions import create_socket_signal, get_socket_signal
+		create_socket_signal("envctl.socket", "command", {"value": args.sendcommand})
+	else: parser.print_help()
 
 if __name__ == "__main__":
 	main()
