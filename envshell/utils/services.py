@@ -1,7 +1,7 @@
+# type: ignore
 from fabric.core.service import Service, Signal, Property
 from fabric.notifications import Notification
 from typing import List
-
 class EnvShellService(Service):
 	@Signal
 	def bluetooth_changed(self, new_bluetooth: str) -> None:
