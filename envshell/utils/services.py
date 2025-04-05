@@ -45,6 +45,9 @@ class EnvShellService(Service):
 	@Signal
 	def dock_hidden_changed(self, value: bool) -> None:
 		...
+	@Signal
+	def show_notificationcenter_changed(self, value: bool) -> None:
+		...
 
 	@Property(str, flags="read-write")
 	def current_active_app_name(self) -> str:
@@ -85,6 +88,9 @@ class EnvShellService(Service):
 	@Property(bool, flags="read-write", default_value=False)
 	def dock_hidden(self) -> bool:
 		return self._dock_hidden
+	@Property(bool, flags="read-write", default_value=False)
+	def show_notificationcenter(self) -> bool:
+		return self._show_notificationcenter
 
 	@current_active_app_name.setter
 	def current_active_app_name(self, value: str):
@@ -147,6 +153,11 @@ class EnvShellService(Service):
 		if value != self._dock_hidden:
 			self._dock_hidden = value
 			self.dock_hidden_changed(value)
+	@show_notificationcenter.setter
+	def show_notificationcenter(self, value: bool):
+		if value != self._show_notificationcenter:
+			self._show_notificationcenter = value
+			self.show_notificationcenter_changed(value)
 
 	def sc(self, signal_name: str, callback: callable, def_value="..."):
 		self.connect(signal_name, callback)
@@ -166,6 +177,7 @@ class EnvShellService(Service):
 		self._current_dropdown = "0"
 		self._dropdowns_hide = False
 		self._dock_hidden = False
+		self._show_notificationcenter = False
 
 		self._dock_width = 0
 		self._dock_height = 0

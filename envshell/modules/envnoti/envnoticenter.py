@@ -87,22 +87,19 @@ class EnvNotiCenter(Window):
 			self.on_notification_changed,
 		)
 
-		def toggle_me():
-			if get_socket_signal("envshellcommands.socket").get("show", {"value": False}).get("value"):
-				self.show()
-				self.pass_through = False
-			else:
-				self.hide()
-				self.pass_through = True
-			repeater = invoke_repeater(
-				20,
-				toggle_me,
-				initial_call=False,
-			)
+		envshell_service.connect(
+			"show-notificationcenter-changed",
+			self.toggle_me,
+		)
 
-		toggle_me()
+		self.hide()
 
 		self.add(self.main_box)
+
+	def toggle_me(self, _, value):
+		self.pass_through = not bool(value)
+		if bool(value): self.show()
+		else: self.hide()
 
 	def on_notification_changed(self, *_):
 		self.main_box.children = [

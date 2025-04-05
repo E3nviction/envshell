@@ -144,8 +144,7 @@ class EnvPanel(Window):
 		self.set_property("height-request", c.get_rule("Panel.height"))
 
 		def toggle_notification_panel(*_):
-			previous = get_socket_signal("envshellcommands.socket").get("show", {"value": False}).get("value")
-			create_socket_signal("envshellcommands.socket", "show", {"value": not previous})
+			envshell_service.show_notificationcenter = not envshell_service.show_notificationcenter
 
 		self.envlight = EnvLight()
 		self.date_time = Button(
