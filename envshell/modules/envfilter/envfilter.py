@@ -46,8 +46,6 @@ class BorderGlow(Window):
 			**kwargs,
 		)
 
-		self.set_size_request(1920, 1080)
-
 		if c.get_rule("Panel.mode") == "floating":
 			self.set_property("margin", (-(c.get_rule("Panel.height") + 10), 0, 0, 0))
 		elif c.get_rule("Panel.mode") == "normal":
@@ -83,8 +81,6 @@ class EnvFilter(Window):
 			self.set_style(self.get_effects()[c.get_rule("ScreenFilter.effect")])
 
 		GtkLayerShell.set_exclusive_zone(self, -1)
-
-		self.set_size_request(1920, 1080)
 
 		self.children = []
 		self.show_all()

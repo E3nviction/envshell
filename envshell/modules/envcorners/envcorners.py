@@ -11,7 +11,7 @@ from fabric.widgets.svg import Svg
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib # type: ignore
+from gi.repository import GLib, GtkLayerShell # type: ignore
 
 from styledwidgets.styled import styler, style_dict, class_
 from styledwidgets.agents import colors
@@ -39,9 +39,8 @@ class EnvCorners(Window):
 			name="corners",
 			title="envshell",
 			layer="overlay",
-			margin=(-c.get_rule("Panel.height"), 0, -(round(c.get_rule("Dock.size") * 64) + 0 if c.get_rule("Dock.mode") == "full" else 10), 0),
 			anchor="top bottom left right",
-			exclusivity="normal",
+			exclusivity="none",
 			pass_through=True,
 			visible=False,
 			all_visible=False,
@@ -78,6 +77,8 @@ class EnvCorners(Window):
 				),
 			],
 		)
+
+		GtkLayerShell.set_exclusive_zone(self, -1)
 
 		self.add(self.all_corners)
 

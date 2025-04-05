@@ -21,7 +21,7 @@ for disable in [
 	loguru.logger.disable(disable)
 
 if __name__ == "__main__":
-	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
+	envcorners = EnvCorners()
 	envnotch = None
 	envpanel = None
 	if c.get_rule("Notch.enable"):
@@ -33,6 +33,7 @@ if __name__ == "__main__":
 	apps = [
 		envnotch,
 		envpanel,
+		envcorners,
 	]
 	apps = list(filter(lambda x: x is not None, apps))
 	app = Application(

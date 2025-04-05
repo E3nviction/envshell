@@ -27,7 +27,7 @@ for disable in [
 if __name__ == "__main__":
 	envnoti = EnvNoti()
 	envnoticenter = None
-	#envcorners = EnvCorners() # FIXME: Fix the issue where they are just not correctly positioned
+	envcorners = EnvCorners()
 	envnotch = None
 	envdock = None
 	envpanel = None
@@ -45,6 +45,7 @@ if __name__ == "__main__":
 		envnotch,
 		envdock,
 		envpanel,
+		envcorners,
 	]
 	apps = list(filter(lambda x: x is not None, apps))
 	app = Application(
