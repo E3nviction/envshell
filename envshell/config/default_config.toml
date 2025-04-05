@@ -19,7 +19,17 @@ resolution = "1920x1080"
 [Notifications]
 	enable = true
 [ScreenFilter]
-	enable = false
+	enable = true
+	effect = "none"
+	advanced.update_interval = 10
+	[ScreenFilter.redshift]
+		brightness = 1
+		temperature = 10000
+		strength = 0.1
+	[ScreenFilter.nightshift]
+		brightness = 1
+		temperature = 10000
+		strength = 0.1
 [Dock]
 	enable = true
 	legacy = true

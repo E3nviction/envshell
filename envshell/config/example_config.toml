@@ -37,7 +37,41 @@ resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 [Notifications]
 	enable = true
 [ScreenFilter]
-	enable = false # This enables things like Night and Redshift
+	# Implemented effects, include:
+	#	- none
+	#	- redshift
+	#	- nightshift
+	enable = true # This enables things like Night and Redshift
+	# This is the update interval for the screen filter, in seconds
+	# So every 1 second the screen filter will check if it needs to update
+	advanced.update_interval = 10 # (seconds)
+	# This is the effect that will be used for the screen filter when no rules are applied
+	effect = "none"
+
+	# every screen filter has a brightness, temperature and strength
+	[ScreenFilter.redshift]
+		# Brightness just makes it lighter or darker, 1 is default
+		brightness = 1
+		# Temperature is the "saturation" or power of the screen filter
+		temperature = 10000
+		# Strength is like the opacity of the screen filter
+		strength = 0.1
+	[ScreenFilter.nightshift]
+		brightness = 1
+		temperature = 10000
+		strength = 0.1
+	# This is the rules for the screen filter, you can add as many as you want
+	#[[ScreenFilter.rules]]
+	#	# This is the type of rule, it can be shell or python
+	#	#! Python might be dangerous, so be careful
+	#	type = "shell"
+	#	# This is the command that will be run to check if the rule is true or false
+	#	# This example checks if the current hour is greater than 17
+	#	if = '[ $(date +"%H") -gt 17 ] && echo "true" || echo "false"'
+	#	# The output of the command will be compared to this
+	#	is = "true"
+	#	# If the rule is true, this is the effect that will be used
+	#	then = "nightshift"
 [Dock]
 	enable = true
 

@@ -30,27 +30,20 @@ def monitor():
 		"ScreenFilter": "screenfilter.py",
 	}
 
-	if not c.get_rule("Dock.enable"):
-		process_names.pop("Dock")
-
-	if not c.get_rule("Notifications.enable"):
-		process_names.pop("Notifications")
-
-	if not c.get_rule("Panel.enable"):
-		process_names.pop("Panel")
-
-	if not c.get_rule("ScreenFilter.enable"):
-		process_names.pop("ScreenFilter")
+	if not c.get_rule("Dock.enable"):          process_names.pop("Dock")
+	if not c.get_rule("Notifications.enable"): process_names.pop("Notifications")
+	if not c.get_rule("Panel.enable"):         process_names.pop("Panel")
+	if not c.get_rule("ScreenFilter.enable"):  process_names.pop("ScreenFilter")
 
 	existing_pids = {p.pid for p in psutil.process_iter(attrs=["pid"])}
 
 	while True:
+		time.sleep(.1)
 		current_pids = {p.pid for p in psutil.process_iter(attrs=["pid"])}
 		if current_pids != existing_pids:
 			for process, script in process_names.items():
 				restart_if_needed(process, script)
 			existing_pids = current_pids
-		time.sleep(.5)
 
 if __name__ == "__main__":
 	setproctitle.setproctitle("envShell")
