@@ -26,12 +26,10 @@ def monitor():
 	process_names = {
 		"Panel": "panel.py",
 		"Dock": "dock.py",
-		"Notifications": "noti.py",
 		"ScreenFilter": "screenfilter.py",
 	}
 
 	if not c.get_rule("Dock.enable"):          process_names.pop("Dock")
-	if not c.get_rule("Notifications.enable"): process_names.pop("Notifications")
 	if not c.get_rule("Panel.enable"):         process_names.pop("Panel")
 	if not c.get_rule("ScreenFilter.enable"):  process_names.pop("ScreenFilter")
 
