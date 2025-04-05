@@ -29,7 +29,6 @@ from widgets.envdropdown import EnvDropdown, dropdown_divider
 from widgets.osd_widget import OsdWindow
 
 from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
-from modules.envnoti.envnoticenter import EnvNotiCenter
 from .about import About
 
 from styledwidgets.styled import styler, style_dict
