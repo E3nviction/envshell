@@ -172,7 +172,9 @@ class Config:
 
 	def get_rule(self, rule_path_: str="", default: Any=None, _type: str="") -> Any:
 		rule_path: list = rule_path_.split(".")
-		val = self._get_recursive(rule_path) or default
+		val = self._get_recursive(rule_path)
+		if val is None:
+			val = default
 		if _type == "tuple":
 			fin_val = tuple(val)
 			return fin_val
