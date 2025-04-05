@@ -1,6 +1,8 @@
 from modules.envnotch.envnotch import EnvNotch
 from modules.envpanel.envpanel import EnvPanel
 from modules.envcorners.envcorners import EnvCorners
+from modules.envnoti.envnoti import EnvNoti
+from modules.envnoti.envnoticenter import EnvNotiCenter
 from modules.envlight.envlight import EnvLight
 from fabric import Application
 from fabric.utils import get_relative_path, monitor_file
@@ -22,8 +24,13 @@ for disable in [
 
 if __name__ == "__main__":
 	envcorners = EnvCorners()
+	envnoti = None
+	envnoticenter = None
 	envnotch = None
 	envpanel = None
+	if c.get_rule("Notifications.enable"):
+		envnoti = EnvNoti()
+		envnoticenter = EnvNotiCenter()
 	if c.get_rule("Notch.enable"):
 		envnotch = EnvNotch()
 	if c.get_rule("Panel.enable"):
@@ -34,6 +41,8 @@ if __name__ == "__main__":
 		envnotch,
 		envpanel,
 		envcorners,
+		envnoti,
+		envnoticenter,
 	]
 	apps = list(filter(lambda x: x is not None, apps))
 	app = Application(
