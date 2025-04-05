@@ -200,7 +200,10 @@ class player(Box):
 				self.time_pos.set_label(
 					data["sposition"] if data["sposition"] else "0:00"
 				)
-				self.scale.set_value(int(data["position"]) * 100 / int(data["duration"]))
+				if int(data["duration"]) == 0:
+					self.scale.set_value(0)
+				else:
+					self.scale.set_value(int(data["position"]) * 100 / int(data["duration"]))
 				self.status.set_markup(
 					(
 						""
@@ -255,6 +258,8 @@ class EnvControlCenter(Window):
 			**kwargs,
 		)
 
+		self.focus_mode = False
+
 		volume = 100
 		wlan = envshell_service.sc("wlan-changed", self.wlan_changed)
 		bluetooth = envshell_service.sc("bluetooth-changed", self.bluetooth_changed)
@@ -300,6 +305,20 @@ class EnvControlCenter(Window):
 
 		self.wlan_widget = Svg(svg_file=get_relative_path("../../assets/svgs/wifi.svg"), style_classes="icon") if wlan != "No Connection" else Svg(svg_file=get_relative_path("../../assets/svgs/wifi-off.svg"), style_classes="icon")
 
+		self.focus_icon = Svg(svg_file=get_relative_path("../../assets/svgs/dnd-off.svg"), style_classes="icon")
+
+		self.focus_widget = Button(
+			name="focus-widget",
+			child=Box(
+				orientation="h",
+				children=[
+					self.focus_icon,
+					Label(label="Focus", style_classes="title ct", h_align="start"),
+				]
+			),
+			on_clicked=self.set_dont_disturb,
+		)
+
 		self.widgets = exml(
 			file=get_relative_path("envcontrolcenter.xml"),
 			root=Box,
@@ -317,7 +336,8 @@ class EnvControlCenter(Window):
 				"self.music_widget": self.music_widget,
 				"self.volume_icon": self.volume_icon,
 				"self.bluetooth_widget": self.bluetooth_widget,
-				"self.wlan_widget": self.wlan_widget
+				"self.wlan_widget": self.wlan_widget,
+				"self.focus_widget": self.focus_widget,
 			}
 		)
 
@@ -332,6 +352,11 @@ class EnvControlCenter(Window):
 		self.keyboard_mode = "exclusive"
 
 		self.start_update_thread()
+
+	def set_dont_disturb(self, *_):
+		self.focus_mode = not self.focus_mode
+		envshell_service.dont_disturb = self.focus_mode
+		self.focus_icon.set_from_file(get_relative_path("../../assets/svgs/dnd.svg" if self.focus_mode else "../../assets/svgs/dnd-off.svg"))
 
 	def set_volume(self, _, __, volume):
 		audio_service.speaker.volume = round(volume) # type: ignore
