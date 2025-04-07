@@ -11,7 +11,7 @@ from fabric.widgets.svg import Svg
 from fabric.widgets.box import Box
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib # type: ignore
+from gi.repository import GLib, GtkLayerShell # type: ignore
 
 from styledwidgets.styled import styler, style_dict
 from styledwidgets.agents import colors, borderradius, transitions, margins, paddings
@@ -51,14 +51,10 @@ class EnvNotch(Window):
 			name="env-notch",
 			all_visible=True,
 			visible=True,
-			margin=(-(c.get_rule("Panel.height")), 10, 10, 10),
 			**kwargs,
 		)
 
-		if c.get_rule("Panel.mode") == "floating":
-			self.set_property("margin", (-(c.get_rule("Panel.height") + 10), 10, 10, 10))
-		elif c.get_rule("Panel.mode") == "normal":
-			self.set_property("margin", (-(c.get_rule("Panel.height")), 10, 10, 10))
+		GtkLayerShell.set_exclusive_zone(self, -1)
 
 		self.hidden = False
 
