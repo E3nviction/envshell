@@ -71,10 +71,10 @@ resolution = "1920x1080"
 		date.enable = true
 
 [Systray]
-hide-empty = true
+	hide-empty = true
 
 [Workspace]
-ignore.id.9 = true
+	ignore.id.9 = true
 
 [Shell]
 	[Shell.about]
@@ -89,8 +89,29 @@ ignore.id.9 = true
 		options.store.label = "Nix Store..."
 		options.store.on-click = "xdg-open https://search.nixos.org/packages"
 
+[EnvLight]
+	show-executable = true
+	clear-search-on-toggle = true
+	advanced.executable-max-length = 50
+	advanced.full-executable = true
+	[[EnvLight.shortcuts]]
+		name = "Wikipedia"
+		tooltip = "Search on Wikipedia."
+		keyword = "wi"
+		type = "url"
+		description = "Search for '%s' on Wikipedia"
+		command = "https://en.wikipedia.org/w/index.php?search=%s"
+	[[EnvLight.shortcuts]]
+		name = "Calculate"
+		tooltip = "Calculate and Copy to Clipboard."
+		keyword = "="
+		type = "command"
+		description-command = "python -c 'print(eval(\"%s\"))'"
+		description = "Copy to clipboard %c"
+		command = "python -c 'print(eval(\"%s\"))' | wl-copy && notify-send \"envShell\" \"Copied to Clipboard\""
+
 [Cache]
-directory = "envshell"
+	directory = "envshell"
 
 [Bluetooth]
-show-hidden-devices = false
+	show-hidden-devices = false

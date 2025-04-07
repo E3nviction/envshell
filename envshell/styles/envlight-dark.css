@@ -3,28 +3,37 @@
 }
 
 #env-light {
-	opacity: 1;
-	padding: 0;
-	border-radius: 15px;
-	background-color: alpha(#333, 0.3);
-	box-shadow: inset 0 0 0 0.5px alpha(#333, 0.5);
-	transition: opacity 250ms ease-in-out;
+	background-color: alpha(#000, 0.3);
+	box-shadow: inset 0 0 0 1px alpha(#aaa, 0.4);
+	border: 1px solid alpha(#111, 0.4);
+	border-radius: 1.25rem;
+	padding: .5rem;
+	margin: 5px;
+}
+
+#env-light slider {
+    min-width: 8px;
+    min-height: 5px;
+	background-color: transparent;
+    border-radius: 10px;
+}
+
+#env-light scrollbar through {
+	background-color: transparent;
+}
+
+#env-light scrollbar slider {
+    background: #555;
+}
+#env-light scrollbar slider:hover {
+    background-color: #666;
 }
 
 #light-suggestions {
 	padding: 2rem 0 2rem 2rem;
 	font-size: 14px;
 	color: alpha(#fff, 1.0);
-}
-
-#light-suggestion {
-	padding: .5rem 1rem;
-	margin: 0.2rem;
-	border-radius: 5px;
-}
-
-#light-suggestion label {
-	font-size: 14px;
+	transition: all 0s ease-in-out;
 }
 
 #light-suggestion:hover {

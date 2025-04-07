@@ -157,27 +157,63 @@ resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 		control-center.enable = true
 		date.enable = true
 
+[EnvLight]
+	# This will show the executable below the Name
+	show-executable = true
+	# This will clear the search bar when you toggle the widget
+	clear-search-on-toggle = true
+	# This is the maximum length of the executable name
+	advanced.executable-max-length = 50
+	# This will show the full executable name
+	# example:
+	# 	nautilus -> nautilus --new-window
+	advanced.full-executable = false
+	# Here you can add shortcuts to envLight
+	[[EnvLight.shortcuts]]
+		# Every shortcut has a name
+		name = "Wikipedia"
+		# A tooltip for hovering over the shortcut
+		tooltip = "Search on Wikipedia."
+		# The keyword that will be used to search
+		keyword = "wi"
+		# The type of the shortcut, it can be url or command
+		type = "url"
+		# The description that will be shown in the envLight
+		description = "Search for '%s' on Wikipedia"
+		# The command that will be run when the shortcut is clicked
+		command = "https://en.wikipedia.org/w/index.php?search=%s"
+	[[EnvLight.shortcuts]]
+		# This is a shortcut for the calculator
+		name = "Calculate"
+		tooltip = "Calculate and Copy to Clipboard."
+		# It uses python to calculate the expression
+		keyword = "="
+		type = "command"
+		# It also uses an advanced description command to show the result
+		description-command = "python -c 'print(eval(\"%s\"))'"
+		# Resulting in an update to the description of the shortcut
+		description = "Copy to clipboard %c"
+		command = "python -c 'print(eval(\"%s\"))' | wl-copy && notify-send \"envShell\" \"Copied to Clipboard\""
+
 [Systray]
-hide-empty = true
+	hide-empty = true
 
 [Workspace]
-# Makes the dock ignore apps on workspace id 9
-ignore.id.9 = true
+	# Makes the dock ignore apps on workspace id 9
+	ignore.id.9 = true
 
 [MusicPlayer]
-# This would ignore any sound control for players with the title being spotify
-#[[MusicPlayer.ignore]]
-#title.regex = "^spotify$"
+	# This would ignore any sound control for players with the title being spotify
+	#[[MusicPlayer.ignore]]
+	#title.regex = "^spotify$"
 
 [Cache]
-# The Directory for cache such as icons
-directory = "envshell"
+	# The Directory for cache such as icons
+	directory = "envshell"
 
 [Bluetooth]
-# If you want to show Devices without names
-show-hidden-devices = false
-
-
+	# If you want to show Devices without names
+	show-hidden-devices = false
 
 [Shell]
 # This is rarely changed by the user, you can delete it if you want
@@ -198,7 +234,6 @@ show-hidden-devices = false
 		# If you want to use a different Store, such as the Gnome Software store, you can uncomment this
 		#options.store.label = "App Store..."
 		#options.store.on-click = "gnome-software"
-
 
 [Mods]
 # You can also create mods, which are dropdowns inside the top panel
