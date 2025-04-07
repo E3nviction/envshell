@@ -25,7 +25,6 @@ global audio_service
 from utils.roam import envshell_service, audio_service
 from utils.exml import exml
 
-from utils.functions import get_from_socket
 
 from config.c import c
 
