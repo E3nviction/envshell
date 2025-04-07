@@ -201,8 +201,44 @@ class EnvPanel(Window):
 			max_value=100,
 			style=styler({
 				"#osd-window-scale": style_dict(
-					margin_left="20px",
-				)
+					margin_left=px(20),
+				),
+				"#osd-window-scale slider": style_dict(
+					background_image="none",
+					background_color=colors.transparent,
+					padding=px(2),
+					border_radius=px(20),
+				),
+				"#osd-window-scale .small slider": style_dict(
+					background_image="none",
+					background_color=colors.transparent,
+					padding=px(0),
+				),
+				"#osd-window-scale scale": style_dict(
+					background_color=colors.transparent,
+					margin_top=px(10),
+					border_radius=px(20),
+				),
+				"#osd-window-scale trough": style_dict(
+					min_width=px(25),
+					border_radius=px(99),
+					background_color=alpha("#666", 0.5),
+					border=px(1) + "solid" + alpha("#444", 0.3),
+				),
+				"#osd-window-scale highlight": style_dict(
+					background=alpha(colors.white, 0.8),
+					border_radius=px(99),
+				),
+				"#osd-window-scale mark indicator": style_dict(
+					background="none",
+					background_image="none",
+					color=alpha(colors.white, 0.2),
+				),
+				"#osd-window-scale mark label": style_dict(
+					background="none",
+					background_image="none",
+					color=alpha(colors.white, 0.2),
+				),
 			}),
 			increments=(1, 1),
 			marks=[ScaleMark(x, position="bottom", markup=str(x) if x % 20 == 0 else "") for x in range(10, 96, 10)],
