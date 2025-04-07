@@ -105,44 +105,44 @@
 	color: alpha(#111, 0.6);
 }
 
-slider {
+#control-center-menu slider {
 	background-image: none;
 	background-color: transparent;
 	padding: 2px;
 	border-radius: 20px;
 }
 
-.small slider {
+#control-center-menu .small slider {
 	background-image: none;
 	background-color: transparent;
 	padding: 0px;
 }
 
-scale {
+#control-center-menu scale {
 	background-color: transparent;
 	margin-top: 10px;
 	border-radius: 20px;
 }
 
-trough {
+#control-center-menu trough {
     min-width: 25px;
     border-radius: 99px;
 	background-color: alpha(#666, 0.5);
 	border: 1px solid alpha(#444, 0.3);
 }
 
-highlight {
+#control-center-menu highlight {
     background: alpha(#fff, 0.8);
     border-radius: 99px;
 }
 
-mark indicator {
+#control-center-menu mark indicator {
 	background: none;
 	background-image: none;
 	color: alpha(#fff, 0.2);
 }
 
-mark label {
+#control-center-menu mark label {
 	background: none;
 	background-image: none;
 	color: alpha(#fff, 0.2);
