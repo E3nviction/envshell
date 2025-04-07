@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-import toml
 import argparse
 import os
 import subprocess
-import loguru
+import sys
+from utils.socket import create_socket_signal, get_socket_signal
 
-loguru.logger.disable("config.c")
-
-from config.c import c
 
 def update_toml_value(file_path, toml_path, value):
 	try:
@@ -53,6 +50,7 @@ def restart_module(module):
 
 def main():
 	parser = argparse.ArgumentParser(description="Manage envShell.")
+	parser.add_argument("-NC", "--no-config", action="store_true", help="Disable accessing config")
 	subparsers = parser.add_subparsers(dest="command", required=True)
 
 	keyword_parser = subparsers.add_parser("keyword", help="Update configs of envShell.")
@@ -74,6 +72,11 @@ def main():
 	restart_parser.add_argument("module", choices=["Dock", "Panel", "Notifications", "Shell", "ScreenFilter", "all"], help="Module to restart.")
 
 	args = parser.parse_args()
+	if not args.no_config:
+		global c
+		global toml
+		import toml
+		from config.c import c
 
 	file_path = os.path.join(os.path.expanduser("~"), ".config", "envshell", "temp.toml")
 
@@ -99,7 +102,6 @@ def main():
 		else: print("No configuration file to delete.")
 	elif args.command == "restart": restart_module(args.module)
 	elif args.command == "send":
-		from utils.functions import create_socket_signal, get_socket_signal
 		create_socket_signal("envctl.socket", "command", {"value": args.sendcommand})
 	else: parser.print_help()
 
