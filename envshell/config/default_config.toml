@@ -106,5 +106,5 @@ resolution = "1920x1080"
 	show-hidden-devices = false
 
 [Misc]
-	activate-linux.enable = true
+	activate-linux.enable = false
 	activate-linux.layer = "overlay"

@@ -23,36 +23,7 @@ from utils.functions import get_from_socket
 
 from gi.repository import GtkLayerShell # type: ignore
 
-class BorderGlow(Window):
-	def __init__(self, **kwargs):
-		super().__init__(
-			layer="overlay",
-			anchor="top bottom left right",
-			exclusivity="none",
-			title="envshell-glow",
-			name="env-glow",
-			all_visible=True,
-			visible=True,
-			pass_through=True,
-			style=styler({
-				"default": style_dict(
-					background_color=alpha(colors.orange, 0),
-					box_shadow="inset 0 0 10px 1px #f00",
-					border_radius=px(12),
-					transition=transitions.normal,
-					padding=px(0),
-				)
-			}),
-			**kwargs,
-		)
-
-		if c.get_rule("Panel.mode") == "floating":
-			self.set_property("margin", (-(c.get_rule("Panel.height") + 10), 0, 0, 0))
-		elif c.get_rule("Panel.mode") == "normal":
-			self.set_property("margin", (-(c.get_rule("Panel.height")), 0, 0, 0))
-
-		self.children = []
-		self.show_all()
+from widgets.shadertoy import Shadertoy
 
 class EnvFilter(Window):
 	"""Screen Filters for envshell, like Nightlight, Redshift, etc."""
@@ -84,6 +55,15 @@ class EnvFilter(Window):
 
 		self.children = []
 		self.show_all()
+
+		#self.add(Shadertoy(
+		#	shader_buffer="""
+		#	void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+		#		fragColor = vec4(1.0, 0.0, 0.0, 0.2); // Red
+		#	}
+		#	""",
+		#))
+
 
 		self.start_update_thread()
 
@@ -133,7 +113,6 @@ class EnvFilter(Window):
 		def run():
 			try:
 				while True:
-
 					for rule in rules:
 						type = rule["type"]
 						ifcmd = rule["if"]
@@ -156,4 +135,4 @@ class EnvFilter(Window):
 					time.sleep(c.get_rule("ScreenFilter.advanced.update_interval"))
 			except KeyboardInterrupt: pass
 
-		threading.Thread(target=run, daemon=True).start()
+		#threading.Thread(target=run, daemon=True).start()
