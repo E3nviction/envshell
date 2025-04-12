@@ -292,3 +292,11 @@ auto-generated = true
 #		on-clicked = "ghostty"
 #		# This will add a divider below the last option
 #		divider = true
+
+[Misc]
+	# This will give you an "Activate Linux" widget at the bottom right, just like in windows
+	# This is of course just for the jokes
+	activate-linux.enable = false
+	# And if you want to change the layer, you can do that here
+	# Available layers are: 'background', 'bottom', 'top', 'overlay'
+	activate-linux.layer = "background"

@@ -104,3 +104,7 @@ resolution = "1920x1080"
 
 [Bluetooth]
 	show-hidden-devices = false
+
+[Misc]
+	activate-linux.enable = true
+	activate-linux.layer = "overlay"

@@ -27,6 +27,7 @@ def monitor():
 		"Panel": "panel.py",
 		"Dock": "dock.py",
 		"ScreenFilter": "screenfilter.py",
+		"envShell Misc": "misc.py",
 	}
 
 	if not c.get_rule("Dock.enable"):          process_names.pop("Dock")
