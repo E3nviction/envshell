@@ -168,32 +168,48 @@ resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 	# example:
 	# 	nautilus -> nautilus --new-window
 	advanced.full-executable = false
-	# Here you can add shortcuts to envLight
-	[[EnvLight.shortcuts]]
-		# Every shortcut has a name
-		name = "Wikipedia"
-		# A tooltip for hovering over the shortcut
-		tooltip = "Search on Wikipedia."
-		# The keyword that will be used to search
-		keyword = "wi"
-		# The type of the shortcut, it can be url or command
-		type = "url"
-		# The description that will be shown in the envLight
-		description = "Search for '%s' on Wikipedia"
-		# The command that will be run when the shortcut is clicked
-		command = "https://en.wikipedia.org/w/index.php?search=%s"
-	[[EnvLight.shortcuts]]
-		# This is a shortcut for the calculator
-		name = "Calculate"
-		tooltip = "Calculate and Copy to Clipboard."
-		# It uses python to calculate the expression
-		keyword = "="
-		type = "command"
-		# It also uses an advanced description command to show the result
-		description-command = "python -c 'print(eval(\"%s\"))'"
-		# Resulting in an update to the description of the shortcut
-		description = "Copy to clipboard %c"
-		command = "python -c 'print(eval(\"%s\"))' | wl-copy && notify-send \"envShell\" \"Copied to Clipboard\""
+	# available builtins:
+	# 	"builtin.wikipedia" -> wi prompt
+	# 	"builtin.calculator" -> =prompt
+	# 	"builtin.duckduckgo" -> ddg prompt
+	enabled = [
+		"builtin.calculator",
+		"builtin.wikipedia"
+	]
+	# Try changing a keyword to something else
+	# like this: EnvLight.extensions.builtin.wikipedia.keyword = "wiki"
+
+	# Every extension has a subgroup
+	# [EnvLight.extensions.builtin]
+	# and a name
+	# [EnvLight.extensions.builtin.wikipedia]
+
+	## Here you can add extensions to envLight
+	#[EnvLight.extensions.builtin.wikipedia]
+	#	# Every extension has a name
+	#	name = "Wikipedia"
+	#	# A tooltip for hovering over the extension
+	#	tooltip = "Search on Wikipedia."
+	#	# The keyword that will be used to search
+	#	keyword = "wi"
+	#	# The type of the extension, it can be url or command
+	#	type = "url"
+	#	# The description that will be shown in the envLight
+	#	description = "Search for '%s' on Wikipedia"
+	#	# The command that will be run when the extension is clicked
+	#	command = "https://en.wikipedia.org/w/index.php?search=%s"
+	#[EnvLight.extensions.builtin.calculator]
+	#	# This is a extension for the calculator
+	#	name = "Calculate"
+	#	tooltip = "Calculate and Copy to Clipboard."
+	#	# It uses python to calculate the expression
+	#	keyword = "="
+	#	type = "command"
+	#	# It also uses an advanced description command to show the result
+	#	description-command = "python -c 'print(eval(\"%s\"))'"
+	#	# Resulting in an update to the description of the extension
+	#	description = "Copy to clipboard %c"
+	#	command = "python -c 'print(eval(\"%s\"))' | wl-copy && notify-send \"envShell\" \"Copied to Clipboard\""
 
 [Systray]
 	hide-empty = true

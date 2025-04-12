@@ -130,16 +130,20 @@ class EnvLight(Window):
 
 		self.viewport.children = []
 
-		shortcuts: list[dict] = c.get_rule("EnvLight.shortcuts")
+		extension_groups: dict[str, dict] = c.get_rule("EnvLight.extensions")
 
-		if not shortcuts:
-			return False
+		enabled: list[str] = c.get_rule("EnvLight.enabled")
 
 		filtered_apps_list: list = []
 
-		for shortcut in shortcuts:
-			if query.casefold().startswith(shortcut["keyword"].casefold()):
-				filtered_apps_list.append(shortcut)
+		for i in extension_groups:
+			extension_group = extension_groups[i]
+			for j in extension_group:
+				extension = extension_group[j]
+				if f"{i}.{j}" not in enabled:
+					continue
+				if query.casefold().startswith(extension["keyword"].casefold()):
+					filtered_apps_list.append(extension)
 
 		filtered_apps_list.extend([
 			app for app in self._all_apps
@@ -157,7 +161,7 @@ class EnvLight(Window):
 	def add_applications(self, apps_list: list[DesktopApp | dict], query: str = ""):
 		for app in apps_list:
 			if isinstance(app, dict):
-				self.viewport.add(self.bake_shortcut_slot(app, query))
+				self.viewport.add(self.bake_extension_slot(app, query))
 			else:
 				self.viewport.add(self.bake_application_slot(app))
 
@@ -174,22 +178,22 @@ class EnvLight(Window):
 		)
 		return False
 
-	def bake_shortcut_slot(self, shortcut: dict, query: str, **kwargs) -> Button:
-		shortcut = shortcut.copy()
-		if query.startswith(shortcut["keyword"] + " "):
-			query = query.removeprefix(shortcut["keyword"] + " ")
-		elif query.startswith(shortcut["keyword"]):
-			query = query.removeprefix(shortcut["keyword"])
+	def bake_extension_slot(self, extension: dict, query: str, **kwargs) -> Button:
+		extension = extension.copy()
+		if query.startswith(extension["keyword"] + " "):
+			query = query.removeprefix(extension["keyword"] + " ")
+		elif query.startswith(extension["keyword"]):
+			query = query.removeprefix(extension["keyword"])
 		old_query = f"{query}"
 		# make query be url supportive
-		if shortcut.get("type") == "url":
+		if extension.get("type") == "url":
 			query = quote(query)
-			if not shortcut["command"].startswith("xdg-open"):
-				shortcut["command"] = f"xdg-open {shortcut['command']}"
-		if shortcut.get("description", None):
-			result = shortcut.get("description-command", "echo ...")
+			if not extension["command"].startswith("xdg-open"):
+				extension["command"] = f"xdg-open {extension['command']}"
+		if extension.get("description", None):
+			result = extension.get("description-command", "echo ...")
 			result = subprocess.run(result.replace("%s", query), shell=True, capture_output=True).stdout.decode("utf-8").strip()
-			shortcut["description"] = shortcut["description"].replace("%c", result)
+			extension["description"] = extension["description"].replace("%c", result)
 		return Button(
 			child=Box(
 				orientation="h",
@@ -198,7 +202,7 @@ class EnvLight(Window):
 					#Image(pixbuf=app.get_icon_pixbuf(), h_align="start", size=32),
 					Box(orientation="v", spacing=2, children=[
 						Label(
-							label=f"{shortcut["name"]}" or "Unknown",
+							label=f"{extension["name"]}" or "Unknown",
 							style=styler({
 								"default": style_dict(
 									font_size=px(14),
@@ -209,7 +213,7 @@ class EnvLight(Window):
 							h_align="start",
 						),
 						Label(
-							label=(f"{shortcut.get("description", None) or shortcut["command"]}".replace("%s", old_query).replace("%S", query))[:c.get_rule("EnvLight.advanced.executable-max-length")],
+							label=(f"{extension.get("description", None) or extension["command"]}".replace("%s", old_query).replace("%S", query))[:c.get_rule("EnvLight.advanced.executable-max-length")],
 							style=styler({
 								"default": style_dict(
 									font_size=px(12),
@@ -220,7 +224,7 @@ class EnvLight(Window):
 							h_align="start",
 						),
 					] if c.get_rule("EnvLight.show-executable") else [
-						Label(label=f"{shortcut["name"]}" or "Unknown", style=styler(font_size=px(14)), v_align="start", h_align="start"),
+						Label(label=f"{extension["name"]}" or "Unknown", style=styler(font_size=px(14)), v_align="start", h_align="start"),
 					]),
 				],
 			),
@@ -238,8 +242,8 @@ class EnvLight(Window):
 				),
 			}),
 			name="light-suggestion",
-			tooltip_text=shortcut["tooltip"],
-			on_clicked=lambda *_: (self.launch_app(shortcut["command"].replace("%s", query)), self.toggle(None)),
+			tooltip_text=extension["tooltip"],
+			on_clicked=lambda *_: (self.launch_app(extension["command"].replace("%s", query)), self.toggle(None)),
 			**kwargs,
 		)
 

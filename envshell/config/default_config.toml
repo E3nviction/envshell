@@ -94,14 +94,15 @@ resolution = "1920x1080"
 	clear-search-on-toggle = true
 	advanced.executable-max-length = 50
 	advanced.full-executable = true
-	[[EnvLight.shortcuts]]
+	enabled = []
+	[EnvLight.extensions.builtin.wikipedia]
 		name = "Wikipedia"
 		tooltip = "Search on Wikipedia."
 		keyword = "wi"
 		type = "url"
 		description = "Search for '%s' on Wikipedia"
 		command = "https://en.wikipedia.org/w/index.php?search=%s"
-	[[EnvLight.shortcuts]]
+	[EnvLight.extensions.builtin.calculator]
 		name = "Calculate"
 		tooltip = "Calculate and Copy to Clipboard."
 		keyword = "="
@@ -109,6 +110,13 @@ resolution = "1920x1080"
 		description-command = "python -c 'print(eval(\"%s\"))'"
 		description = "Copy to clipboard %c"
 		command = "python -c 'print(eval(\"%s\"))' | wl-copy && notify-send \"envShell\" \"Copied to Clipboard\""
+	[EnvLight.extensions.builtin.duckduckgo]
+		name = "DuckDuckGo"
+		tooltip = "Search using DuckDuckGo."
+		keyword = "ddg"
+		type = "url"
+		description = "Search for: %s"
+		command = "https://duckduckgo.com/?q=%s"
 
 [Cache]
 	directory = "envshell"
