@@ -220,6 +220,10 @@ auto-generated = true
 	#	# It uses python to calculate the expression
 	#	keyword = "="
 	#	type = "command"
+	#	# This will ignore the char limit
+	#	ignore-char-limit = true
+	#	# This will wrap the description. available modes are: "none", "word", "char"
+	#	wrap-mode = "char"
 	#	# It also uses an advanced description command to show the result
 	#	description-command = "python -c 'print(eval(\"%s\"))'"
 	#	# Resulting in an update to the description of the extension

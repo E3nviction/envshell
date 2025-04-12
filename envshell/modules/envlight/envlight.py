@@ -194,6 +194,36 @@ class EnvLight(Window):
 			result = extension.get("description-command", "echo ...")
 			result = subprocess.run(result.replace("%s", query), shell=True, capture_output=True).stdout.decode("utf-8").strip()
 			extension["description"] = extension["description"].replace("%c", result)
+		description = f"{extension.get("description", None) or extension["command"]}"
+		description = description.replace("%s", old_query).replace("%S", query)
+		# limit char
+		if not extension.get("ignore-char-limit", False):
+			description = description[:c.get_rule("EnvLight.advanced.executable-max-length")]
+		# wrap-mode, "none", "word", "char"
+		if extension.get("wrap-mode", "none") == "none": pass
+		elif extension.get("wrap-mode", "none") == "char":
+			# split by word, so the length does not exceed the limit
+			lines = [""]
+			for char in description:
+				lines[-1] += char
+				if len(lines[-1]) >= 63: lines.append("")
+			description = "\n".join(lines)
+		elif extension.get("wrap-mode", "none") == "word":
+			# split by word, so the length does not exceed the limit
+			lines = [""]
+			for word in description.split():
+				if len(word) >= 63:
+					# fall back to char
+					words = [""]
+					for char in word:
+						words[-1] += char
+						if len(words[-1]) >= 63: words.append("")
+					lines.extend(words)
+					continue
+				if len(lines[-1]) + len(word) >= 63:
+					lines.append("")
+				lines[-1] += word + " "
+			description = "\n".join(lines)
 		return Button(
 			child=Box(
 				orientation="h",
@@ -213,16 +243,17 @@ class EnvLight(Window):
 							h_align="start",
 						),
 						Label(
-							label=(f"{extension.get("description", None) or extension["command"]}".replace("%s", old_query).replace("%S", query))[:c.get_rule("EnvLight.advanced.executable-max-length")],
+							label=description,
 							style=styler({
 								"default": style_dict(
+									font_family="monospace",
 									font_size=px(12),
-									color=colors.gray.three,
+									color=colors.white.seven,
 								),
 							}),
 							v_align="start",
 							h_align="start",
-						),
+						)
 					] if c.get_rule("EnvLight.show-executable") else [
 						Label(label=f"{extension["name"]}" or "Unknown", style=styler(font_size=px(14)), v_align="start", h_align="start"),
 					]),
