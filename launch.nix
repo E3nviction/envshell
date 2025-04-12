@@ -19,10 +19,14 @@ pkgs.mkShell rec {
   ];
 
   shellHook = ''
-  	echo "Setting up linkers for python."
+    echo "Setting Timezone..."
+    echo "use export TZ={insert your timezone} to change it to your timezone"
+    export TZ=CEST-2
+    echo "Setting up linkers for python."
     export PYTHONPATH="${pkgs.python312Packages.pygobject3}/lib/python3.12/site-packages"
+
     echo "Activating python virtual env..."
-    source ${toString ./.}/venv/bin/activate
-    python ${toString ./.}/envshell/watcher.py
+    source ./venv/bin/activate
+    python ./envshell/watcher.py
   '';
 }
