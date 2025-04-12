@@ -8,6 +8,7 @@ pkgs.mkShell rec {
     pkgs.python312Packages.pygobject3
     pkgs.python312Packages.psutil
     pkgs.python312Packages.pyopengl
+    pkgs.python312Packages.numpy
     pkgs.gtk4
     pkgs.gtk3
     pkgs.librsvg
