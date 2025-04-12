@@ -5,6 +5,10 @@ title = "envShell Example Config"
 auto-generated = true
 
 [General]
+	# With include you can add other config files and load them in order
+	include = [
+		#"~/.config/envshell/otherfile.toml",
+	]
 
 [Display]
 resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
@@ -169,23 +173,34 @@ resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 	# 	nautilus -> nautilus --new-window
 	advanced.full-executable = false
 	# available builtins:
-	# 	"builtin.wikipedia" -> wi prompt
-	# 	"builtin.calculator" -> =prompt
-	# 	"builtin.duckduckgo" -> ddg prompt
+	# 	"builtins.wikipedia" -> wi prompt
+	# 	"builtins.calculator" -> =prompt
+	# 	"builtins.duckduckgo" -> ddg prompt
+	# You can load extensions like this:
+	# Keep in mind that this will overwrite the default extensions, so builtins will be disabled if not added here
+	# Also, the extensions will not follow the folder and name structure, but the defined path inside the extension. so not:
+	# random_folder/random_extension but [EnvLight.extensions.random_folder.random_extension] would result in random_folder.random_extension
+	# so no matter the folder, it will always use the path inside
+	load-extensions = [
+		"extension://builtins/wikipedia", # This results in a path like this: /home/user/.config/envshell/extensions/builtins/wikipedia
+		"extension://builtins/calculator", # Inside this file is the same as below. e.g.: [EnvLight.extensions.builtins.wikipedia]...
+		#"extension:///path/to/your/extension", # Would result in an absolute path
+		#"extension-folder://builtins", # to load all the builtins
+	]
 	enabled = [
-		"builtin.calculator",
-		"builtin.wikipedia"
+		"builtins.calculator",
+		"builtins.wikipedia"
 	]
 	# Try changing a keyword to something else
-	# like this: EnvLight.extensions.builtin.wikipedia.keyword = "wiki"
+	# like this: EnvLight.extensions.builtins.wikipedia.keyword = "wiki"
 
 	# Every extension has a subgroup
-	# [EnvLight.extensions.builtin]
+	# [EnvLight.extensions.builtins]
 	# and a name
-	# [EnvLight.extensions.builtin.wikipedia]
+	# [EnvLight.extensions.builtins.wikipedia]
 
 	## Here you can add extensions to envLight
-	#[EnvLight.extensions.builtin.wikipedia]
+	#[EnvLight.extensions.builtins.wikipedia]
 	#	# Every extension has a name
 	#	name = "Wikipedia"
 	#	# A tooltip for hovering over the extension
@@ -198,7 +213,7 @@ resolution = "1920x1080" # 1920x1080, 2560x1440, 3840x2160
 	#	description = "Search for '%s' on Wikipedia"
 	#	# The command that will be run when the extension is clicked
 	#	command = "https://en.wikipedia.org/w/index.php?search=%s"
-	#[EnvLight.extensions.builtin.calculator]
+	#[EnvLight.extensions.builtins.calculator]
 	#	# This is a extension for the calculator
 	#	name = "Calculate"
 	#	tooltip = "Calculate and Copy to Clipboard."

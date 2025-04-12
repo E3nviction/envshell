@@ -3,6 +3,7 @@ from fabric.utils import get_relative_path, monitor_file
 import tomllib
 import json
 import os
+import shutil
 from loguru import logger
 
 
@@ -21,8 +22,8 @@ def load_config(config):
     # Rename
     for k, v in config["Window"].get("rename", {}).get("class", {}).items():
         c.window_rename(from_wmclass=k, to_wmclass=v)
-    for k, v in config["Window"].get("rename", {}).get("title", {}).items():
-        c.window_rename(from_title=k, to_wmclass=v)
+    #for k, v in config["Window"].get("rename", {}).get("title", {}).items():
+    #    c.window_rename(from_title=k, to_wmclass=v)
     # Ignore
     for k, v in config["Window"].get("ignore", {}).get("class", {}).items():
         if v == True:
@@ -104,6 +105,53 @@ def load_config_file():
         config = write_config(config_temp, config)
         load_config(config)
         c._private_config = config
+        if c.get_rule("General.include") is not None:
+            for conf in c.get_rule("General.include"):
+                if conf.startswith("./"):
+                    conf = os.path.join(config_location, "envshell", conf[2:])
+                with open(conf, "rb") as f:
+                    include_config = tomllib.load(f)
+                config = write_config(include_config, config)
+                load_config(config)
+                c._private_config = config
+        if c.get_rule("EnvLight.load-extensions") is not None:
+            exts = {}
+            for ext in c.get_rule("EnvLight.load-extensions"):
+                if ext.startswith("extension-folder://"):
+                    # remove the prefix
+                    ext = ext.replace("extension-folder://", "")
+                    # extend the path
+                    spec = os.path.join(config_location, "envshell", "extensions", ext)
+                    if ext.startswith("/"):
+                        spec = ext
+                    # load all files inside the folder
+                    for f in os.listdir(spec):
+                        if f.endswith(".ext"):
+                            exts[(f.replace(".ext", ""))] = os.path.join(spec, f)
+                            logger.info(f"Loading extension: {f}")
+                if ext.startswith("extension://"):
+                    # remove the prefix
+                    ext = ext.replace("extension://", "")
+                    # extend the path
+                    spec = os.path.join(config_location, "envshell", "extensions", f"{ext}.ext")
+                    if ext.startswith("/"):
+                        spec = ext
+                    # load file
+                    exts[(ext)] = spec
+                    logger.info(f"Loading extension: {ext}")
+            for ext in exts:
+                spec = exts[ext]
+                try:
+                    with open(spec, "rb") as f:
+                        extension_config = tomllib.load(f)
+                    # append to config
+                    config = write_config(extension_config, config)
+                    load_config(config)
+                    c._private_config = config
+                    logger.success(f"Loaded extension: {ext}")
+                except Exception as e:
+                    logger.error(f"Failed to load extension: {ext}")
+                    logger.error(f" Error: {e}")
     except:
         logger.warning("Could not find a config file, using default")
     json.dump(config, open(get_relative_path("latest_compiled_config.json"), "w"), indent=4)
@@ -123,6 +171,7 @@ if not os.path.exists(os.path.join(config_location, "envshell", "config.toml")):
 if not os.path.exists(os.path.join(config_location, "envshell", "envctl.toml")):
     with open(os.path.join(config_location, "envshell", "envctl.toml"), "w") as f:
         f.write("")
+
 
 config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "config.toml"))
 config_file_monitor.connect("changed", lambda *_: load_config_file())
