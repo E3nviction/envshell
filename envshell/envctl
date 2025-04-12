@@ -78,7 +78,7 @@ def main():
 		import toml
 		from config.c import c
 
-	file_path = os.path.join(os.path.expanduser("~"), ".config", "envshell", "temp.toml")
+	file_path = os.path.join(os.path.expanduser("~"), ".config", "envshell", "envctl.toml")
 
 	if args.command == "keyword":
 		if args.subcommand == "set":

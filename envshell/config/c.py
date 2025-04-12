@@ -99,7 +99,7 @@ def load_config_file():
         with open(os.path.join(config_location, "envshell", "config.toml"), "rb") as f:
             config = tomllib.load(f)
         config = write_config(config, default_config)
-        with open(os.path.join(config_location, "envshell", "temp.toml"), "rb") as f:
+        with open(os.path.join(config_location, "envshell", "envctl.toml"), "rb") as f:
             config_temp = tomllib.load(f)
         config = write_config(config_temp, config)
         load_config(config)
@@ -120,12 +120,12 @@ if not os.path.exists(os.path.join(config_location, "envshell", "config.toml")):
     shutil.copyfile(get_relative_path("example_config.toml"), os.path.join(config_location, "envshell", "config.toml"))
 
 # check if temp config file exists
-if not os.path.exists(os.path.join(config_location, "envshell", "temp.toml")):
-    with open(os.path.join(config_location, "envshell", "temp.toml"), "w") as f:
+if not os.path.exists(os.path.join(config_location, "envshell", "envctl.toml")):
+    with open(os.path.join(config_location, "envshell", "envctl.toml"), "w") as f:
         f.write("")
 
 config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "config.toml"))
 config_file_monitor.connect("changed", lambda *_: load_config_file())
 
-config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "temp.toml"))
+config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "envctl.toml"))
 config_file_monitor.connect("changed", lambda *_: load_config_file())
