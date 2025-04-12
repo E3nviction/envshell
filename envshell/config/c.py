@@ -172,7 +172,6 @@ if not os.path.exists(os.path.join(config_location, "envshell", "envctl.toml")):
     with open(os.path.join(config_location, "envshell", "envctl.toml"), "w") as f:
         f.write("")
 
-
 config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "config.toml"))
 config_file_monitor.connect("changed", lambda *_: load_config_file())
 
