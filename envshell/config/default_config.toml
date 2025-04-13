@@ -1,10 +1,11 @@
 auto-generated = false
 
 [General]
-transparency = true
+	transparency = true
+	include = []
 
 [Display]
-resolution = "1920x1080"
+	resolution = "1920x1080"
 
 [Window]
 	autohide.class."Hyprland" = true
@@ -14,10 +15,6 @@ resolution = "1920x1080"
 	[Window.translate]
 		smart-title = true
 		class."None" = "Hyprland"
-[Notch]
-	enable = true
-[Notifications]
-	enable = true
 [ScreenFilter]
 	enable = true
 	effect = "none"
@@ -98,6 +95,11 @@ resolution = "1920x1080"
 	load-extensions = [
 		"extension-folder://builtins",
 	]
+
+[Notch]
+	enable = true
+[Notifications]
+	enable = true
 
 [Cache]
 	directory = "envshell"
