@@ -1,0 +1,9 @@
+[EnvLight.extensions.builtins.duckduckgo]
+	name = "DuckDuckGo"
+	tooltip = "Search using DuckDuckGo."
+	keyword = "ddg"
+	type = "url"
+	ignore-char-limit = true
+	wrap-mode = "word"
+	description = "Search for: %s"
+	command = "https://duckduckgo.com/?q=%s"

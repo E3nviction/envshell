@@ -1,0 +1,10 @@
+[EnvLight.extensions.builtins.calculator]
+	name = "Calculate"
+	tooltip = "Calculate and Copy to Clipboard."
+	keyword = "="
+	type = "command"
+	ignore-char-limit = true
+	wrap-mode = "char"
+	description-command = "python -c 'print(eval(\"%s\"))'"
+	description = "Copy to clipboard %c"
+	command = "python -c 'print(eval(\"%s\"))' | wl-copy && notify-send \"envShell\" \"Copied to Clipboard\""

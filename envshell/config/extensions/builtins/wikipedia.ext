@@ -1,0 +1,7 @@
+[EnvLight.extensions.builtins.wikipedia]
+	name = "Wikipedia"
+	tooltip = "Search on Wikipedia."
+	keyword = "wi"
+	type = "url"
+	description = "Search for '%s' on Wikipedia"
+	command = "https://en.wikipedia.org/w/index.php?search=%s"
