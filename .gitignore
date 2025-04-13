@@ -20,3 +20,4 @@ venv.bak/
 
 # Config
 envshell/config/latest_compiled_config.json
+.template.md
