@@ -5,4 +5,13 @@ pulsectl==24.12.0
 setproctitle==1.3.4
 psutil
 toml
+annotated-types==0.7.0
+click==8.1.8
+numpy==2.2.4
+pycairo==1.27.0
+pydantic==2.10.6
+pydantic_core==2.27.2
+typing_extensions==4.12.2
+pyopengl
+pygobject3
 StyledWidgets @ git+https://github.com/E3nviction/StyledWidgets.git

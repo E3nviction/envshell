@@ -18,6 +18,7 @@ pkgs.mkShell rec {
     pkgs.gtk-layer-shell
     pkgs.gobject-introspection
     pkgs.gnome-bluetooth
+    pkgs.playerctl
   ];
 
   shellHook = ''

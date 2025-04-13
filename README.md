@@ -15,14 +15,26 @@ See [Features](#features) below
 
 Please note that envShell is still in an experimental stage. It is not guaranteed to work on your systems. Proceed with caution and be prepared to encounter issues.
 
-## Dependencies (non-python)
+## Dependencies
 
 1. hyprland
 2. playerctl
+3. gtk3
+4. librsvg
+5. libdbusmenu-gtk3
+6. libdbusmenu-gtk2
+7. gdk-pixbuf
+8. cinnamon-desktop
+9. pulseaudio
+10. gtk-layer-shell
+11. gobject-introspection
+12. gnome-bluetooth
+13. python >= 3.10 (3.12 recommended)
 
 ## Installation
 
 1. `pip install -r requirements.txt`
+2. install dependencies as described above
 
 ## Usage
 
