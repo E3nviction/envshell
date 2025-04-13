@@ -5,6 +5,9 @@ title = "envShell Example Config"
 auto-generated = true
 
 [General]
+	# If turned off it tries to make most parts of envShell non-transparent, to optimize performance
+	# This is usually left on.
+	transparency = true
 	# With include you can add other config files and load them in order
 	include = [
 		#"~/.config/envshell/otherfile.toml",
@@ -67,7 +70,7 @@ auto-generated = true
 	# This is the rules for the screen filter, you can add as many as you want
 	#[[ScreenFilter.rules]]
 	#	# This is the type of rule, it can be shell or python
-	#	#! Python might be dangerous, so be careful
+	#	# Python might be dangerous, so be careful
 	#	type = "shell"
 	#	# This is the command that will be run to check if the rule is true or false
 	#	# This example checks if the current hour is greater than 17
