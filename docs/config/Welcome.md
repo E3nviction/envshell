@@ -35,6 +35,8 @@ Here are the main sections you can configure:
 - **Cache**: Cache settings for various features.
 - **Bluetooth**: Bluetooth settings.
 - **Misc**: Fun and experimental features like "Activate Linux."
+- **MusicPlayer**: Music player settings.
+- **Panel Mods**: Mods for the top panel.
 
 ## Next Steps?
 
@@ -55,6 +57,8 @@ Now that you have a basic understanding of how the configuration file looks like
 - [Cache Configuration](./Cache.md)
 - [Bluetooth Configuration](./Bluetooth.md)
 - [Misc Configuration](./Misc.md)
+- [MusicPlayer Configuration](./MusicPlayer.md)
+- [Panel Mods Configuration](./Mods.md)
 
 ## Need Help?
 

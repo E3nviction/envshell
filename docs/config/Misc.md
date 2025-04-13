@@ -24,4 +24,4 @@ activate-linux.layer = "overlay"
 
 ---
 
-- [Go back to Welcome](./Welcome.md)
+- [Continue with MusicPlayer Configuration](./MusicPlayer.md)
