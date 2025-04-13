@@ -29,7 +29,7 @@ Here are the main sections you can configure:
 - **EnvLight**: Manage extensions and search behavior.
 - **Workspace**: Workspace-specific settings.
 - **System Tray**: Customize the system tray.
-- **Shell**: Configure the shell environment.
+- **Shell**: Configure shell settings/apps.
 - **Notch**: Customize the notch.
 - **Notifications**: Notification settings.
 - **Cache**: Cache settings for various features.
