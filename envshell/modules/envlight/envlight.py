@@ -69,9 +69,6 @@ class EnvLight(Window):
 			child=self.viewport,
 		)
 
-		self.socket = socket.socket()
-		self.socket.bind(("localhost", 3262))
-
 		self.add(
 			Box(
 				spacing=2,
@@ -185,6 +182,55 @@ class EnvLight(Window):
 		elif query.startswith(extension["keyword"]):
 			query = query.removeprefix(extension["keyword"])
 		old_query = f"{query}"
+		description = extension.get("description", None) or extension["command"]
+		description = description.replace("%c", "...")
+		label_description = Label(
+			label=description,
+			style=styler({
+				"default": style_dict(
+					font_family="monospace",
+					font_size=px(12),
+					color=colors.white.seven,
+				),
+			}),
+			v_align="start",
+			h_align="start",
+		)
+		def update_description(value):
+			description = extension.get("description", None) or extension["command"]
+			description = description.replace("%c", value)
+			description = description.replace("%s", old_query).replace("%S", query)
+			# limit char
+			if not extension.get("ignore-char-limit", False):
+				description = description[:c.get_rule("EnvLight.advanced.executable-max-length")]
+			# wrap-mode, "none", "word", "char"
+			if extension.get("wrap-mode", "none") == "none": pass
+			elif extension.get("wrap-mode", "none") == "char":
+				# split by word, so the length does not exceed the limit
+				lines = [""]
+				for char in description:
+					lines[-1] += char
+					if len(lines[-1]) >= 63: lines.append("")
+				description = "\n".join(lines)
+			elif extension.get("wrap-mode", "none") == "word":
+				# split by word, so the length does not exceed the limit
+				lines = [""]
+				for word in description.split():
+					if len(word) >= 63:
+						# fall back to char
+						words = [""]
+						for char in word:
+							words[-1] += char
+							if len(words[-1]) >= 63: words.append("")
+						lines.extend(words)
+						continue
+					if len(lines[-1]) + len(word) >= 63:
+						lines.append("")
+					lines[-1] += word + " "
+				description = "\n".join(lines)
+
+			label_description.set_label(description)
+
 		# make query be url supportive
 		if extension.get("type") == "url":
 			query = quote(query)
@@ -192,38 +238,7 @@ class EnvLight(Window):
 				extension["command"] = f"xdg-open {extension['command']}"
 		if extension.get("description", None):
 			result = extension.get("description-command", "echo ...")
-			result = subprocess.run(result.replace("%s", query), shell=True, capture_output=True).stdout.decode("utf-8").strip()
-			extension["description"] = extension["description"].replace("%c", result)
-		description = f"{extension.get("description", None) or extension["command"]}"
-		description = description.replace("%s", old_query).replace("%S", query)
-		# limit char
-		if not extension.get("ignore-char-limit", False):
-			description = description[:c.get_rule("EnvLight.advanced.executable-max-length")]
-		# wrap-mode, "none", "word", "char"
-		if extension.get("wrap-mode", "none") == "none": pass
-		elif extension.get("wrap-mode", "none") == "char":
-			# split by word, so the length does not exceed the limit
-			lines = [""]
-			for char in description:
-				lines[-1] += char
-				if len(lines[-1]) >= 63: lines.append("")
-			description = "\n".join(lines)
-		elif extension.get("wrap-mode", "none") == "word":
-			# split by word, so the length does not exceed the limit
-			lines = [""]
-			for word in description.split():
-				if len(word) >= 63:
-					# fall back to char
-					words = [""]
-					for char in word:
-						words[-1] += char
-						if len(words[-1]) >= 63: words.append("")
-					lines.extend(words)
-					continue
-				if len(lines[-1]) + len(word) >= 63:
-					lines.append("")
-				lines[-1] += word + " "
-			description = "\n".join(lines)
+			result = exec_shell_command_async(result.replace("%s", query), lambda value: idle_add(update_description, value))
 		return Button(
 			child=Box(
 				orientation="h",
@@ -242,18 +257,7 @@ class EnvLight(Window):
 							v_align="start",
 							h_align="start",
 						),
-						Label(
-							label=description,
-							style=styler({
-								"default": style_dict(
-									font_family="monospace",
-									font_size=px(12),
-									color=colors.white.seven,
-								),
-							}),
-							v_align="start",
-							h_align="start",
-						)
+						label_description
 					] if c.get_rule("EnvLight.show-executable") else [
 						Label(label=f"{extension["name"]}" or "Unknown", style=styler(font_size=px(14)), v_align="start", h_align="start"),
 					]),
