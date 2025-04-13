@@ -133,6 +133,10 @@ class Shadertoy(Gtk.GLArea, Widget):
         self.set_required_version(3, 3)
         self.set_has_depth_buffer(False)
         self.set_has_stencil_buffer(False)
+        self.set_has_alpha(True)
+        self.set_can_focus(False)
+        self.set_sensitive(False)
+        self.set_focus_on_click(False)
 
         self._ready = False
         self._program = None

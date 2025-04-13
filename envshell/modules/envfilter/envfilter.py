@@ -34,9 +34,9 @@ class EnvFilter(Window):
 			exclusivity="none",
 			title="envshell-filter",
 			name="env-filter",
-			all_visible=True,
 			visible=True,
 			pass_through=True,
+			keyboard_mode="none",
 			style=styler({
 				"default": style_dict(
 					background_color=alpha(colors.orange, 0),
@@ -53,17 +53,16 @@ class EnvFilter(Window):
 
 		GtkLayerShell.set_exclusive_zone(self, -1)
 
-		self.children = []
-		self.show_all()
-
 		#self.add(Shadertoy(
 		#	shader_buffer="""
 		#	void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-		#		fragColor = vec4(1.0, 0.0, 0.0, 0.2); // Red
+		#		vec2 uv = fragCoord / iResolution.xy;
+		#		float vignette = smoothstep(0.4, 0.8, length(uv - 0.5));
+		#		fragColor = vec4(0.0, 0.0, 0.0, vignette);
 		#	}
 		#	""",
+		#	pass_through=True
 		#))
-
 
 		self.start_update_thread()
 
