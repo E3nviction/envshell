@@ -127,11 +127,12 @@ class EnvLight(Window):
 
 		self.viewport.children = []
 
-		extension_groups: dict[str, dict] = c.get_rule("EnvLight.extensions")
+		extension_groups: dict[str, dict] = c.get_rule("EnvLight.extensions") # type: ignore
 
-		enabled: list[str] = c.get_rule("EnvLight.enabled")
+		enabled: list[str] = c.get_rule("EnvLight.enabled") # type: ignore
 
 		filtered_apps_list: list = []
+		left_apps: list = self._all_apps.copy()
 
 		for i in extension_groups:
 			extension_group = extension_groups[i]
@@ -142,11 +143,19 @@ class EnvLight(Window):
 				if query.casefold().startswith(extension["keyword"].casefold()):
 					filtered_apps_list.append(extension)
 
-		filtered_apps_list.extend([
-			app for app in self._all_apps
-			if query.casefold()
-			in (app.display_name or "") + (" " + app.name + " ") + (app.generic_name or "").casefold()
-		])
+		fields = ["display_name", "name", "generic_name", "description", "executable", "command_line"]
+		query_lower = query.casefold()
+
+		for field in fields:
+			remaining_apps = []
+			for app in left_apps:
+				value = getattr(app, field, "") or ""
+				if query_lower in value.casefold():
+					filtered_apps_list.append(app)
+				else:
+					remaining_apps.append(app)
+			left_apps = remaining_apps
+
 		self._arranger_handler = idle_add(
 			lambda list: self.add_applications(list, query),
 			filtered_apps_list,
@@ -177,6 +186,7 @@ class EnvLight(Window):
 
 	def bake_extension_slot(self, extension: dict, query: str, **kwargs) -> Button:
 		extension = extension.copy()
+		# remove keyword
 		if query.startswith(extension["keyword"] + " "):
 			query = query.removeprefix(extension["keyword"] + " ")
 		elif query.startswith(extension["keyword"]):
@@ -341,7 +351,7 @@ class EnvLight(Window):
 		app = app.removesuffix("%U").removesuffix("%u").removesuffix("%f").removesuffix("%F").strip()
 		logger.info("Launching: " + "nohup " + app)
 		threading.Thread(
-			target=lambda: subprocess.run("nohup " + app, shell=True),
+			target=lambda: subprocess.run("nohup '" + app.replace("'", "\\'") + "' >/dev/null", shell=True),
 			name="EnvLightLaunchAppThread",
 			args=(),
 			daemon=True,
