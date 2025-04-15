@@ -200,6 +200,8 @@ class player(Box):
 				self.time_pos.set_label(
 					data["sposition"] if data["sposition"] else "0:00"
 				)
+				if data["duration"] == "":
+					data["duration"] = "0"
 				if int(data["duration"]) == 0:
 					self.scale.set_value(0)
 				else:
