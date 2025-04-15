@@ -179,7 +179,7 @@ class EnvDock(Window):
 		exec_shell_command_async("hyprctl dispatch focuswindow address:" + b.get_name())
 	def launch_app(self, b: Button):
 		logger.info("Launching: " + b.get_name())
-		exec_shell_command_async(f"hyprctl dispatch exec {c.dock_pinned[b.get_name()]}")
+		exec_shell_command_async(f"hyprctl dispatch exec {c.get_rule("Dock.pinned")[b.get_name()]}")
 	def dock_apps_changed(self, apps):
 		"""Update UI safely in the main thread."""
 		def create_button(icon, name, active, running, on_click, tooltip):
@@ -211,20 +211,20 @@ class EnvDock(Window):
 				apps: list = eval(apps)
 
 			# Here we sort out the pinned apps, that are running, and move them to running_pinned_apps
-			running_pinned_apps = [app for app in apps if app[0] in c.dock_pinned]
-			apps = [app for app in apps if app[0] not in c.dock_pinned]
+			running_pinned_apps = [app for app in apps if app[0].casefold() in [p.casefold() for p in c.get_rule("Dock.pinned")]]
+			apps = [app for app in apps if app[0].casefold() not in [p.casefold() for p in c.get_rule("Dock.pinned")]]
 
 			# enrichen pinned apps with apps
-			for p in c.dock_pinned:
-				names_of_running_pinned_apps = [app[0] for app in running_pinned_apps]
-				current_app = [app for app in running_pinned_apps if app[0] == p]
-				if p not in names_of_running_pinned_apps:
+			for p in c.get_rule("Dock.pinned"):
+				names_of_running_pinned_apps = [app[0].casefold() for app in running_pinned_apps]
+				current_app = [app for app in running_pinned_apps if app[0].casefold() == p.casefold()]
+				if p.casefold() not in names_of_running_pinned_apps:
 					pinned_apps[p] = [p, None, None, None, None, False]
 				else:
 					pinned_apps[p] = [p, current_app[0][1], current_app[0][2], current_app[0][3], current_app[0][4], True]
 
 			# Then we sort by config order
-			pinned_apps = dict(sorted(pinned_apps.items(), key=lambda item: list(c.dock_pinned.keys()).index(item[0])))
+			pinned_apps = dict(sorted(pinned_apps.items(), key=lambda item: list(c.get_rule("Dock.pinned").keys()).index(item[0])))
 
 			for app_ in pinned_apps:
 				app, pid, title, address, active, running = pinned_apps[app_]
