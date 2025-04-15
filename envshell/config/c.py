@@ -177,5 +177,5 @@ if not os.path.exists(os.path.join(config_location, "envshell", "envctl.toml")):
 config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "config.toml"))
 config_file_monitor.connect("changed", lambda *_: load_config_file())
 
-config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "envctl.toml"))
-config_file_monitor.connect("changed", lambda *_: load_config_file())
+config_file_monitor_ctl = monitor_file(os.path.join(config_location, "envshell", "envctl.toml"))
+config_file_monitor_ctl.connect("changed", lambda *_: load_config_file())
