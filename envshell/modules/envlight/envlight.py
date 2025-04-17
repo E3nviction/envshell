@@ -348,7 +348,9 @@ class EnvLight(Window):
 	def launch_app(self, app: str | None):
 		if app is None:
 			return
-		app = app.removesuffix("%U").removesuffix("%u").removesuffix("%f").removesuffix("%F").strip()
+		artifacts = ["@@", "%U", "@@u", "%u", "%f", "%F"]
+		for artifact in artifacts:
+			app = app.replace(artifact, "").strip()
 		logger.info("Launching: " + "nohup " + app)
 		threading.Thread(
 			target=lambda: subprocess.run("nohup '" + app.replace("'", "\\'") + "' >/dev/null", shell=True),
