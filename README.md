@@ -2,6 +2,13 @@
 
 ---
 
+## Attention
+Take a look at the website if you want to see all features!
+
+https://e3nviction.github.io/#/envshell
+
+---
+
 A shell for Hyprland, designed with simplicity and aesthetics in mind, by mimicing the look of MacOS as closely as possible.
 All powered by [Fabric](https://github.com/Fabric-Development/fabric)
 
