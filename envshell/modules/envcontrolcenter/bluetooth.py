@@ -73,7 +73,7 @@ class BluetoothDeviceSlot(CenterBox):
 
 
 class BluetoohConnections(Box):
-    def __init__(self, **kwargs):
+    def __init__(self, parent, **kwargs):
         super().__init__(
             spacing=4,
             orientation="vertical",
@@ -81,8 +81,10 @@ class BluetoohConnections(Box):
             **kwargs,
         )
 
+        self.parent = parent # type: ignore
+
         self.client = BluetoothClient(on_device_added=self.on_device_added)
-        self.title = Label("Bluetooth")
+        self.title = Box(orientation="h", children=[Button(image=Image(icon_name="back", size=5), on_clicked=lambda *_: self.parent.close_bluetooth()), Label("Bluetooth")])
         self.toggle_button = Gtk.Switch(
             visible=True,
             name="toggle-button"
