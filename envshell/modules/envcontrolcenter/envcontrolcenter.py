@@ -228,7 +228,7 @@ class EnvControlCenter(Window):
 				while True:
 					self.smode = get_from_socket()[0]
 
-					wlan = subprocess.run("nmcli radio wifi", shell=True, capture_output=True, text=True)
+					wlan = subprocess.run("iwgetid -r", shell=True, capture_output=True, text=True)
 					if self.smode != True:
 						envshell_service.wlan = "PhotonWeb5"
 					else:
