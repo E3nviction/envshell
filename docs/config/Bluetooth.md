@@ -22,4 +22,4 @@ show-hidden-devices = false
 
 ---
 
-- [Continue with Misc Configuration](./Misc.md)
+- [Continue with Wifi Configuration](./Wifi.md)

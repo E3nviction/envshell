@@ -1,7 +1,7 @@
 # Misc Configuration
 
 - [Go to Home](./Welcome.md)
-- [Go back to Bluetooth Configuration](./Bluetooth.md)
+- [Go back to Wifi Configuration](./Wifi.md)
 
 The **Misc** section allows you to configure miscellaneous settings, and joke features.
 

@@ -34,6 +34,7 @@ Here are the main sections you can configure:
 - **Notifications**: Notification settings.
 - **Cache**: Cache settings for various features.
 - **Bluetooth**: Bluetooth settings.
+- **Wifi**: WiFi settings.
 - **Misc**: Fun and experimental features like "Activate Linux."
 - **MusicPlayer**: Music player settings.
 - **Panel Mods**: Mods for the top panel.
@@ -56,6 +57,7 @@ Now that you have a basic understanding of how the configuration file looks like
 - [Notifications Configuration](./Notifications.md)
 - [Cache Configuration](./Cache.md)
 - [Bluetooth Configuration](./Bluetooth.md)
+- [Wifi Configuration](./Wifi.md)
 - [Misc Configuration](./Misc.md)
 - [MusicPlayer Configuration](./MusicPlayer.md)
 - [Panel Mods Configuration](./Mods.md)
