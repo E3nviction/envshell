@@ -3,7 +3,7 @@ from fabric.widgets.box import Box
 from fabric.widgets.eventbox import EventBox
 from fabric.widgets.wayland import WaylandWindow as Window
 
-from widgets.popup_window import PopupWindow
+from widgets.popup_window_custom import PopupWindow
 
 from utils.roam import envshell_service
 

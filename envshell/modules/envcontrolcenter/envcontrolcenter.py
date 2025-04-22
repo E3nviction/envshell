@@ -34,7 +34,7 @@ from config.c import c
 
 from utils.functions import get_from_socket
 
-from widgets.popup_window import PopupWindow
+from widgets.popup_window_custom import PopupWindow
 
 from styledwidgets.styled import styler, style_dict
 from styledwidgets.agents import margins, paddings, transitions, colors, shadows, borderradius, textsize
