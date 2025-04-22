@@ -230,7 +230,7 @@ class EnvControlCenter(Window):
 
 					wlan = subprocess.run("iwgetid -r", shell=True, capture_output=True, text=True)
 					if self.smode != True:
-						envshell_service.wlan = "PhotonWeb5"
+						envshell_service.wlan = c.get_rule("Wifi.sentry-mode-wifi")
 					else:
 						envshell_service.wlan = "No Connection" if wlan.stdout.strip() == "" else wlan.stdout.strip()
 

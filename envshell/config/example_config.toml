@@ -253,6 +253,10 @@ auto-generated = true
 	# If you want to show Devices without names
 	show-hidden-devices = false
 
+[Wifi]
+	# When Sentry Mode is enabled, use this as the wifi name
+	sentry-mode-wifi = "Anonymous" # for example
+
 [Shell]
 # This is rarely changed by the user, you can delete it if you want
 	[Shell.about]

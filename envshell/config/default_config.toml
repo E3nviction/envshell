@@ -107,6 +107,9 @@ auto-generated = false
 [Bluetooth]
 	show-hidden-devices = false
 
+[Wifi]
+	sentry-mode-wifi = "Enabled"
+
 [Misc]
 	activate-linux.enable = false
 	activate-linux.layer = "overlay"
