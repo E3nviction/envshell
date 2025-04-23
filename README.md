@@ -3,9 +3,10 @@
 ---
 
 ## Attention
+
 Take a look at the website if you want to see all features!
 
-https://e3nviction.github.io/#/envshell
+<https://e3nviction.github.io/#/envshell>
 
 ---
 
@@ -73,6 +74,12 @@ windowrulev2 = pin,             title:(About Menu)
 To exit the **envShell (see above)**, kill the process: `pkill -x envShell`.  
 To exit the Panel, Noti, OSD, etc, kill the process: `pkill -x Panel`.  
 To exit the Dock, kill the process: `pkill -x Dock`.  
+
+## Configuration
+
+The config file is located at: `~/.config/envshell/config.toml`
+
+See the documentation for more information, [Config Documentation](./docs/config/Welcome.md)
 
 ## Screenshots
 
