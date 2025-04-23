@@ -12,6 +12,9 @@ import setproctitle
 
 from utils.functions import AppName, apply_style
 from config.c import c
+from utils.roam import envshell_service
+
+from widgets.mousecatcher import MouseCatcher
 
 for disable in [
 	"fabric.hyprland.widgets",
@@ -30,7 +33,8 @@ if __name__ == "__main__":
 	envpanel = None
 	if c.get_rule("Notifications.enable"):
 		envnoti = EnvNoti()
-		envnoticenter = EnvNotiCenter()
+		envnoticenter = MouseCatcher(layer="top", child_window=EnvNotiCenter())
+		envshell_service.connect("show-notificationcenter-changed", envnoticenter.toggle_mousecatcher)
 	if c.get_rule("Notch.enable"):
 		envnotch = EnvNotch()
 	if c.get_rule("Panel.enable"):
