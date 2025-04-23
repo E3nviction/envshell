@@ -14,7 +14,7 @@ from styledwidgets.color import alpha, hex
 
 from utils.roam import envshell_service
 
-class MouseCatcher(Window):
+class MouseCapture(Window):
 	"""A Window that spans across the entire screen, to essentially catch the mouse"""
 	def __init__(self, layer: str, child_window: Window, **kwargs):
 		super().__init__(
@@ -22,7 +22,7 @@ class MouseCatcher(Window):
 			anchor="top bottom left right",
 			exclusivity="auto",
 			title="envshell-mousecatch",
-			name="MouseCatcher",
+			name="MouseCapture",
 			keyboard_mode="exclusive",
 			style=styler(
 				background_color=alpha(colors.black, 0),
@@ -37,7 +37,10 @@ class MouseCatcher(Window):
 
 		self.child_window = child_window
 
-		# when clicking on the mousecatcher, hide the child window
+		if hasattr(self.child_window, "_mousecapture_parent"):
+			self.child_window._mousecapture_parent = self
+
+		# when clicking on the mousecapture, hide the child window
 		self.event_box = EventBox(
 			events=["enter-notify-event", "leave-notify-event", "button-press-event", "key-press-event"],
 			all_visible=True,
@@ -48,21 +51,21 @@ class MouseCatcher(Window):
 		self.children = [self.event_box]
 
 	def show_child_window(self, widget: Widget, event: Any) -> None:
-		self.child_window._set_mousecatcher(True)
+		self.child_window._set_mousecapture(True)
 		self.set_visible(True)
 		self.pass_through = False
 
 	def hide_child_window(self, widget: Widget, event: Any) -> None:
-		self.child_window._set_mousecatcher(False)
+		self.child_window._set_mousecapture(False)
 		self.set_visible(False)
 		self.pass_through = True
 
 	def dropdowns_hide_changed(self, widget: Widget, event: Any) -> None:
-		self.child_window._set_mousecatcher(False)
+		self.child_window._set_mousecapture(False)
 		self.set_visible(False)
 		self.pass_through = True
 
-	def toggle_mousecatcher(self, *_) -> None:
+	def toggle_mousecapture(self, *_) -> None:
 		self.set_visible(not self.is_visible())
 		self.keyboard_mode = "none" if self.is_visible() else "exclusive"
 		if self.is_visible():
@@ -70,10 +73,10 @@ class MouseCatcher(Window):
 		else:
 			self.return_input()
 		self.pass_through = not self.is_visible()
-		self.child_window._set_mousecatcher(self.is_visible())
+		self.child_window._set_mousecapture(self.is_visible())
 
 
-class DropDownMouseCatcher(MouseCatcher):
+class DropDownMouseCapture(MouseCapture):
 	"""A Window that spans across the entire screen, to essentially catch the mouse"""
 	def __init__(self, *args, **kwargs):
 		super().__init__(
@@ -83,7 +86,7 @@ class DropDownMouseCatcher(MouseCatcher):
 		envshell_service.connect("dropdowns-hide-changed", self.dropdowns_hide_changed)
 
 	def hide_child_window(self, widget: Widget, event: Any) -> None:
-		self.child_window._set_mousecatcher(False)
+		self.child_window._set_mousecapture(False)
 		envshell_service.current_dropdown = None
 		self.set_visible(False)
 		self.pass_through = True

@@ -196,7 +196,7 @@ class EnvControlCenter(Window):
 		idle_add(lambda *_: self.set_children(self.center_box))
 		self.has_bluetooth_open = False
 
-	def _set_mousecatcher(self, visible: bool):
+	def _set_mousecapture(self, visible: bool):
 		self.set_visible(visible)
 		if not visible:
 			self.close_bluetooth()

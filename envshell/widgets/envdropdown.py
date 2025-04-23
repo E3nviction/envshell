@@ -54,7 +54,7 @@ class EnvDropdown(PopupWindow):
 		if str(envshell_service.current_dropdown) != str(self.id) and self.is_visible():
 			self.hide()
 
-	def _set_mousecatcher(self, visible: bool) -> None:
+	def _set_mousecapture(self, visible: bool) -> None:
 		self.set_visible(visible)
 		if visible:
 			envshell_service.current_dropdown = self.id

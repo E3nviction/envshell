@@ -90,7 +90,7 @@ class EnvNotiCenter(Window):
 		self.show()
 		self.add(self.revealer)
 
-	def _set_mousecatcher(self, visible: bool):
+	def _set_mousecapture(self, visible: bool):
 		self.pass_through = not visible
 		if visible: self.revealer.reveal()
 		else: self.revealer.unreveal()

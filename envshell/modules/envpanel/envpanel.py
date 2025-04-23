@@ -27,7 +27,7 @@ from utils.roam import envshell_service, audio_service
 from utils.functions import app_name_class, create_socket_signal, get_socket_signal
 from widgets.envdropdown import EnvDropdown, dropdown_divider
 from widgets.osd_widget import OsdWindow
-from widgets.mousecatcher import DropDownMouseCatcher, MouseCatcher
+from widgets.mousecapture import DropDownMouseCapture, MouseCapture
 
 from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
@@ -101,7 +101,7 @@ class ItemWidget:
 				options.append(dropdown_option(self, i["label"], i.get("keybind", ""), on_click=i.get("on-clicked", "")))
 			if i.get("divider") is not None:
 				options.append(dropdown_divider(""))
-		self.menu = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
+		self.menu = DropDownMouseCapture(layer="top", child_window=EnvDropdown(
 			dropdown_id=self.id,
 			parent=self.parent,
 			dropdown_children=options,
@@ -109,7 +109,7 @@ class ItemWidget:
 		self.button = Button(
 			image=Svg(icon, size=icon_size),
 			style_classes="button",
-			on_clicked=lambda b: self.menu.toggle_mousecatcher(),
+			on_clicked=lambda b: self.menu.toggle_mousecapture(),
 		)
 		self.menu.child_window.set_pointing_to(self.button)
 
@@ -146,23 +146,23 @@ class EnvPanel(Window):
 		def toggle_notification_panel(*_):
 			envshell_service.show_notificationcenter = not envshell_service.show_notificationcenter
 
-		self.envlight = EnvLight()
+		self.envlight = MouseCapture(layer="top", child_window=EnvLight())
 		self.date_time = Button(
 			child=DateTime(formatters=c.get_rule("Panel.date-format"), name="date-time"),
 			on_clicked=toggle_notification_panel,
 			style_classes="button"
 		)
-		self.envsh_button_dropdown = DropDownMouseCatcher(layer="top", child_window=Dropdown(parent=self))
+		self.envsh_button_dropdown = DropDownMouseCapture(layer="top", child_window=Dropdown(parent=self))
 
-		self.control_center = MouseCatcher(layer="top", child_window=EnvControlCenter())
+		self.control_center = MouseCapture(layer="top", child_window=EnvControlCenter())
 		self.control_center_image = Svg(get_relative_path("../../assets/svgs/control-center.svg"), name="control-center-image")
-		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_mousecatcher)
+		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_mousecapture)
 
 		self.envsh_button = Button(
 			label=c.get_rule("Panel.icon"),
 			name="envsh-button",
 			style_classes="button",
-			on_clicked=lambda b: self.envsh_button_dropdown.toggle_mousecatcher()
+			on_clicked=lambda b: self.envsh_button_dropdown.toggle_mousecapture()
 		)
 		self.envsh_button_dropdown.child_window.set_pointing_to(self.envsh_button)
 		self.power_button_image = Svg(get_relative_path("../../assets/svgs/battery.svg"), name="control-center-image")
@@ -170,7 +170,7 @@ class EnvPanel(Window):
 
 		self.search_button_image = Svg(get_relative_path("../../assets/svgs/search.svg"), name="search-button-image")
 		self.search_button = Button(image=self.search_button_image, name="search-button", style_classes="button")
-		self.search_button.connect("clicked", self.envlight.toggle)
+		self.search_button.connect("clicked", self.envlight.toggle_mousecapture)
 
 		self.wifi_button_image = Svg(get_relative_path("../../assets/svgs/wifi-clear.svg"), name="wifi-button-image")
 		wlan = envshell_service.sc("wlan-changed", self.wlan_changed)
@@ -180,7 +180,7 @@ class EnvPanel(Window):
 		self.bluetooth_button_image = Svg(get_relative_path("../../assets/svgs/bluetooth-clear.svg"), size=24, name="bluetooth-button-image")
 
 		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
-		self.global_menu_title = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
+		self.global_menu_title = DropDownMouseCapture(layer="top", child_window=EnvDropdown(
 			dropdown_id="global-menu-title",
 			parent=self,
 			dropdown_children=[
@@ -301,7 +301,7 @@ class EnvPanel(Window):
 
 		self.global_menu_file   = None
 		self.global_menu_edit   = None
-		self.global_menu_view   = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
+		self.global_menu_view   = DropDownMouseCapture(layer="top", child_window=EnvDropdown(
 			dropdown_id="global-menu-view",
 			parent=self,
 			dropdown_children=[
@@ -309,7 +309,7 @@ class EnvPanel(Window):
 			]
 		))
 		self.global_menu_go     = None
-		self.global_menu_window = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
+		self.global_menu_window = DropDownMouseCapture(layer="top", child_window=EnvDropdown(
 			dropdown_id="global-menu-window",
 			parent=self,
 			dropdown_children=[
@@ -328,7 +328,7 @@ class EnvPanel(Window):
 			]
 		))
 
-		self.global_menu_help   = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
+		self.global_menu_help   = DropDownMouseCapture(layer="top", child_window=EnvDropdown(
 			dropdown_id="global-menu-help",
 			parent=self,
 			dropdown_children=[
@@ -337,7 +337,7 @@ class EnvPanel(Window):
 				dropdown_option(self, "nixOS Help", on_clicked=lambda b: subprocess.run("xdg-open https://wiki.nixos.org/wiki/NixOS_Wiki", shell=True)),
 			]
 		))
-		self.bluetooth_menu = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
+		self.bluetooth_menu = DropDownMouseCapture(layer="top", child_window=EnvDropdown(
 			dropdown_id="bluetooth-menu",
 			parent=self,
 			dropdown_children=[
@@ -350,24 +350,24 @@ class EnvPanel(Window):
 			child=ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window)),
 			name="global-title-button",
 			style_classes="button",
-			on_clicked=lambda b: self.global_menu_title.toggle_mousecatcher(),
+			on_clicked=lambda b: self.global_menu_title.toggle_mousecapture(),
 		)
 		self.global_menu_title.child_window.set_pointing_to(self.global_menu_button_title)
 
 		self.global_menu_button_file   = Button(label="File",   name="global-menu-button-file",   style_classes="button")
 		self.global_menu_button_edit   = Button(label="Edit",   name="global-menu-button-edit",   style_classes="button")
-		self.global_menu_button_view   = Button(label="View",   name="global-menu-button-view",   style_classes="button", on_clicked=lambda b: self.global_menu_view.toggle_mousecatcher())
+		self.global_menu_button_view   = Button(label="View",   name="global-menu-button-view",   style_classes="button", on_clicked=lambda b: self.global_menu_view.toggle_mousecapture())
 		self.global_menu_view.child_window.set_pointing_to(self.global_menu_button_view)
 		self.global_menu_button_go     = Button(label="Go",     name="global-menu-button-go",     style_classes="button")
-		self.global_menu_button_window = Button(label="Window", name="global-menu-button-window", style_classes="button", on_clicked=lambda b: self.global_menu_window.toggle_mousecatcher())
+		self.global_menu_button_window = Button(label="Window", name="global-menu-button-window", style_classes="button", on_clicked=lambda b: self.global_menu_window.toggle_mousecapture())
 		self.global_menu_window.child_window.set_pointing_to(self.global_menu_button_window)
-		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_mousecatcher())
+		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_mousecapture())
 		self.global_menu_help.child_window.set_pointing_to(self.global_menu_button_help)
 		self.bluetooth_button = Button(
 			image=self.bluetooth_button_image,
 			name="bluetooth-button",
 			style_classes="button",
-			on_clicked=lambda b: self.bluetooth_menu.toggle_mousecatcher()
+			on_clicked=lambda b: self.bluetooth_menu.toggle_mousecapture()
 		)
 		self.bluetooth_menu.child_window.set_pointing_to(self.bluetooth_button)
 
