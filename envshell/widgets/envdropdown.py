@@ -44,24 +44,20 @@ class EnvDropdown(PopupWindow):
 		)
 
 		self.children = [self.event_box]
-		self.event_box.connect("enter-notify-event", self.on_cursor_enter)
-		self.event_box.connect("leave-notify-event", self.on_cursor_leave)
 		self.connect("button-press-event", self.hide_dropdown)
 		self.add_keybinding("Escape", self.hide_dropdown)
 
 	def toggle_dropdown(self, button, parent=None):
 		self.set_visible(not self.is_visible())
-		if self.is_visible():
-			self.keyboard_mode = "exclusive"
-			self.steal_input()
-			envshell_service.current_dropdown = self.id
-		else:
-			self.keyboard_mode = "none"
-			self.return_input()
-			envshell_service.current_dropdown = None
+		envshell_service.current_dropdown = self.id if self.is_visible() else None
 	def hide_dropdown(self, widget, event):
-		if envshell_service.current_dropdown != self.id:
+		if str(envshell_service.current_dropdown) != str(self.id) and self.is_visible():
 			self.hide()
+
+	def _set_mousecatcher(self, visible: bool) -> None:
+		self.set_visible(visible)
+		if visible:
+			envshell_service.current_dropdown = self.id
 
 	def on_cursor_enter(self, *_):
 		self.set_visible(True)
