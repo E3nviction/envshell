@@ -39,10 +39,11 @@ class MouseCatcher(Window):
 
 		# when clicking on the mousecatcher, hide the child window
 		self.event_box = EventBox(
-			events=["enter-notify-event", "leave-notify-event", "button-press-event"],
+			events=["enter-notify-event", "leave-notify-event", "button-press-event", "key-press-event"],
 			all_visible=True,
 		)
 		self.event_box.connect("button-press-event", self.hide_child_window)
+		self.add_keybinding("Escape", self.hide_child_window)
 
 		self.children = [self.event_box]
 
@@ -53,7 +54,6 @@ class MouseCatcher(Window):
 
 	def hide_child_window(self, widget: Widget, event: Any) -> None:
 		self.child_window._set_mousecatcher(False)
-		envshell_service.current_dropdown = None
 		self.set_visible(False)
 		self.pass_through = True
 
@@ -64,6 +64,11 @@ class MouseCatcher(Window):
 
 	def toggle_mousecatcher(self, *_) -> None:
 		self.set_visible(not self.is_visible())
+		self.keyboard_mode = "none" if self.is_visible() else "exclusive"
+		if self.is_visible():
+			self.steal_input()
+		else:
+			self.return_input()
 		self.pass_through = not self.is_visible()
 		self.child_window._set_mousecatcher(self.is_visible())
 
@@ -76,6 +81,12 @@ class DropDownMouseCatcher(MouseCatcher):
 			**kwargs,
 		)
 		envshell_service.connect("dropdowns-hide-changed", self.dropdowns_hide_changed)
+
+	def hide_child_window(self, widget: Widget, event: Any) -> None:
+		self.child_window._set_mousecatcher(False)
+		envshell_service.current_dropdown = None
+		self.set_visible(False)
+		self.pass_through = True
 
 	def dropdowns_hide_changed(self, widget: Widget, event: Any) -> None:
 		if envshell_service.current_dropdown == self.child_window.id: return
