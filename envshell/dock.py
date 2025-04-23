@@ -1,5 +1,5 @@
+from modules.envdock.envdock_experimental import EnvDock as EnvDockExperimental
 from modules.envdock.envdock import EnvDock
-from modules.envdock.envdock_old import EnvDock as EnvDockLegacy
 from fabric import Application
 from fabric.utils import get_relative_path, monitor_file
 import loguru
@@ -22,7 +22,7 @@ if __name__ == "__main__":
 	if c.get_rule("Dock.enable"):
 		app = Application(
 			"envshellDock",
-			EnvDockLegacy() if c.get_rule("Dock.legacy") else EnvDock(),
+			EnvDock() if not c.get_rule("Dock.experimental") else EnvDockExperimental(),
 			open_inspector=len(sys.argv) > 1,
 		)
 	else:

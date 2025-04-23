@@ -16,7 +16,7 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib # type: ignore
+from gi.repository import GLib, GtkLayerShell # type: ignore
 import json
 
 from loguru import logger
@@ -44,23 +44,19 @@ class EnvDock(Window):
 			h_expand=True,
 			v_expand=True,
 			size=(round(c.get_rule("Dock.size") * 64), round(c.get_rule("Dock.size") * 64)),
-			margin=(0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5),
+			margin=(0,0,0,0) if c.get_rule("Dock.mode") == "full" else ((c.get_rule("Dock.gap"), )*4),
 			**kwargs,
 		)
 
 		if c.get_rule("Dock.autohide"):
-			self.is_hidden = True
-
-		self.is_hidden = False
-		self._hide()
-		self.is_hovered = False # type: ignore
-		self.last_hovered = datetime.now()
+			self.hotspot = EnvDockHotspot(self)
+			envshell_service.dock_hidden = True
 
 		self.icon_resolver = IconResolver()
 
 		if self.get_orientation() == "horizontal": idle_add(lambda: self.set_property("height-request", round(c.get_rule("Dock.size") * 64)))
 		else: idle_add(lambda: self.set_property("width-request", round(c.get_rule("Dock.size") * 64)))
-		idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5)))
+		idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else ((c.get_rule("Dock.gap"), )*4)))
 		idle_add(lambda: self.set_property("anchor", self.get_pos()))
 
 		envshell_service.connect(
@@ -81,22 +77,19 @@ class EnvDock(Window):
 			v_align="fill" if c.get_rule("Dock.mode") == "full" else "center",
 		)
 
-		self.dock_event_box = EventBox()
-		self.dock_event_box.add(self.dock_box)
-		self.dock_event_box.connect("enter-notify-event", self.update_hover)
-		self.dock_event_box.connect("leave-notify-event", self.update_hover)
-
 		self.connect("size-allocate", self.update_size)
 		self.update_size(None)
 
-		self.hover_activator = EventBox()
-		self.hover_activator.set_size_request(-1, 1)
-		self.hover_activator.connect("enter-notify-event", self.update_hover)
-		self.hover_activator.connect("leave-notify-event", self.update_hover)
+		self.children = self.dock_box
 
-		self.main_box = Box(orientation="v", children=[self.dock_event_box, self.hover_activator])
-		self.add(self.main_box)
+		self.connect("enter-notify-event", self._hide)
+		self.connect("leave-notify-event", self._hide)
 
+		if c.get_rule("Dock.autohide"):
+			envshell_service.connect(
+				"dock-hidden-changed",
+				self._hide,
+			)
 		self.connection = get_hyprland_connection()
 
 		if self.connection.ready:
@@ -104,55 +97,45 @@ class EnvDock(Window):
 			GLib.timeout_add(500, self._hide)
 		else:
 			self.connection.connect("event::ready", lambda *_: self.refresh_apps())
-			self.connection.connect("event::ready", lambda *_: self._hide())
 
 		for event in (
 			"activewindow",
 			"openwindow",
 			"closewindow",
+			"movewindow",
+			"windowtitle",
 			"changefloatingmode",
-			"changeworkspace",
+			"workspace",
+			"fullscreen"
 		):
 			self.connection.connect(f"event::{event}", lambda *_: self.refresh_apps())
 		self.connection.connect("event::workspace", self._hide)
 
-		self.hoverer = Fabricator(
-			interval=50,
-			default_value=False,
-			poll_from=self.is_not_hovered,
-			on_changed=self.hide_dock,
-		)
-
-	def is_not_hovered(self, *_):
-		dock_lazy_time_seconds = (int(c.get_rule("Dock.lazy-time")) / 1000)
-		delta_seconds = (datetime.now() - self.last_hovered).total_seconds()
-
-		is_timeout = delta_seconds > dock_lazy_time_seconds
-		return  is_timeout and not self.dock_event_box.is_hovered()
 	def show_dock(self, *_):
 		self.steal_input()
-		self.is_hidden = False
-		self._hide()
-	def hide_dock(self, f, v):
-		is_workspace_empty = self.fetch_clients_current_workspace() if c.get_rule("Dock.show-on-workspace") else True
-		if v and is_workspace_empty:
-			self.return_input()
-			self.is_hidden = True
-			self._hide()
-	def update_hover(self, *_):
-		self.last_hovered = datetime.now()
-		self.is_hidden = False
-		self._hide()
-	def _hide(self, *_):
-		if not c.get_rule("Dock.autohide"): return
-		if self.is_hidden:
-			idle_add(lambda: self.set_property("margin", (0,0,-(self.get_allocation().height - 1),0)))
+		envshell_service.dock_hidden = False
+
+	def hide_dock(self, *_):
+		x, y = self.get_pointer()
+		allocation = self.get_allocation()
+		if y == 0:
+			envshell_service.dock_hidden = False
+			return
+		if not (0 < x < allocation.width and 0 < y < allocation.height + c.get_rule("Dock.gap")):
+			envshell_service.dock_hidden = True
+		else:
+			envshell_service.dock_hidden = False
+
+	def _hide(self, *_, force_visible: bool=False, force_visible_value: bool=False):
+		if not c.get_rule("Dock.autohide") and not force_visible: return
+		if envshell_service.dock_hidden or force_visible_value and force_visible:
+			idle_add(lambda: self.set_property("margin", (0,0,-(self.get_allocation().height),0)))
 			if self.get_orientation() == "vertical":
 				if c.get_rule("Dock.position") == "left":
-					idle_add(lambda: self.set_property("margin", (0,0,0,-(self.get_allocation().width - 1))))
+					idle_add(lambda: self.set_property("margin", (0,0,0,-(self.get_allocation().width))))
 				elif c.get_rule("Dock.position") == "right":
-					idle_add(lambda: self.set_property("margin", (0,-(self.get_allocation().width - 1),0,0)))
-		else: idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5)))
+					idle_add(lambda: self.set_property("margin", (0,-(self.get_allocation().width),0,0)))
+		else: idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else ((c.get_rule("Dock.gap"), )*4)))
 	def update_size(self, *_):
 		envshell_service.dock_width = self.get_allocation().width
 		envshell_service.dock_height = self.get_allocation().height
@@ -266,26 +249,27 @@ class EnvDock(Window):
 			self.dock_box.show_all()
 
 		GLib.idle_add(dock_apps_changed_update, apps)
-	def format_window(self, title, wmclass):
-		return app_name_class.format_app_name(title, wmclass, False)
 	def refresh_apps(self):
 		windows = self.fetch_clients()
-		is_on_empty_workspace = self.fetch_clients_current_workspace() == []
-		if is_on_empty_workspace:
-			self.is_hidden = False
-			self._hide()
 		open_apps = []
 		for window in windows:
 			pid = window["pid"]
 			title = window["title"]
 			address = window["address"]
 			app_name = window["initialClass"] if window["initialClass"] != "" else window["title"]
+			fullscreen = window["fullscreen"]
+			if int(fullscreen) in (1, 2) and self.get_focused_window() == address:
+				self._hide(force_visible=True, force_visible_value=True)
+			if (int(fullscreen) not in (1, 2)) and self.get_focused_window() == address:
+				self._hide(force_visible=True, force_visible_value=False)
 			if not (c.is_window_ignored(wmclass=str(app_name).lower()) or c.is_window_ignored(wmclass=str(app_name)) or c.is_workspace_ignored(id_=window["workspace"]["id"])):
 				focused_address = self.get_focused_window()
 				open_apps.append([app_name, pid, str(title), address, focused_address == address])
 		# sort alphabetically
 		open_apps = sorted(open_apps, key=lambda x: x[0])
 		envshell_service.dock_apps = str(open_apps)
+	def format_window(self, title, wmclass):
+		return app_name_class.format_app_name(title, wmclass, False)
 	def fetch_clients(self):
 		"""Retrieve open windows from Hyprland."""
 		try: return json.loads(self.connection.send_command("j/clients").reply.decode())
@@ -301,3 +285,119 @@ class EnvDock(Window):
 		"""Get the currently focused window's address."""
 		try: return json.loads(self.connection.send_command("j/activewindow").reply.decode()).get("address", "")
 		except json.JSONDecodeError:return ""
+
+class EnvDockHotspot(Window):
+	def __init__(self, dock, **kwargs):
+		super().__init__(
+			name="envdock-hotspot",
+			title="envshell",
+			layer="top",
+			anchor=self.get_pos(),
+			style="background-color: alpha(#f00, 0.1);" if c.get_rule("Dock.debug") else "",
+			size=(768, c.get_rule("Dock.size") * 64),
+			margin=(0, 0, 0, 0),
+			visible=True,
+			style_classes="envdock-hotspot",
+			**kwargs
+		)
+
+		self.dock = dock
+		GtkLayerShell.set_exclusive_zone(self, -1)
+		if self.get_orientation() == "horizontal":
+			self.dock_height = c.get_rule("Dock.size") * 64
+			self.dock_width = 768
+		else:
+			self.dock_height = 768
+			self.dock_width = c.get_rule("Dock.size") * 64
+
+		envshell_service.connect(
+			"dock-width-changed",
+			self.set_width,
+		)
+
+		envshell_service.connect(
+			"dock-height-changed",
+			self.set_height,
+		)
+
+		envshell_service.connect(
+			"dock-hidden-changed",
+			self.do_check_hide,
+		)
+
+		self.connect("enter-notify-event", self.show_dock)
+
+	def show_dock(self, *_):
+		envshell_service.dock_hidden = not envshell_service.dock_hidden
+
+	def do_check_hide(self, *_):
+		if envshell_service.dock_hidden:
+			pos = c.get_rule("Dock.position")
+			full = c.get_rule("Dock.mode") == "full"
+			if not full:
+				if pos == "left":
+					self.set_property("anchor", "left center")
+				elif pos == "right":
+					self.set_property("anchor", "right center")
+				else:
+					self.set_property("anchor", "bottom center")
+			self.set_property("width-request", self.dock_width)
+			self.set_property("height-request", self.dock_height)
+			if self.get_orientation() == "vertical":
+				if c.get_rule("Dock.position") == "left":
+					self.set_property("margin", (0,0,0,-(self.dock_width - 1)))
+				elif c.get_rule("Dock.position") == "right":
+					self.set_property("margin", (0,-(self.dock_width - 1),0,0))
+			else:
+				self.set_property("margin", (0,0,-(self.dock_height),0))
+		else:
+			self.set_property("anchor", self.get_pos())
+			if self.get_orientation() == "horizontal":
+				self.set_property("width-request", int(c.get_rule("Display.resolution").split("x")[0]))
+			else:
+				self.set_property("height-request", int(c.get_rule("Display.resolution").split("x")[1]))
+			if not c.get_rule("Dock.exclusive"):
+				if self.get_orientation() == "vertical":
+					if c.get_rule("Dock.position") == "left":
+						self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,(self.dock_width + c.get_rule("Dock.gap"))))
+					elif c.get_rule("Dock.position") == "right":
+						self.set_property("margin", (-(c.get_rule("Panel.height")),(self.dock_width + c.get_rule("Dock.gap")),0,0))
+				else:
+					self.set_property("margin", (0,0,self.dock_height + c.get_rule("Dock.gap"),0) if c.get_rule("Dock.mode") == "full" else (0,0,self.dock_height + c.get_rule("Dock.gap"),0))
+			else:
+				if self.get_orientation() == "vertical":
+					if c.get_rule("Dock.position") == "left":
+						self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,(self.dock_width + c.get_rule("Dock.gap"))))
+					elif c.get_rule("Dock.position") == "right":
+						self.set_property("margin", (-(c.get_rule("Panel.height")),(self.dock_width + c.get_rule("Dock.gap")),0,0))
+				else:
+					self.set_property("margin", (0,0,self.dock_height + c.get_rule("Dock.gap"),0) if c.get_rule("Dock.mode") == "full" else (0,0,self.dock_height + c.get_rule("Dock.gap"),0))
+
+	def set_height(self, _, height):
+		self.dock_height = height
+		self.set_property("height-request", height)
+
+	def set_width(self, _, width):
+		self.dock_width = width
+		self.set_property("width-request", width)
+
+	def get_pos(self):
+		pos = c.get_rule("Dock.position")
+		full = c.get_rule("Dock.mode") == "full"
+		if full:
+			if pos == "bottom": pos = "bottom left right center"
+			elif pos == "left": pos = "left top bottom center"
+			elif pos == "right": pos = "right top bottom center"
+		else:
+			if pos == "bottom": pos = "bottom center"
+			elif pos == "left": pos = "left top bottom center"
+			elif pos == "right": pos = "right top bottom center"
+		return pos
+
+	def get_orientation(self):
+		pos = c.get_rule("Dock.position")
+		orientation = "horizontal"
+		if pos == "bottom": orientation = "horizontal"
+		elif pos == "left": orientation = "vertical"
+		elif pos == "right": orientation = "vertical"
+		return orientation

@@ -29,7 +29,7 @@ auto-generated = false
 		strength = 0.1
 [Dock]
 	enable = true
-	legacy = true
+	experimental = false
 	magnification = true
 	title.limit = 25
 	exclusive = false
