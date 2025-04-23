@@ -10,8 +10,12 @@
 	border-radius: 19.2px;
 }
 
-#dock-seperator {
-    border-right: 1px solid alpha(#aaa, 0.3);
+#dock-seperator-horizontal {
+    border-right: 1px solid alpha(#aaa, 0.5);
+}
+
+#dock-seperator-vertical {
+    border-bottom: 1px solid alpha(#aaa, 0.5);
 }
 
 .dock-app-button {

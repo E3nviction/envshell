@@ -227,7 +227,10 @@ class EnvDock(Window):
 				self.dock_box.add(app_button)
 
 			if len(apps) != 0:
-				self.dock_box.add(Box(orientation="horizontal", name="dock-seperator", h_expand=True, v_expand=True))
+				if self.get_orientation() == "horizontal":
+					self.dock_box.add(Box(orientation="horizontal", name="dock-seperator-horizontal", h_expand=True, v_expand=True))
+				else:
+					self.dock_box.add(Box(orientation="vertical", name="dock-seperator-vertical", h_expand=True, v_expand=True))
 
 			for app, pid, title, address, active in apps:
 				app = c.get_translation(wmclass=app)
