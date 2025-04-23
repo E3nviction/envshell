@@ -18,7 +18,9 @@ Here are the available options for the **Dock** section:
 | `exclusive`         | Make the dock push away windows                                                          | `Bool`                        | `false`              |
 | `lazy-time`         | How long it takes the dock to disappear (not implemented for legacy dock)                | `Number`                      | `1000`               |
 | `autohide`          | Makes the dock Hide, when not hovered                                                    | Bool`                         | `true`               |
+| `gap` | Space between the screen edge and the dock (-12 is touching the screen)                                             | `Number`                        | `0`               |
 | `show-on-workspace` | Makes the dock show on an empty workspace                                                | `Bool`                        | `true`               |
+| `hide-on-fullscreen` | Makes the dock hide, when in fullscreen                                                | `Bool`                        | `true`               |
 | `mode`              | If mode is "full", then it will expand to edges                                          | `String[center, full]`        | `center`             |
 | `size`              | Icon size of the dock                                                                    | `Float[0.1->3.0]`             | `1`                  |
 | `position`          | The position of the dock, on the screen                                                  | `String[left, right, bottom]` | `bottom`             |

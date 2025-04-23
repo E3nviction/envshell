@@ -16,7 +16,7 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib # type: ignore
+from gi.repository import GLib, GtkLayerShell # type: ignore
 import json
 
 from loguru import logger
@@ -44,7 +44,7 @@ class EnvDock(Window):
 			h_expand=True,
 			v_expand=True,
 			size=(round(c.get_rule("Dock.size") * 64), round(c.get_rule("Dock.size") * 64)),
-			margin=(0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5),
+			margin=(0,0,0,0) if c.get_rule("Dock.mode") == "full" else ((c.get_rule("Dock.gap"), )*4),
 			**kwargs,
 		)
 
@@ -56,7 +56,7 @@ class EnvDock(Window):
 
 		if self.get_orientation() == "horizontal": idle_add(lambda: self.set_property("height-request", round(c.get_rule("Dock.size") * 64)))
 		else: idle_add(lambda: self.set_property("width-request", round(c.get_rule("Dock.size") * 64)))
-		idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5)))
+		idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else ((c.get_rule("Dock.gap"), )*4)))
 		idle_add(lambda: self.set_property("anchor", self.get_pos()))
 
 		envshell_service.connect(
@@ -102,8 +102,11 @@ class EnvDock(Window):
 			"activewindow",
 			"openwindow",
 			"closewindow",
+			"movewindow",
+			"windowtitle",
 			"changefloatingmode",
-			"changeworkspace",
+			"workspace",
+			"fullscreen"
 		):
 			self.connection.connect(f"event::{event}", lambda *_: self.refresh_apps())
 		self.connection.connect("event::workspace", self._hide)
@@ -118,21 +121,21 @@ class EnvDock(Window):
 		if y == 0:
 			envshell_service.dock_hidden = False
 			return
-		if not (0 < x < allocation.width and 0 < y < allocation.height + 5):
+		if not (0 < x < allocation.width and 0 < y < allocation.height + c.get_rule("Dock.gap")):
 			envshell_service.dock_hidden = True
 		else:
 			envshell_service.dock_hidden = False
 
-	def _hide(self, *_):
-		if not c.get_rule("Dock.autohide"): return
-		if envshell_service.dock_hidden:
+	def _hide(self, *_, force_visible: bool=False, force_visible_value: bool=False):
+		if not c.get_rule("Dock.autohide") and not force_visible: return
+		if envshell_service.dock_hidden or force_visible_value and force_visible:
 			idle_add(lambda: self.set_property("margin", (0,0,-(self.get_allocation().height),0)))
 			if self.get_orientation() == "vertical":
 				if c.get_rule("Dock.position") == "left":
 					idle_add(lambda: self.set_property("margin", (0,0,0,-(self.get_allocation().width))))
 				elif c.get_rule("Dock.position") == "right":
 					idle_add(lambda: self.set_property("margin", (0,-(self.get_allocation().width),0,0)))
-		else: idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else (5,5,5,5)))
+		else: idle_add(lambda: self.set_property("margin", (0,0,0,0) if c.get_rule("Dock.mode") == "full" else ((c.get_rule("Dock.gap"), )*4)))
 	def update_size(self, *_):
 		envshell_service.dock_width = self.get_allocation().width
 		envshell_service.dock_height = self.get_allocation().height
@@ -246,8 +249,6 @@ class EnvDock(Window):
 			self.dock_box.show_all()
 
 		GLib.idle_add(dock_apps_changed_update, apps)
-	def format_window(self, title, wmclass):
-		return app_name_class.format_app_name(title, wmclass, False)
 	def refresh_apps(self):
 		windows = self.fetch_clients()
 		open_apps = []
@@ -256,12 +257,19 @@ class EnvDock(Window):
 			title = window["title"]
 			address = window["address"]
 			app_name = window["initialClass"] if window["initialClass"] != "" else window["title"]
+			fullscreen = window["fullscreen"]
+			if int(fullscreen) in (1, 2) and self.get_focused_window() == address:
+				self._hide(force_visible=True, force_visible_value=True)
+			if (int(fullscreen) not in (1, 2)) and self.get_focused_window() == address:
+				self._hide(force_visible=True, force_visible_value=False)
 			if not (c.is_window_ignored(wmclass=str(app_name).lower()) or c.is_window_ignored(wmclass=str(app_name)) or c.is_workspace_ignored(id_=window["workspace"]["id"])):
 				focused_address = self.get_focused_window()
 				open_apps.append([app_name, pid, str(title), address, focused_address == address])
 		# sort alphabetically
 		open_apps = sorted(open_apps, key=lambda x: x[0])
 		envshell_service.dock_apps = str(open_apps)
+	def format_window(self, title, wmclass):
+		return app_name_class.format_app_name(title, wmclass, False)
 	def fetch_clients(self):
 		"""Retrieve open windows from Hyprland."""
 		try: return json.loads(self.connection.send_command("j/clients").reply.decode())
@@ -294,6 +302,7 @@ class EnvDockHotspot(Window):
 		)
 
 		self.dock = dock
+		GtkLayerShell.set_exclusive_zone(self, -1)
 		if self.get_orientation() == "horizontal":
 			self.dock_height = c.get_rule("Dock.size") * 64
 			self.dock_width = 768
@@ -350,13 +359,19 @@ class EnvDockHotspot(Window):
 			if not c.get_rule("Dock.exclusive"):
 				if self.get_orientation() == "vertical":
 					if c.get_rule("Dock.position") == "left":
-						self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,(self.dock_width + 10)))
+						self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,(self.dock_width + c.get_rule("Dock.gap"))))
 					elif c.get_rule("Dock.position") == "right":
-						self.set_property("margin", (-(c.get_rule("Panel.height")),(self.dock_width + 10),0,0))
+						self.set_property("margin", (-(c.get_rule("Panel.height")),(self.dock_width + c.get_rule("Dock.gap")),0,0))
 				else:
-					self.set_property("margin", (0,0,self.dock_height + 5,0) if c.get_rule("Dock.mode") == "full" else (0,0,self.dock_height + 10,0))
+					self.set_property("margin", (0,0,self.dock_height + c.get_rule("Dock.gap"),0) if c.get_rule("Dock.mode") == "full" else (0,0,self.dock_height + c.get_rule("Dock.gap"),0))
 			else:
-				self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,0))
+				if self.get_orientation() == "vertical":
+					if c.get_rule("Dock.position") == "left":
+						self.set_property("margin", (-(c.get_rule("Panel.height")),0,0,(self.dock_width + c.get_rule("Dock.gap"))))
+					elif c.get_rule("Dock.position") == "right":
+						self.set_property("margin", (-(c.get_rule("Panel.height")),(self.dock_width + c.get_rule("Dock.gap")),0,0))
+				else:
+					self.set_property("margin", (0,0,self.dock_height + c.get_rule("Dock.gap"),0) if c.get_rule("Dock.mode") == "full" else (0,0,self.dock_height + c.get_rule("Dock.gap"),0))
 
 	def set_height(self, _, height):
 		self.dock_height = height

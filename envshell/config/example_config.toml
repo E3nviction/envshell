@@ -95,6 +95,12 @@ auto-generated = true
 	lazy-time = 1000 # (ms)
 	# if you want to make the dock hide
 	autohide = true
+	# How much space you want between the screen edge and the dock
+	# -12 would be touching the screen edge
+	gap = 0
+	# Makes the dock hide when using hyprlands fullscreen, be it fullscreen 0 or 1.
+	# This will hide the dock no matter what settings are set
+	hide-on-fullscreen = true
 	# if you want to show the dock on an empty workspace
 	show-on-workspace = true
 	# If you want a dock that expands to the screen edges, or a floating one in the center
