@@ -43,6 +43,9 @@ auto-generated = true
 	enable = true
 [Notifications]
 	enable = true
+	[Notifications.Center]
+		# This is the position of the notifications
+		position = "right" # [left, right]
 [ScreenFilter]
 	# Implemented effects, include:
 	#	- none

@@ -54,7 +54,7 @@ class EnvNotiCenter(Window):
 	):
 		super().__init__(
 			layer="overlay",
-			anchor="top bottom right",
+			anchor=f"top bottom {c.get_rule('Notifications.Center.position')}",
 			title="envshell",
 			exclusivity="none",
 			margin=(0,0,0,0),
