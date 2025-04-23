@@ -2,6 +2,7 @@ import threading
 import time
 import math
 import subprocess
+from widgets.popup_window import PopupWindow
 import gi # type: ignore
 
 from fabric.utils import invoke_repeater
@@ -46,9 +47,9 @@ class EnvNotiCenter(Window):
 	"""Notification Center for envshell"""
 	def __init__(
 		self,
-		transition_type="",
-        transition_duration: int = 400,
-        revealer_name: str | None = None,
+		transition_type="crossfade",
+		transition_duration: int = 400,
+		revealer_name: str | None = None,
 		**kwargs
 	):
 		super().__init__(
@@ -74,32 +75,25 @@ class EnvNotiCenter(Window):
 					label="Notifications",
 				)
 			],
-			**kwargs,
 		)
 
-		envshell_service.connect(
-			"notification-count-changed",
-			self.on_notification_changed,
+		self.revealer = Revealer(
+			child=self.main_box,
+			transition_type="slide-right",
+			transition_duration=transition_duration,
+			name=revealer_name,
 		)
 
-		envshell_service.connect(
-			"clear-all-changed",
-			self.on_notification_changed,
-		)
+		envshell_service.connect("notification-count-changed", self.on_notification_changed)
+		envshell_service.connect("clear-all-changed", self.on_notification_changed)
 
-		envshell_service.connect(
-			"show-notificationcenter-changed",
-			self.toggle_me,
-		)
+		self.show()
+		self.add(self.revealer)
 
-		self.hide()
-
-		self.add(self.main_box)
-
-	def toggle_me(self, _, value):
-		self.pass_through = not bool(value)
-		if bool(value): self.show()
-		else: self.hide()
+	def _set_mousecatcher(self, visible: bool):
+		self.pass_through = not visible
+		if visible: self.revealer.reveal()
+		else: self.revealer.unreveal()
 
 	def on_notification_changed(self, *_):
 		self.main_box.children = [
@@ -140,25 +134,25 @@ class EnvNotiCenter(Window):
 						h_expand=True,
 						v_expand=True,
 					)
-                    .build(
-                        lambda box, _: box.pack_end(
-                            Button(
-                                image=CustomImage(
-                                    icon_name="close-symbolic",
-                                    icon_size=18,
-                                ),
-                                v_align="center",
-                                h_align="end",
+					.build(
+						lambda box, _: box.pack_end(
+							Button(
+								image=CustomImage(
+									icon_name="close-symbolic",
+									icon_size=18,
+								),
+								v_align="center",
+								h_align="end",
 							).build(
 								lambda button, _: button.connect(
 									"clicked",
 									lambda *_, notification_data=notification_data: envshell_service.remove_notification(notification_data["id"]),
 								)),
-                            False,
-                            False,
-                            0,
-                        )
-                    ),
+							False,
+							False,
+							0,
+						)
+					),
 					Label(
 						label=notification_data["body"],
 						line_wrap="word-char",
