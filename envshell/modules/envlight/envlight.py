@@ -7,6 +7,7 @@ import socket
 import subprocess
 import threading
 import time
+from types import EllipsisType
 from urllib.parse import quote
 from fabric import Application
 from fabric.widgets.box import Box
@@ -26,6 +27,7 @@ from styledwidgets.color import alpha
 from fabric.utils import exec_shell_command_async
 from loguru import logger
 from config.c import c
+from widgets.mousecapture import MouseCapture
 from utils.functions import create_socket_signal
 
 class EnvLight(Window):
@@ -42,7 +44,7 @@ class EnvLight(Window):
 			all_visible=False,
 			**kwargs,
 		)
-		self.add_keybinding("Escape", self.toggle)
+		self._mousecapture_parent: MouseCapture | EllipsisType = ...
 		self.set_property("width-request", 400)
 		self._arranger_handler: int = 0
 		self._all_apps = get_desktop_applications()
@@ -108,19 +110,18 @@ class EnvLight(Window):
 				data = json.loads(data)
 				if data.get("command", {}).get("value", "") == "command:toggle envLight":
 					create_socket_signal("envctl.socket", "command", {"value": ""})
-					idle_add(lambda *_: self.toggle(None))
+					idle_add(lambda *_: self._mousecapture_parent.toggle_mousecapture()) # type: ignore
 			except json.JSONDecodeError:
 				logger.error("Failed to decode JSON data from socket")
 			except Exception as e:
 				logger.error(f"An error occurred: {e}")
 			time.sleep(0.1)
-	def toggle(self, b, *_):
+
+	def _set_mousecapture(self, visible: bool):
 		if c.get_rule("EnvLight.clear-search-on-toggle"):
 			self.search_entry.set_text("")
-		if self.get_visible():
-			self.hide()
-		else:
-			self.show_all()
+		self.set_visible(visible)
+		self.pass_through = not visible
 
 	def arrange_viewport(self, query: str = ""):
 		remove_handler(self._arranger_handler) if self._arranger_handler else None
@@ -288,7 +289,7 @@ class EnvLight(Window):
 			}),
 			name="light-suggestion",
 			tooltip_text=extension["tooltip"],
-			on_clicked=lambda *_: (self.launch_app(extension["command"].replace("%s", query)), self.toggle(None)),
+			on_clicked=lambda *_: (self.launch_app(extension["command"].replace("%s", query)), self._mousecapture_parent.toggle_mousecapture()), # type: ignore
 			**kwargs,
 		)
 
@@ -342,7 +343,7 @@ class EnvLight(Window):
 			}),
 			name="light-suggestion",
 			tooltip_text=app.description,
-			on_clicked=lambda *_: (self.launch_app(app.command_line), self.toggle(None)),
+			on_clicked=lambda *_: (self.launch_app(app.command_line), self._mousecapture_parent.toggle_mousecapture()), # type: ignore
 			**kwargs,
 		)
 	def launch_app(self, app: str | None):
