@@ -27,6 +27,7 @@ from utils.roam import envshell_service, audio_service
 from utils.functions import app_name_class, create_socket_signal, get_socket_signal
 from widgets.envdropdown import EnvDropdown, dropdown_divider
 from widgets.osd_widget import OsdWindow
+from widgets.mousecatcher import DropDownMouseCatcher
 
 from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
@@ -35,7 +36,6 @@ from styledwidgets.styled import styler, style_dict
 from styledwidgets.agents import margins, paddings, transitions, colors, shadows, borderradius, textsize
 from styledwidgets.types import px, rem
 from styledwidgets.color import alpha, hex
-
 
 from modules.envlight.envlight import EnvLight
 
@@ -101,17 +101,17 @@ class ItemWidget:
 				options.append(dropdown_option(self, i["label"], i.get("keybind", ""), on_click=i.get("on-clicked", "")))
 			if i.get("divider") is not None:
 				options.append(dropdown_divider(""))
-		self.menu = EnvDropdown(
+		self.menu = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
 			dropdown_id=self.id,
 			parent=self.parent,
 			dropdown_children=options,
-		)
+		))
 		self.button = Button(
 			image=Svg(icon, size=icon_size),
 			style_classes="button",
-			on_clicked=lambda b: self.menu.toggle_dropdown(b, self.button),
+			on_clicked=lambda b: self.menu.toggle_mousecatcher(),
 		)
-		self.menu.set_pointing_to(self.button)
+		self.menu.child_window.set_pointing_to(self.button)
 
 	def build(self):
 		return self.button
@@ -152,14 +152,19 @@ class EnvPanel(Window):
 			on_clicked=toggle_notification_panel,
 			style_classes="button"
 		)
-		self.envsh_button_dropdown = Dropdown(parent=self)
+		self.envsh_button_dropdown = DropDownMouseCatcher(layer="top", child_window=Dropdown(parent=self))
 
 		self.control_center = EnvControlCenter()
 		self.control_center_image = Svg(get_relative_path("../../assets/svgs/control-center.svg"), name="control-center-image")
 		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
 
-		self.envsh_button = Button(label=c.get_rule("Panel.icon"), name="envsh-button", style_classes="button", on_clicked=lambda b: self.envsh_button_dropdown.toggle_dropdown(b, self.envsh_button))
-		self.envsh_button_dropdown.set_pointing_to(self.envsh_button)
+		self.envsh_button = Button(
+			label=c.get_rule("Panel.icon"),
+			name="envsh-button",
+			style_classes="button",
+			on_clicked=lambda b: self.envsh_button_dropdown.toggle_mousecatcher()
+		)
+		self.envsh_button_dropdown.child_window.set_pointing_to(self.envsh_button)
 		self.power_button_image = Svg(get_relative_path("../../assets/svgs/battery.svg"), name="control-center-image")
 		self.power_button = Button(image=self.power_button_image, name="power-button", style_classes="button")
 
@@ -175,13 +180,13 @@ class EnvPanel(Window):
 		self.bluetooth_button_image = Svg(get_relative_path("../../assets/svgs/bluetooth-clear.svg"), size=24, name="bluetooth-button-image")
 
 		self.global_title_menu_about = dropdown_option(self, f"About {envshell_service.current_active_app_name}")
-		self.global_menu_title = EnvDropdown(
+		self.global_menu_title = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
 			dropdown_id="global-menu-title",
 			parent=self,
 			dropdown_children=[
 				self.global_title_menu_about
 			]
-		)
+		))
 
 		self.notch_spot = Box(
 			name="notch-spot",
@@ -296,15 +301,15 @@ class EnvPanel(Window):
 
 		self.global_menu_file   = None
 		self.global_menu_edit   = None
-		self.global_menu_view   = EnvDropdown(
+		self.global_menu_view   = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
 			dropdown_id="global-menu-view",
 			parent=self,
 			dropdown_children=[
 				dropdown_option(self, "Enter Full Screen", on_click="hyprctl dispatch fullscreen"),
 			]
-		)
+		))
 		self.global_menu_go     = None
-		self.global_menu_window = EnvDropdown(
+		self.global_menu_window = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
 			dropdown_id="global-menu-window",
 			parent=self,
 			dropdown_children=[
@@ -321,9 +326,9 @@ class EnvPanel(Window):
 				dropdown_option(self, "Group", on_click="hyprctl dispatch togglegroup"),
 				dropdown_option(self, "Pin", on_clicked=lambda b: subprocess.run("bash ~/.config/scripts/winpin.sh", shell=True)),
 			]
-		)
+		))
 
-		self.global_menu_help   = EnvDropdown(
+		self.global_menu_help   = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
 			dropdown_id="global-menu-help",
 			parent=self,
 			dropdown_children=[
@@ -331,40 +336,40 @@ class EnvPanel(Window):
 				dropdown_divider("---------------------"),
 				dropdown_option(self, "nixOS Help", on_clicked=lambda b: subprocess.run("xdg-open https://wiki.nixos.org/wiki/NixOS_Wiki", shell=True)),
 			]
-		)
-		self.bluetooth_menu = EnvDropdown(
+		))
+		self.bluetooth_menu = DropDownMouseCatcher(layer="top", child_window=EnvDropdown(
 			dropdown_id="bluetooth-menu",
 			parent=self,
 			dropdown_children=[
 				dropdown_option(self, "Toggle Bluetooth", on_clicked=lambda b: exec_shell_command_async(f"bluetoothctl power {'off' if envshell_service.bluetooth == 'On' else 'on'}")),
 			]
-		)
+		))
 
 		envshell_service.connect("current-active-app-name-changed", lambda _, value: self.global_title_menu_about.set_property("label", f"About {value}"))
 		self.global_menu_button_title = Button(
 			child=ActiveWindow(formatter=FormattedString("{ format_window('None', 'None') if win_title == '' and win_class == '' else format_window(win_title, win_class) }", format_window=self.format_window)),
 			name="global-title-button",
 			style_classes="button",
-			on_clicked=lambda b: self.global_menu_title.toggle_dropdown(b, self.global_menu_button_title),
+			on_clicked=lambda b: self.global_menu_title.toggle_mousecatcher(),
 		)
-		self.global_menu_title.set_pointing_to(self.global_menu_button_title)
+		self.global_menu_title.child_window.set_pointing_to(self.global_menu_button_title)
 
 		self.global_menu_button_file   = Button(label="File",   name="global-menu-button-file",   style_classes="button")
 		self.global_menu_button_edit   = Button(label="Edit",   name="global-menu-button-edit",   style_classes="button")
-		self.global_menu_button_view   = Button(label="View",   name="global-menu-button-view",   style_classes="button", on_clicked=lambda b: self.global_menu_view.toggle_dropdown(b, self.global_menu_button_view))
-		self.global_menu_view.set_pointing_to(self.global_menu_button_view)
+		self.global_menu_button_view   = Button(label="View",   name="global-menu-button-view",   style_classes="button", on_clicked=lambda b: self.global_menu_view.toggle_mousecatcher())
+		self.global_menu_view.child_window.set_pointing_to(self.global_menu_button_view)
 		self.global_menu_button_go     = Button(label="Go",     name="global-menu-button-go",     style_classes="button")
-		self.global_menu_button_window = Button(label="Window", name="global-menu-button-window", style_classes="button", on_clicked=lambda b: self.global_menu_window.toggle_dropdown(b, self.global_menu_button_window))
-		self.global_menu_window.set_pointing_to(self.global_menu_button_window)
-		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_dropdown(b, self.global_menu_button_help))
-		self.global_menu_help.set_pointing_to(self.global_menu_button_help)
+		self.global_menu_button_window = Button(label="Window", name="global-menu-button-window", style_classes="button", on_clicked=lambda b: self.global_menu_window.toggle_mousecatcher())
+		self.global_menu_window.child_window.set_pointing_to(self.global_menu_button_window)
+		self.global_menu_button_help   = Button(label="Help",   name="global-menu-button-help",   style_classes="button", on_clicked=lambda b: self.global_menu_help.toggle_mousecatcher())
+		self.global_menu_help.child_window.set_pointing_to(self.global_menu_button_help)
 		self.bluetooth_button = Button(
 			image=self.bluetooth_button_image,
 			name="bluetooth-button",
 			style_classes="button",
-			on_clicked=lambda b: self.bluetooth_menu.toggle_dropdown(b, self.bluetooth_button)
+			on_clicked=lambda b: self.bluetooth_menu.toggle_mousecatcher()
 		)
-		self.bluetooth_menu.set_pointing_to(self.bluetooth_button)
+		self.bluetooth_menu.child_window.set_pointing_to(self.bluetooth_button)
 
 		self.systray = SystemTray(
 			name="system-tray",
@@ -437,22 +442,16 @@ class EnvPanel(Window):
 
 	def changed_dropdown(self, _, dropdown_id):
 		self.hide_dropdowns(_, True)
-		if dropdown_id == "os-menu":
-			self.envsh_button.add_style_class("active")
-		if dropdown_id == "global-menu-edit":
-			self.global_menu_button_edit.add_style_class("active")
-		if dropdown_id == "global-menu-file":
-			self.global_menu_button_file.add_style_class("active")
-		if dropdown_id == "global-menu-go":
-			self.global_menu_button_go.add_style_class("active")
-		if dropdown_id == "global-menu-help":
-			self.global_menu_button_help.add_style_class("active")
-		if dropdown_id == "global-menu-title":
-			self.global_menu_button_title.add_style_class("active")
-		if dropdown_id == "global-menu-view":
-			self.global_menu_button_view.add_style_class("active")
-		if dropdown_id == "global-menu-window":
-			self.global_menu_button_window.add_style_class("active")
+		match dropdown_id:
+			case "os-menu": self.envsh_button.add_style_class("active")
+			case "global-menu-edit": self.global_menu_button_edit.add_style_class("active")
+			case "global-menu-file": self.global_menu_button_file.add_style_class("active")
+			case "global-menu-go": self.global_menu_button_go.add_style_class("active")
+			case "global-menu-help": self.global_menu_button_help.add_style_class("active")
+			case "global-menu-title": self.global_menu_button_title.add_style_class("active")
+			case "global-menu-view": self.global_menu_button_view.add_style_class("active")
+			case "global-menu-window": self.global_menu_button_window.add_style_class("active")
+			case _: pass
 
 	def toggle_systray(self, b):
 		if "hidden" in self.systray.style_classes:
