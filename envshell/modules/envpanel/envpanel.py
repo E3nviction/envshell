@@ -27,7 +27,7 @@ from utils.roam import envshell_service, audio_service
 from utils.functions import app_name_class, create_socket_signal, get_socket_signal
 from widgets.envdropdown import EnvDropdown, dropdown_divider
 from widgets.osd_widget import OsdWindow
-from widgets.mousecatcher import DropDownMouseCatcher
+from widgets.mousecatcher import DropDownMouseCatcher, MouseCatcher
 
 from modules.envcontrolcenter.envcontrolcenter import EnvControlCenter
 from .about import About
@@ -154,9 +154,9 @@ class EnvPanel(Window):
 		)
 		self.envsh_button_dropdown = DropDownMouseCatcher(layer="top", child_window=Dropdown(parent=self))
 
-		self.control_center = EnvControlCenter()
+		self.control_center = MouseCatcher(layer="top", child_window=EnvControlCenter())
 		self.control_center_image = Svg(get_relative_path("../../assets/svgs/control-center.svg"), name="control-center-image")
-		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_cc)
+		self.control_center_button = Button(image=self.control_center_image, name="control-center-button", style_classes="button", on_clicked=self.control_center.toggle_mousecatcher)
 
 		self.envsh_button = Button(
 			label=c.get_rule("Panel.icon"),

@@ -165,10 +165,6 @@ class EnvControlCenter(Window):
 
 		self.children = self.center_box
 
-		self.add_keybinding("Escape", self.toggle_cc)
-		self.grab_focus()
-		self.keyboard_mode = "exclusive"
-
 		self.bluetooth_fabricator = Fabricator(
 			interval=5000,
 			default_value=False,
@@ -200,12 +196,10 @@ class EnvControlCenter(Window):
 		idle_add(lambda *_: self.set_children(self.center_box))
 		self.has_bluetooth_open = False
 
-	def toggle_cc(self, button, *_):
-		if self.is_visible():
-			self.set_visible(False)
+	def _set_mousecatcher(self, visible: bool):
+		self.set_visible(visible)
+		if not visible:
 			self.close_bluetooth()
-		else:
-			self.set_visible(True)
 	def volume_changed(self, _, ):
 		GLib.idle_add(lambda: self.volume_scale.set_value(int(audio_service.speaker.volume))) # type: ignore
 	def wlan_changed(self, _, wlan):
