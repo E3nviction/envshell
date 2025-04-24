@@ -92,10 +92,10 @@ def load_default_config():
         config = default_config
         c._private_config = config
 
-def load_config_file():
+def load_config_file(verbose: bool=True, verbose_extensions: bool=False) -> None:
     global default_config
     global config
-    logger.info("[Main] Applying Config")
+    if verbose: logger.info("[Main] Applying Config")
     try:
         with open(os.path.join(config_location, "envshell", "config.toml"), "rb") as f:
             config = tomllib.load(f)
@@ -128,7 +128,7 @@ def load_config_file():
                     for f in os.listdir(spec):
                         if f.endswith(".ext"):
                             exts[(f.replace(".ext", ""))] = os.path.join(spec, f)
-                            logger.info(f"Loading extension: {f}")
+                            if verbose_extensions: logger.info(f"Loading extension: {f}")
                 if ext.startswith("extension://"):
                     # remove the prefix
                     ext = ext.replace("extension://", "")
@@ -138,7 +138,7 @@ def load_config_file():
                         spec = ext
                     # load file
                     exts[(ext)] = spec
-                    logger.info(f"Loading extension: {ext}")
+                    if verbose_extensions:logger.info(f"Loading extension: {ext}")
             for ext in exts:
                 spec = exts[ext]
                 try:
@@ -148,12 +148,12 @@ def load_config_file():
                     config = write_config(extension_config, config)
                     load_config(config)
                     c._private_config = config
-                    logger.success(f"Loaded extension: {ext}")
+                    if verbose_extensions:logger.success(f"Loaded extension: {ext}")
                 except Exception as e:
-                    logger.error(f"Failed to load extension: {ext}")
-                    logger.error(f" Error: {e}")
+                    if verbose_extensions: logger.error(f"Failed to load extension: {ext}")
+                    if verbose_extensions: logger.error(f" Error: {e}")
     except:
-        logger.warning("Could not find a config file, using default")
+        if verbose: logger.warning("Could not find a config file, using default")
     json.dump(config, open(get_relative_path("latest_compiled_config.json"), "w"), indent=4)
 
 load_default_config()
@@ -175,7 +175,7 @@ if not os.path.exists(os.path.join(config_location, "envshell", "envctl.toml")):
         f.write("")
 
 config_file_monitor = monitor_file(os.path.join(config_location, "envshell", "config.toml"))
-config_file_monitor.connect("changed", lambda *_: load_config_file())
+config_file_monitor.connect("changed", lambda *_: load_config_file(verbose=False))
 
 config_file_monitor_ctl = monitor_file(os.path.join(config_location, "envshell", "envctl.toml"))
-config_file_monitor_ctl.connect("changed", lambda *_: load_config_file())
+config_file_monitor_ctl.connect("changed", lambda *_: load_config_file(verbose=False))

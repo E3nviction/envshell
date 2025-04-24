@@ -26,7 +26,7 @@ from styledwidgets.color import alpha
 
 from fabric.utils import exec_shell_command_async
 from loguru import logger
-from config.c import c
+from config.c import c, load_config_file
 from widgets.mousecapture import MouseCapture
 from utils.functions import create_socket_signal
 
@@ -44,6 +44,9 @@ class EnvLight(Window):
 			all_visible=False,
 			**kwargs,
 		)
+
+		load_config_file(verbose_extensions=True)
+
 		self._mousecapture_parent: MouseCapture | EllipsisType = ...
 		self.set_property("width-request", 400)
 		self._arranger_handler: int = 0
@@ -120,6 +123,7 @@ class EnvLight(Window):
 	def _set_mousecapture(self, visible: bool):
 		if c.get_rule("EnvLight.clear-search-on-toggle"):
 			self.search_entry.set_text("")
+		self.keyboard_mode = "exclusive" if visible else "none"
 		self.set_visible(visible)
 		self.pass_through = not visible
 
