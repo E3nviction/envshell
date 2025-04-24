@@ -51,19 +51,15 @@ class MouseCapture(Window):
 		self.children = [self.event_box]
 
 	def show_child_window(self, widget: Widget, event: Any) -> None:
-		self.child_window._set_mousecapture(True)
-		self.set_visible(True)
-		self.pass_through = False
+		self.set_child_window_visible(True)
 
 	def hide_child_window(self, widget: Widget, event: Any) -> None:
-		self.child_window._set_mousecapture(False)
-		self.set_visible(False)
-		self.pass_through = True
+		self.set_child_window_visible(False)
 
-	def dropdowns_hide_changed(self, widget: Widget, event: Any) -> None:
-		self.child_window._set_mousecapture(False)
-		self.set_visible(False)
-		self.pass_through = True
+	def set_child_window_visible(self, visible: bool) -> None:
+		self.child_window._set_mousecapture(visible)
+		self.set_visible(visible)
+		self.pass_through = not visible
 
 	def toggle_mousecapture(self, *_) -> None:
 		self.set_visible(not self.is_visible())
@@ -93,4 +89,4 @@ class DropDownMouseCapture(MouseCapture):
 
 	def dropdowns_hide_changed(self, widget: Widget, event: Any) -> None:
 		if envshell_service.current_dropdown == self.child_window.id: return
-		return super().dropdowns_hide_changed(widget, event)
+		return super().hide_child_window(widget, event)
