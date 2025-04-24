@@ -99,7 +99,13 @@ class Player(Box):
 			h_expand=True,
 		)
 
-		self.scale.connect("value-changed", lambda *_: self.scale.set_value(int(self.data["position"]) * 100 / int(self.data["duration"])))
+		self.scale.connect(
+			"value-changed",
+			lambda *_:
+				self.scale.set_value(
+					int(self.data["position"]) * 100 / int(self.data["duration"]) if int(self.data["duration"]) > 0 else 0
+				)
+		)
 
 		self.controls = CenterBox(
 			name="left-player-controls",
