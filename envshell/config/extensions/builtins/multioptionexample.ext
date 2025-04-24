@@ -1,0 +1,9 @@
+[EnvLight.extensions.builtins.multioptionexample]
+	name = "MultiOptionExample"
+	tooltip = "Think of the Possibilities"
+	condition = "python ./builtins/multioptionexample.py '%s'"
+	condition-is = "true"
+	ignore-char-limit = true
+	wrap-mode = "char"
+	type = "multi-options"
+	command = "python ./builtins/multioptionexample.py"
