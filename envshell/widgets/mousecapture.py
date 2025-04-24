@@ -37,8 +37,8 @@ class MouseCapture(Window):
 
 		self.child_window = child_window
 
-		if hasattr(self.child_window, "_mousecapture_parent"):
-			self.child_window._mousecapture_parent = self
+		if hasattr(self.child_window, "_init_mousecapture"):
+			self.child_window._init_mousecapture(self)
 
 		# when clicking on the mousecapture, hide the child window
 		self.event_box = EventBox(
