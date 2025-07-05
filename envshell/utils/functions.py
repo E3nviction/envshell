@@ -7,6 +7,7 @@ import subprocess
 import tomllib
 import shutil
 from typing import Dict, List, Literal
+from fabric import Application
 
 import gi # type: ignore
 from fabric.utils import exec_shell_command, exec_shell_command_async, get_relative_path
@@ -20,9 +21,10 @@ from utils.roam import envshell_service
 
 from config.c import c
 
-def apply_style(app):
+def apply_style(app: Application):
 	logger.info("[Main] Applying CSS")
 	app.set_stylesheet_from_file(get_relative_path("../envshell.css"))
+	app.set_stylesheet_from_file(os.path.expanduser("~/.config/envshell/style.css"), append=True)
 
 def set_socket(value):
 	try:
@@ -101,6 +103,28 @@ class AppName:
 					desktop_app_name = line.split("=")[1].strip()
 					break
 		return desktop_app_name
+
+	def get_app_exec(self, wmclass, format_=False):
+		desktop_file = ""
+		for f in self.files:
+			if f.startswith(wmclass + ".desktop"): desktop_file = f
+
+		desktop_app_name = wmclass
+
+		if desktop_file == "": return wmclass
+		with open(os.path.join(self.path, desktop_file), "r") as f:
+			lines = f.readlines()
+			for line in lines:
+				if line.startswith("Exec="):
+					desktop_app_name = line.split("=")[1].strip()
+					break
+		return desktop_app_name
+
+	def get_desktop_file(self, wmclass):
+		desktop_file = ""
+		for f in self.files:
+			if f.startswith(wmclass + ".desktop"): desktop_file = f
+		return desktop_file
 
 	def format_app_name(self, title, wmclass, update=False):
 		name = wmclass
