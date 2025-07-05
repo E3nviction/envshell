@@ -17,6 +17,7 @@ from widgets.systrayv2 import SystemTray
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import FormattedString, truncate
+from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from gi.repository import GLib, Gtk, GdkPixbuf # type: ignore
 
@@ -145,6 +146,8 @@ class EnvPanel(Window):
 
 		def toggle_notification_panel(*_):
 			envshell_service.show_notificationcenter = not envshell_service.show_notificationcenter
+
+		self.hidden = False
 
 		self.envlight = MouseCapture(layer="top", child_window=EnvLight())
 		self.date_time = Button(
@@ -424,6 +427,28 @@ class EnvPanel(Window):
 			center_children=[self.notch_spot],
 			end_children=right_widgets if c.get_rule("Panel.Widgets.right.enable") else [],
 		)
+
+		self.conn = get_hyprland_connection()
+
+		GLib.timeout_add(16, self.poll_mouse)
+
+	def poll_mouse(self):
+		self.cursor_pos = [int(x) for x in self.conn.send_command("/cursorpos").reply.split(b", ")]
+		self.toggle_panel()
+		return True  # keep repeating
+
+	def toggle_panel(self, show=None):
+		if not c.get_rule("Panel.autohide") == True: return
+		if self.hidden:
+			if self.cursor_pos[1] < 2: self.hidden = False
+		else:
+			if self.cursor_pos[1] > self.get_allocation().height + 10: self.hidden = True
+		if self.hidden:
+			if c.get_rule("Panel.mode") == "floating": idle_add(self.set_property, "margin", (-(self.get_allocation().height - 1),5,5,5))
+			elif c.get_rule("Panel.mode") == "normal": idle_add(self.set_property, "margin", (-(self.get_allocation().height - 1),0,0,0))
+		else:
+			if c.get_rule("Panel.mode") == "floating": idle_add(self.set_property, "margin", (5,5,5,5))
+			elif c.get_rule("Panel.mode") == "normal": idle_add(self.set_property, "margin", (0,0,0,0))
 
 	def wlan_changed(self, _, wlan):
 		self.wifi_button_image.set_from_file(get_relative_path("../../assets/svgs/wifi-clear.svg" if wlan != "No Connection" else "../../assets/svgs/wifi-off-clear.svg"))
