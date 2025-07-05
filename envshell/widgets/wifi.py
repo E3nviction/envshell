@@ -107,8 +107,11 @@ class WifiMenu(Gtk.Box):
 
         header_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
+        # set min size for self
+        self.set_size_request(248, 400)
+
         title_label = Gtk.Label()
-        title_label.set_markup("<b>wi-fi</b>")
+        title_label.set_markup("<b>Wi-Fi</b>")
         title_label.set_xalign(0)
         header_hbox.pack_start(title_label, True, True, 0)
 
@@ -321,7 +324,6 @@ class WifiMenu(Gtk.Box):
         else:
             # Might just need a password
             password, remember = self._show_password_dialog(selected.network_data)
-            logger.info("hi", password, remember)
             result = await asyncio.to_thread(connect_network, ssid=ssid, password=password, remember=remember)
             if result:
                 self.update_ssid()
