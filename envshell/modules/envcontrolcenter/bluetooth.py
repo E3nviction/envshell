@@ -109,7 +109,7 @@ class BluetoohConnections(Box):
         self.children = [
             CenterBox(start_children=self.title, end_children=self.toggle_button, name="bluetooth-widget-top"),
             Label("Devices", h_align="start", name="devices-title"),
-            ScrolledWindow(min_content_size=(300, 400), max_content_size=(300, 800), child=self.device_box, overlay_scroll=True),
+            ScrolledWindow(min_content_size=(232, 400), max_content_size=(232, 800), child=self.device_box, overlay_scroll=True),
         ]
         self.client.notify("scanning")
         self.client.notify("enabled")
