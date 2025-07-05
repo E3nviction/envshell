@@ -1,5 +1,6 @@
 import threading
 import time
+import toml
 import sys
 import os
 
@@ -8,6 +9,7 @@ from datetime import datetime
 from fabric import Application, Fabricator
 from fabric.widgets.button import Button
 from fabric.widgets.svg import Svg
+from fabric.widgets.overlay import Overlay
 from fabric.widgets.image import Image
 from fabric.widgets.label import Label
 from fabric.widgets.box import Box
@@ -16,8 +18,10 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.utils.helpers import exec_shell_command_async, get_relative_path
 from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.widgets.wayland import WaylandWindow as Window
-from gi.repository import GLib, GtkLayerShell # type: ignore
+from gi.repository import GLib, GtkLayerShell, Gtk, Gdk # type: ignore
 import json
+
+from widgets.customimage import HoverSVG
 
 from loguru import logger
 
@@ -31,6 +35,30 @@ from utils.icon_resolver import IconResolver
 
 global envshell_service
 from utils.roam import envshell_service
+
+def update_toml_value(file_path, toml_path, value):
+	try:
+		with open(file_path, "r") as f:
+			data = toml.load(f)
+	except FileNotFoundError:
+		logger.error(f"Error: File '{file_path}' not found.")
+		return
+	except toml.TomlDecodeError:
+		logger.error(f"Error: Invalid TOML syntax in '{file_path}'.")
+		return
+
+	toml_path = toml_path.replace("\\.", "₏")
+	keys = toml_path.split(".")
+	for i, key in enumerate(keys):
+		keys[i] = key.replace("₏", ".")
+	temp = data
+	for key in keys[:-1]:
+		temp = temp.setdefault(key, {})
+
+	temp[keys[-1]] = value
+
+	with open(file_path, "w") as f:
+		toml.dump(data, f)
 
 class EnvDock(Window):
 	"""Hackable dock for envshell."""
@@ -73,6 +101,7 @@ class EnvDock(Window):
 			""",
 			h_expand=True,
 			v_expand=True,
+			size=(round(c.get_rule("Dock.size") * 64), round(c.get_rule("Dock.size") * 32)),
 			h_align="fill" if c.get_rule("Dock.mode") == "full" else "center",
 			v_align="fill" if c.get_rule("Dock.mode") == "full" else "center",
 		)
@@ -165,7 +194,7 @@ class EnvDock(Window):
 		exec_shell_command_async(f"hyprctl dispatch exec {c.get_rule("Dock.pinned")[b.get_name()]}")
 	def dock_apps_changed(self, apps):
 		"""Update UI safely in the main thread."""
-		def create_button(icon, name, active, running, on_click, tooltip):
+		def create_button(icon, name, active, running, on_click, tooltip, class_name, pinned):
 			button = Button(
 				child=icon,
 				name=name,
@@ -175,6 +204,7 @@ class EnvDock(Window):
 				on_clicked=on_click,
 				tooltip_text=tooltip,
 			)
+			button.connect("button-press-event", lambda b, e, c, p: self.show_context_menu(b, e, c, p), class_name, pinned)
 			app_button = None
 			if running:
 				app_button = Box(orientation="vertical", children=[
@@ -195,7 +225,12 @@ class EnvDock(Window):
 
 			# Here we sort out the pinned apps, that are running, and move them to running_pinned_apps
 			running_pinned_apps = [app for app in apps if app[0].casefold() in [p.casefold() for p in c.get_rule("Dock.pinned")]]
-			apps = [app for app in apps if app[0].casefold() not in [p.casefold() for p in c.get_rule("Dock.pinned")]]
+			apps = [
+				app
+				for app in apps
+				if app[0].casefold() not in [p.casefold() for p in c.get_rule("Dock.pinned")] or
+				c.get_rule("Dock.pinned").get(app[0].casefold()) == "None"
+			]
 
 			# enrichen pinned apps with apps
 			for p in c.get_rule("Dock.pinned"):
@@ -211,10 +246,14 @@ class EnvDock(Window):
 
 			for app_ in pinned_apps:
 				app, pid, title, address, active, running = pinned_apps[app_]
-				svg = Image(
-					pixbuf=self.icon_resolver.get_icon_pixbuf(c.get_translation(wmclass=app), round(c.get_rule("Dock.size") * 32)),
+				# check if command is none
+				if c.get_rule("Dock.pinned")[app_] in ("None", None):
+					continue
+				svg = HoverSVG(
+					pixbuf=self.icon_resolver.get_icon_pixbuf(c.get_translation(wmclass=app), 1000),
 					size=(round(c.get_rule("Dock.size") * 32)),
-					name="dock-app-icon"
+					hover_size=(round(c.get_rule("Dock.size") * 32)),
+					duration=0.15
 				)
 				app_button = create_button(
 					svg,
@@ -222,7 +261,9 @@ class EnvDock(Window):
 					active,
 					running,
 					self.focus_app if running else self.launch_app,
-					self.format_window(wmclass=app, title=title)
+					self.format_window(wmclass=app, title=title),
+					class_name=app,
+					pinned=True
 				)
 				self.dock_box.add(app_button)
 
@@ -234,24 +275,55 @@ class EnvDock(Window):
 
 			for app, pid, title, address, active in apps:
 				app = c.get_translation(wmclass=app)
-				svg = Image(
-					pixbuf=self.icon_resolver.get_icon_pixbuf(app, round(c.get_rule("Dock.size") * 32)),
+				svg = HoverSVG(
+					pixbuf=self.icon_resolver.get_icon_pixbuf(
+						app,
+						1000
+					),
 					size=(round(c.get_rule("Dock.size") * 32)),
+					hover_size=(round(c.get_rule("Dock.size") * 32)),
+					duration=0.15,
 					name="dock-app-icon"
 				)
-				app = self.format_window(wmclass=app, title=title)
+
 				app_button = create_button(
 					svg,
 					address,
 					active,
 					True,
 					self.focus_app,
-					f"{app} ({f"{title[:c.get_rule('Dock.title.limit')]}..."})"
+					f"{self.format_window(wmclass=app, title=title)} ({f"{title[:c.get_rule('Dock.title.limit')]}..."})",
+					class_name=app,
+					pinned=False
 				)
 				self.dock_box.add(app_button)
 			self.dock_box.show_all()
 
 		GLib.idle_add(dock_apps_changed_update, apps)
+	def show_context_menu(self, button, event, class_name, pinned):
+		# hide dock
+		if event.button == 3:
+			menu = Gtk.Menu()
+			if not pinned:
+				connect_item = Gtk.MenuItem(label="Pin to dock")
+				connect_item.connect("activate", lambda *_: self.pin_app(class_name))
+				menu.append(connect_item)
+			else:
+				connect_item = Gtk.MenuItem(label="Unpin from dock")
+				connect_item.connect("activate", lambda *_: self.unpin_app(class_name))
+				menu.append(connect_item)
+
+			menu.show_all()
+			menu.popup_at_pointer(event)
+	def pin_app(self, app):
+		envshell_service.dock_hidden = True
+		app_class = c.get_translation(wmclass=app)
+		cmd = app_name_class.get_app_exec(app_class)
+		update_toml_value(os.path.expanduser("~/.config/envshell/envctl.toml"), f"Dock.pinned.{app_class.replace('.', '\\.')}", cmd)
+	def unpin_app(self, app):
+		envshell_service.dock_hidden = True
+		app_class = c.get_translation(wmclass=app)
+		update_toml_value(os.path.expanduser("~/.config/envshell/envctl.toml"), f"Dock.pinned.{app_class.replace('.', '\\.')}", "None")
 	def refresh_apps(self):
 		windows = self.fetch_clients()
 		open_apps = []
