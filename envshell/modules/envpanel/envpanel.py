@@ -122,7 +122,7 @@ class EnvPanel(Window):
 	def __init__(self, **kwargs):
 		super().__init__(
 			layer="top",
-			title="envshell",
+			title="envshell-noblur",
 			anchor=self.get_pos(),
 			exclusivity="auto",
 			margin=(0,0,0,0),
@@ -130,8 +130,8 @@ class EnvPanel(Window):
 			style_classes="",
 			style=f"""
 				border-radius: {10 if c.get_rule("Panel.mode") == "floating" else 0}px;
-				background-color: {"alpha(#010101, 0.1)" if c.get_rule("Panel.transparent") and c.get_rule("General.transparency") else "#222"};
-				border-bottom: 1px solid {"alpha(#010101, 0.025)" if c.get_rule("Panel.transparent") and c.get_rule("General.transparency") else "#333"};
+				background-color: {"alpha(#010101, 0)" if c.get_rule("Panel.transparent") and c.get_rule("General.transparency") else "#222"};
+				border-bottom: 1px solid {"alpha(#010101, 0)" if c.get_rule("Panel.transparent") and c.get_rule("General.transparency") else "#333"};
 			""",
 			size=(int(c.get_rule("Display.resolution").split("x")[0]), int(c.get_rule("Panel.height"))),
 			**kwargs,

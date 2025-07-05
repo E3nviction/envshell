@@ -4,7 +4,7 @@ from styledwidgets.types import rem, px
 
 button_style = style_dict(
 	background_color=colors.gray.five,
-	border_radius=rem(.75),
+	border_radius=rem(1.2),
 	padding=rem(.5),
 	transition=transitions.fastest,
 )

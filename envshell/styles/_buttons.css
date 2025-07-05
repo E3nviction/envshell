@@ -1,14 +1,15 @@
 .button {
-	border-radius: 5px;
-	padding: 0 5px;
-	margin: 0 2.5px;
+	border-radius: 15px;
+	padding: 0px 10px;
+	margin: 3px -2.5px;
+	min-width: 30px;
 	background: radial-gradient(alpha(#aaa, 0.0) 0%, transparent, transparent);
 	transition: all 100ms ease-in-out;
 }
 
 .button.active,
 .button:hover {
-	background: radial-gradient(alpha(#aaa, 0.2) 100%, transparent, transparent);
+	background: alpha(#fff, 0.2);
 }
 
 /* EnvSH Button */
