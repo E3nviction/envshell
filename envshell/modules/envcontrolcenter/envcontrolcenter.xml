@@ -2,15 +2,7 @@
     <BoxV h_expand="true" name="control-center-widgets">
         <BoxH name="top-widget" h_expand="true">
             <BoxV name="wb-widget" style_classes="menu" spacing="5">
-                <Button name="wifi-widget">
-                    <BoxH>
-                        <Ref>self.wlan_widget</Ref>
-                        <BoxV name="wifi-widget-info">
-                            <Label label="Wi-Fi" style_classes="title ct" h_align="start"/>
-                            <Ref>self.wlan_label</Ref>
-                        </BoxV>
-                    </BoxH>
-                </Button>
+                <Ref>self.wlan_widget</Ref>
                 <Ref>self.bluetooth_widget</Ref>
             </BoxV>
             <BoxH name="dnd-widget" style_classes="menu" h_expand="true">

@@ -35,6 +35,7 @@ from config.c import c
 from utils.functions import get_from_socket
 
 from widgets.popup_window_custom import PopupWindow
+from widgets.wifi import WifiMenu
 
 from styledwidgets.styled import styler, style_dict
 from styledwidgets.agents import margins, paddings, transitions, colors, shadows, borderradius, textsize
@@ -61,6 +62,8 @@ class EnvControlCenter(Window):
 
 		self.focus_mode = False
 
+		self.add_keybinding("Escape", self.hide_controlcenter)
+
 		volume = 100
 		wlan = envshell_service.sc("wlan-changed", self.wlan_changed)
 		bluetooth = envshell_service.sc("bluetooth-changed", self.bluetooth_changed)
@@ -81,9 +84,12 @@ class EnvControlCenter(Window):
 		)
 
 		self.has_bluetooth_open = False
+		self.has_wifi_open = False
 
 		self.bluetooth_svg = Svg(svg_file=get_relative_path("../../assets/svgs/bluetooth.svg" if bluetooth == "On" else "../../assets/svgs/bluetooth-off.svg"), style_classes="icon")
+		self.wifi_svg = Svg(svg_file=get_relative_path("../../assets/svgs/wifi.svg"), style_classes="icon") if wlan != "No Connection" else Svg(svg_file=get_relative_path("../../assets/svgs/wifi-off.svg"), style_classes="icon")
 
+		self.wifi_man = WifiMenu()
 		self.bluetooth_man = BluetoohConnections(self)
 		self.bluetooth_widget = Button(
 			name="bluetooth-widget",
@@ -104,7 +110,24 @@ class EnvControlCenter(Window):
 			on_clicked=self.open_bluetooth
 		)
 
-		self.wlan_widget = Svg(svg_file=get_relative_path("../../assets/svgs/wifi.svg"), style_classes="icon") if wlan != "No Connection" else Svg(svg_file=get_relative_path("../../assets/svgs/wifi-off.svg"), style_classes="icon")
+		self.wlan_widget = Button(
+			name="wifi-widget",
+			child=Box(
+				orientation="h",
+				children=[
+					self.wifi_svg,
+					Box(
+						name="wifi-widget-info",
+						orientation="vertical",
+						children=[
+							Label(label="Wi-Fi", style_classes="title ct", h_align="start"),
+							self.wlan_label
+						]
+					),
+				]
+			),
+			on_clicked=self.open_wifi
+		)
 
 		self.focus_icon = Svg(svg_file=get_relative_path("../../assets/svgs/dnd-off.svg"), style_classes="icon")
 
@@ -155,6 +178,20 @@ class EnvControlCenter(Window):
 			refs={"self.bluetooth_man": self.bluetooth_man}
 		)
 
+		self.wifi_widgets = exml(
+			file=get_relative_path("envcontrolcenter-wifi.xml"),
+			root=Box,
+			tags={
+				"Box": Box,
+				"Button": Button,
+				"Label": Label,
+				"Scale": Scale,
+				"Svg": Svg
+			},
+			refs={"self.wifi_man": self.wifi_man}
+		)
+
+
 		self.center_box =CenterBox(
 			start_children=[self.widgets]
 		)
@@ -162,6 +199,14 @@ class EnvControlCenter(Window):
 		self.bluetooth_center_box =CenterBox(
 			start_children=[self.bluetooth_widgets]
 		)
+
+		self.wifi_center_box =CenterBox(
+			start_children=[self.wifi_widgets]
+		)
+
+		self.widgets.set_size_request(300, -1)
+		self.bluetooth_center_box.set_size_request(300, -1)
+		self.wifi_center_box.set_size_request(300, -1)
 
 		self.children = self.center_box
 
@@ -192,9 +237,17 @@ class EnvControlCenter(Window):
 		idle_add(lambda *_: self.set_children(self.bluetooth_center_box))
 		self.has_bluetooth_open = True
 
+	def open_wifi(self, *_):
+		idle_add(lambda *_: self.set_children(self.wifi_center_box))
+		self.has_wifi_open = True
+
 	def close_bluetooth(self, *_):
 		idle_add(lambda *_: self.set_children(self.center_box))
 		self.has_bluetooth_open = False
+
+	def close_wifi(self, *_):
+		idle_add(lambda *_: self.set_children(self.center_box))
+		self.has_wifi_open = False
 
 	def _set_mousecapture(self, visible: bool):
 		self.set_visible(visible)
@@ -203,13 +256,20 @@ class EnvControlCenter(Window):
 	def volume_changed(self, _, ):
 		GLib.idle_add(lambda: self.volume_scale.set_value(int(audio_service.speaker.volume))) # type: ignore
 	def wlan_changed(self, _, wlan):
-		self.wlan_widget.set_from_file(get_relative_path("../../assets/svgs/wifi.svg" if wlan != "No Connection" else "../../assets/svgs/wifi-off.svg"))
+		self.wifi_svg.set_from_file(get_relative_path("../../assets/svgs/wifi.svg" if wlan != "No Connection" else "../../assets/svgs/wifi-off.svg"))
 		GLib.idle_add(lambda: self.wlan_label.set_property("label", wlan))
 	def bluetooth_changed(self, _, bluetooth):
 		self.bluetooth_svg.set_from_file(get_relative_path("../../assets/svgs/bluetooth.svg" if bluetooth == "On" else "../../assets/svgs/bluetooth-off.svg"))
 		GLib.idle_add(lambda: self.bluetooth_label.set_property("label", bluetooth))
 	def audio_changed(self, *_):
 		pass
+
+	def _init_mousecapture(self, mousecapture):
+		self._mousecapture_parent = mousecapture
+
+	def hide_controlcenter(self, *_):
+		self._mousecapture_parent.toggle_mousecapture()
+		self.set_visible(False)
 
 	def bluetooth_change_scan(self, f, v):
 		if v == False:
