@@ -49,6 +49,7 @@ auto-generated = false
 	enable = true
 	height = 24
 	full = true
+	autohide = false
 	transparent = true
 	mode = "normal"
 	date-format = "%a %b %d %H:%M"

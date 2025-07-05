@@ -15,6 +15,7 @@ Here are the available options for the **Panel** section:
 | `height`                   | The Height of the panel                                              | `Number`                   | `24`             |
 | `full`                     | Makes the panel have a margin around the edges if false              | `Bool`                     | `true`           |
 | `transparent`              | Makes the panel transparent or not                                   | `Bool`                     | `true`           |
+| `autohide`                 | Makes the panel autohide    or not                                   | `Bool`                     | `false`           |
 | `mode`                     | Determines if the panel expands to the edges or floats in the middle | `String[normal, floating]` | `normal`         |
 | `date-format`              | Custom format for the clock on the right side                        | `String`                   | `%a %b %d %H:%M` |
 | `icon`                     | A custom nerdfont character as an icon on the left                   | `String`                   | ``             |
