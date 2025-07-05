@@ -17,6 +17,7 @@ venv.bak/
 
 # Nix
 result/
+result/*
 #shell.nix
 
 # Config

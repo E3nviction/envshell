@@ -165,6 +165,8 @@ if not os.path.exists(os.path.join(config_location, "envshell")):
 
 # check if config file exists
 if not os.path.exists(os.path.join(config_location, "envshell", "config.toml")):
+    with open(os.path.join(config_location, "envshell", "style.css"), "w") as f:
+        f.write("")
     shutil.copyfile(get_relative_path("example_config.toml"), os.path.join(config_location, "envshell", "config.toml"))
     if not os.path.exists(os.path.join(config_location, "envshell", "extensions")):
         shutil.copy(get_relative_path("extensions"), os.path.join(config_location, "envshell"))
