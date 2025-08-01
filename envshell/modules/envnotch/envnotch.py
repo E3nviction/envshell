@@ -162,7 +162,11 @@ class EnvNotch(Window):
 				"default": style_dict(
 					background_color=colors.black,
 					transition=transitions.normal,
-					border_radius=rem("0") + rem("0") + rem(".75") + rem(".75")
+					margin_top=rem("0.25") if c.get_rule("Notch.island-mode") else rem("0"),
+					border_radius=(
+						(rem("2") + rem("2") + rem("2") + rem("2")) if c.get_rule("Notch.island-mode") else
+						(rem("0") + rem("0") + rem(".75") + rem(".75"))
+					)
 				),
 				".hide ->": style_dict(
 					background_color=colors.transparent,
@@ -173,7 +177,7 @@ class EnvNotch(Window):
 				self.label,
 				self.notch_indicators,
 			],
-			size=(200, 24),
+			size=(200, 27),
 		)
 		self.children = [
 			CenterBox(
@@ -189,7 +193,7 @@ class EnvNotch(Window):
 				v_expand=True,
 				start_children=Box(
 					children=[
-						self.corner_left,
+						self.corner_left if not c.get_rule("Notch.island-mode") else Box()
 					],
 				),
 				center_children=[
@@ -197,7 +201,7 @@ class EnvNotch(Window):
 				],
 				end_children=Box(
 					children=[
-						self.corner_right,
+						self.corner_right if not c.get_rule("Notch.island-mode") else Box()
 					]
 				)
 			)

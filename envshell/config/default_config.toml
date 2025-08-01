@@ -101,6 +101,7 @@ auto-generated = false
 
 [Notch]
 	enable = true
+	island-mode = false
 [Notifications]
 	enable = true
 	[Notifications.Center]

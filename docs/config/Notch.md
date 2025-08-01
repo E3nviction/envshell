@@ -11,13 +11,15 @@ Here are the available options for the **Notch** section:
 
 | Option                     | Description       | Type           | Default               |
 |----------------------------|-------------------|----------------|-----------------------|
-| `enable`                  | Enable or disable the Notch          | `Bool`| `true`                |
+| `enable`                   | Enable or disable the Notch        | `Bool`| `true`        |
+| `island-mode`              | Enable or disable the island mode  | `Bool`| `false`       |
 
 ## Example
 
 ```toml
 [Notch]
 enable = true
+island-mode = false
 ```
 
 ---

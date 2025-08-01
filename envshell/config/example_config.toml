@@ -41,6 +41,7 @@ auto-generated = true
 		class."org.gnome.Software" = "App Store"
 [Notch]
 	enable = true
+	island-mode = false # This will enable the island mode, which is a notch that is floating
 [Notifications]
 	enable = true
 	[Notifications.Center]
